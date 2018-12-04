@@ -14,10 +14,8 @@ _Time Cruncher_ je web-aplikacija namenjena organizaciji personalnog vremena i o
 - Dodavanje ljudi na konkretan kanal
 - Uvid u lične zadatke filtrirane po vremenskom periodu, ili tipu
 - Podsetnik na izvršenje zadataka u vidu notifikacija
-- Četovanje
 
 ![opšti use case dijagram](https://github.com/pripovedac/TimeCruncher/blob/master/Architecture/diagrams/use_case_1.png)
-
 
 ![use case prijavljivanje](https://github.com/pripovedac/TimeCruncher/blob/master/Architecture/diagrams/use_case_2.png)
 
