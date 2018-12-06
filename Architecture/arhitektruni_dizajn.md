@@ -34,8 +34,12 @@ _Time Cruncher_ je web-aplikacija namenjena organizaciji personalnog vremena i o
  
 ## Arhitekturni obrasci
 
+> Arhitekturni obrasci definišu fundamentalu strukturnu i organizacionu šemu softverskog sistema. Oni omogućavaju podelu na podsisteme, definišu njihove odgovornosti i pravila po kojima će ovi podsistemi biti povezani.
+
+Citat iz knjige: Pattern-oriented Software Architecture, a System of Patterns
+
 ### Layered 
-Osnovni arhitekturni obrazac koji će biti primenjen u aplikaciji **Time Cruncher** biće *layered* (eng. *slojeviti*) obrazac. 
+Osnovni arhitekturni obrazac koji će biti primenjen u aplikaciji **Time Cruncher** biće *layered* (eng. *slojeviti*) obrazac. On omogućava dekomponovanje aplikacije na grupe podzadataka pri čemu svaka grupa pripada zasebnom nivou apstrakcije. 
 
 Sistem se sastoji iz nekoliko slojeva: klijentske aplikacije, Pusher-a, servera i sloja baze podataka. Server je posrednik između klijentske aplikacije i baze što može obavljati preko Pusher-a. Komunikacija između klijenta i servera vrši se pomoću *HTTP zahteva*. API koji je obezbeđen na serverskoj strani biće pisan poštujući *RESTful* principe i podrazumevaće *CRUD* operacije za sve entite za koje će one imati smisla. Parafrazirno, ovo znači da će server biti zadužen za perzistenciju podataka. Na serveru će biti odrađen biznis model podataka na osnovu kojih će se generisati odgovarajuće relacije u bazi.
 
@@ -69,9 +73,15 @@ Struktura sistema predstavljena korišćenjem komponenti sistema.
 
 ## Bihevioralni pogled
 
-Interakcija komponenti sistema pri kreiranju novog zadatka. Klijent koristeći svoju aplikaciju koja se izvršava na nekom pretraživaču bira opciju za kreiranje zadatka. Ova informacija se putem Pusher-a prosleđuje serveru koji izvršava dobijeni zadatak uz pomoć ORM alata i vrši perzistenciju zadatka u bazi podataka. Nakon obavljene navedene sekvence akcija ponovo posredstvom Pusher-a se vrši publish-ovanje ka svim korisnicima koji osluškuju kanal na kome je došlo do promene.
+Interakcija komponenti sistema pri kreiranju novog zadatka. Klijent koristeći svoju aplikaciju koja se izvršava na nekom pretraživaču bira opciju za kreiranje zadatka. Ova informacija se prosleđuje serveru koji izvršava dobijeni zadatak uz pomoć ORM alata i vrši perzistenciju zadatka u bazi podataka. Nakon obavljene navedene sekvence akcija ponovo posredstvom Pusher-a se vrši publish-ovanje ka svim korisnicima koji osluškuju kanal na kome je došlo do promene.
+Analogno bi izgledao sekvencijalni dijagram za kreiranje kanala.
 
 ![bihevioralni pogled](https://github.com/pripovedac/TimeCruncher/blob/master/Architecture/diagrams/bihevioralni_pogled.png)
+
+
+Ponašanje sistema pri prihvatanju zadatka od strane korisnika. Interakcija podrazumeva dodeljivanje zadatka jednom korisniku od strane drugog korisnika, pri čemu sistem nakon odobrenja korisnika kome je zadatak dodeljen ažurira bazu podataka.
+
+![bihevioralni pogled 2](https://github.com/pripovedac/TimeCruncher/blob/master/Architecture/diagrams/bihevioralni_pogled2.png)
 
 ## Alokacioni pogled
 
@@ -92,7 +102,7 @@ Na serveru će biti korišćen *Node.js*, te je za backend odabran frejmvork [Ne
 
 ### Komunikacija
 
-Komunikacija između instanci aplikacije **Time Cruncher** kao i servera biće omogućena korišćenjem [Pusher](https://pusher.com/)-a. Pusher kanali se koriste za komunikaciju koristeći notifikacije, čet, ažuriranje web-stranica i dr. U pozadini koristi *publish-subrscribe* model.
+ Komunikacija između instanci aplikacije **Time Cruncher** kao i servera biće omogućena korišćenjem [Pusher](https://pusher.com/)-a. Pusher kanali se koriste za komunikaciju koristeći notifikacije, čet, ažuriranje web-stranica i dr. U pozadini koristi *publish-subrscribe* model.
 
 ### Zaduženja
 
