@@ -1,5 +1,8 @@
 <template>
-    <p>Hello from page A!</p>
+    <div>
+        <p>Hello from page A!</p>
+        <label>Hello world!</label>
+    </div>
 </template>
 
 <script>
@@ -8,6 +11,13 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+    div {
+        border: 1px solid red;
+
+        label {
+            border: 1px solid blue;
+        }
+    }
 
 </style>
