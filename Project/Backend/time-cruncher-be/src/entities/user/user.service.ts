@@ -5,6 +5,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import { Task } from '../task/task.entity';
 import { MissingFieldException } from '../../custom-exceptions/missingfield.exception';
 import { Group } from '../group/group.entity';
+import { CreateUserDTO } from './DTOs/createUser.dto';
 
 @Injectable()
 export class UserService {
@@ -12,9 +13,9 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ){}
-  async addUser(newUserData: User): Promise<User>{
+  async addUser(newUserData: CreateUserDTO): Promise<User>{
     try {
-      return await this.userRepository.save(newUserData);
+      return await this.userRepository.save(newUserData as User);
     }
     catch (exception){
       throw new MissingFieldException(exception.message);

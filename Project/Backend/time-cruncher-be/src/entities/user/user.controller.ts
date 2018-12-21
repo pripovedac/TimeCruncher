@@ -18,6 +18,7 @@ import { catchError } from 'rxjs/operators';
 import { getConnection } from 'typeorm';
 import { IdNotAllowedException } from '../../custom-exceptions/idnotallowed.exception';
 import { GroupService } from '../group/group.service';
+import { CreateUserDTO } from './DTOs/createUser.dto';
 
 @Controller('users')
 export class UserController {
@@ -28,9 +29,7 @@ export class UserController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addUser(@Body() userData: User): Promise<object> {
-    if (userData.id !== undefined)
-      throw new IdNotAllowedException();
+  async addUser(@Body() userData: CreateUserDTO): Promise<object> {
     return await this.userService.addUser(userData);
   }
 

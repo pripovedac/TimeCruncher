@@ -1,7 +1,7 @@
 import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany} from 'typeorm';
 import {Group} from '../group/group.entity';
 import { Task } from '../task/task.entity';
-import {Comment} from '../comments/comment.entity';
+import {Comment} from '../comment/comment.entity';
 
 @Entity()
 export class User{

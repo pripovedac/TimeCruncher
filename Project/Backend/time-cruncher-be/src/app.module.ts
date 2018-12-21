@@ -10,9 +10,10 @@ import { TaskController } from './entities/task/task.controller';
 import { GroupModule } from './entities/group/group.module';
 import { TaskModule } from './entities/task/task.module';
 import { UserIdController } from './entities/user/user-id/user-id.controller';
+import { CommentModule } from './entities/comment/comment.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), UserModule, GroupModule, TaskModule],
+  imports: [TypeOrmModule.forRoot(), UserModule, GroupModule, TaskModule, CommentModule],
   controllers: [AppController, UserController, GroupController, TaskController, UserIdController],
   providers: [AppService, UserService],
 })

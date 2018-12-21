@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany, CreateDateColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Group } from '../group/group.entity';
-import {Comment} from '../comments/comment.entity';
+import {Comment} from '../comment/comment.entity';
 
 @Entity()
 export class Task{
@@ -13,9 +13,8 @@ export class Task{
   })
   description: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'datetime',
-    nullable: false,
   })
   publishTime: string;
 
