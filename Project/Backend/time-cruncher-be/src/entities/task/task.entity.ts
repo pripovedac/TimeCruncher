@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Group } from '../group/group.entity';
+import {Comment} from '../comments/comment.entity';
 
 @Entity()
 export class Task{
@@ -46,4 +47,7 @@ export class Task{
 
   @ManyToMany(type => User, user => user.assignedTasks)
   assignedUsers: User[];
+
+  @OneToMany(type => Comment, comment => comment.creator)
+  comments: Comment[];
 }
