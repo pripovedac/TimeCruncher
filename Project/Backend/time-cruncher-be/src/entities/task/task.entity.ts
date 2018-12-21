@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Group } from '../group/group.entity';
 
 @Entity()
 export class Task{
@@ -35,9 +36,13 @@ export class Task{
   })
   isCompleted: boolean;
 
-  @ManyToOne(type => User, task => task.createdTasks)
+  @ManyToOne(type => User, user => user.createdTasks, {onDelete: 'CASCADE'})
   @JoinColumn()
   creator: number;
+
+  @ManyToOne(type => Group, group => group.tasks)
+  @JoinColumn()
+  group: number;
 
   @ManyToMany(type => User, user => user.assignedTasks)
   assignedUsers: User[];

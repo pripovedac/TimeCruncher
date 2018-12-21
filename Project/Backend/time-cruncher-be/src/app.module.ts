@@ -9,10 +9,11 @@ import { GroupController } from './entities/group/group.controller';
 import { TaskController } from './entities/task/task.controller';
 import { GroupModule } from './entities/group/group.module';
 import { TaskModule } from './entities/task/task.module';
+import { UserIdController } from './entities/user/user-id/user-id.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UserModule, GroupModule, TaskModule],
-  controllers: [AppController, UserController, GroupController, TaskController],
+  controllers: [AppController, UserController, GroupController, TaskController, UserIdController],
   providers: [AppService, UserService],
 })
 export class AppModule {}

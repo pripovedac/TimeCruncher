@@ -1,5 +1,6 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToMany} from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany} from 'typeorm';
 import {User} from '../user/user.entity';
+import { Task } from '../task/task.entity';
 
 @Entity()
 export class Group{
@@ -20,6 +21,9 @@ export class Group{
   })
   description: string;
 
-  @ManyToMany(type => User, user => user.groups, {nullable: false})
+  @ManyToMany(type => User, user => user.groups, {nullable: false, cascade: true})
   users: User[];
+
+  @OneToMany(type => Task, task => task.group)
+  tasks: Task[];
 }
