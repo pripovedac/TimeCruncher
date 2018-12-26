@@ -27,11 +27,11 @@ export class UserService {
     const res: User[] = await this.userRepository.find();
     return res.map( x => new UserInfoDto(x));
   }
-  async findById(id: number): Promise<UserInfoDto> {
+  async findById(id: number): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { id } });
     if (!res)
       throw new UserNotFoundException(id);
-    return new UserInfoDto(res);
+    return res;
   }
   async findByIdWithGroups(id: number): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { id }, relations: ['groups'] });
@@ -69,7 +69,7 @@ export class UserService {
       .innerJoinAndSelect('user.assignedTasks', 'task', 'task.dueTime >= :dateLow and task.dueTime <= :dateHigh', { dateLow, dateHigh })
       .where('user.id = :id', { id })
       .getOne();
-    if (!res) [];
+    if (!res) return [];
     return res.assignedTasks;
   }
   async removeById(id: number) {

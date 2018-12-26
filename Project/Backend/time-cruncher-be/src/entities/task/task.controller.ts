@@ -4,7 +4,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpCode, HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Param,
@@ -22,6 +22,7 @@ import { Group } from '../group/group.entity';
 import { create } from 'domain';
 import { TaskInfoDto } from './DTOs/task-info.dto';
 import { EditTaskDto } from './DTOs/edit-task.dto';
+import { TaskNotFoundException } from '../../custom-exceptions/task-not-found.exception';
 
 @Controller('tasks')
 export class TaskController {
@@ -31,8 +32,8 @@ export class TaskController {
     private readonly userService: UserService,
   ) {}
   @Post()
-  @HttpCode(201)
-  async addTask(@Body() createTaskDto: CreateTaskDto): Promise<object> {
+  @HttpCode(HttpStatus.CREATED)
+  async addTask(@Body() createTaskDto: CreateTaskDto): Promise<TaskInfoDto> {
     const that = this;
     const assignedUsers: User[] = await Promise.all(createTaskDto.assignedUserIds.map(async u => await that.userService.findById(u)));
     const creator: User = await this.userService.findById(createTaskDto.creatorId);
@@ -44,7 +45,8 @@ export class TaskController {
     newTask.dueTime = createTaskDto.dueTime;
     newTask.description = createTaskDto.description;
     newTask.isCompleted = false;
-    return await this.taskService.addTask(newTask);
+    const res: Task = await this.taskService.addTask(newTask);
+    return new TaskInfoDto(res);
   }
 
   @Get()
@@ -56,16 +58,17 @@ export class TaskController {
   @Get(':id')
   async findTaskById(@Param() params): Promise<TaskInfoDto>{
     const res: Task = await this.taskService.findById(params.id);
+    if (!res)
+      throw new TaskNotFoundException(params.id);
     return new TaskInfoDto(res);
   }
 
   @Delete(':id')
   async removeTaskById(@Param() params){
+    if (!this.taskService.existsWithId(params.id))
+      throw new TaskNotFoundException(params.id);
     const res = await this.taskService.removeById(params.id);
-    return {
-      statusCode: 200,
-      message: 'Task successfully removed',
-    };
+    return {messsage: `Task with id = ${params.id} successfully removed.`};
   }
 
   @Put(':id')

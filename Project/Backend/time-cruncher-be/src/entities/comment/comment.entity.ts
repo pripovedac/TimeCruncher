@@ -23,7 +23,7 @@ export class Comment{
   @JoinColumn()
   creator: User;
 
-  @ManyToOne(type => Task, task => task.creator, {nullable: false, onDelete: 'CASCADE'})
+  @ManyToOne(type => Task, task => task.creator, {eager: true, nullable: false, onDelete: 'CASCADE'})
   @JoinColumn()
   task: Task;
 }

@@ -5,6 +5,8 @@ import { User } from '../user/user.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import { EditTaskDto } from './DTOs/edit-task.dto';
 import { UserService } from '../user/user.service';
+import { TaskNotFoundException } from '../../custom-exceptions/task-not-found.exception';
+import { UserIdArrayDto } from '../group/DTOs/user-id-array.dto';
 @Injectable()
 export class TaskService {
   constructor(
@@ -19,13 +21,28 @@ export class TaskService {
     return await this.taskRepository.find();
   }
   async findById(id: number): Promise<Task>{
-    return await this.taskRepository.findOne({ where: {id}});
+    const res: Task = await this.taskRepository.findOne({ where: {id}});
+    if (!res)
+      throw new TaskNotFoundException(id);
+    return res;
+  }
+  async findByIdWithComments(id: number): Promise<Task>{
+    const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['comments']});
+    if (!res)
+      throw new TaskNotFoundException(id);
+    return res;
+  }
+  async findByIdWithAssignedUsers(id: number): Promise<Task>{
+    const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['assignedUsers']});
+    if (!res)
+      throw new TaskNotFoundException(id);
+    return res;
   }
   async removeById(id: number){
     return await this.taskRepository.delete(id);
   }
   async edit(id: number, editTaskDto: EditTaskDto) {
-    const task: Task = await this.taskRepository.findOne(id);
+    const task: Task = await this.findById(id);
     task.description = editTaskDto.description;
     task.dueTime = editTaskDto.dueTime;
     return await this.taskRepository.save(task);
@@ -40,7 +57,7 @@ export class TaskService {
     return await this.taskRepository.find({where: {group: groupId}});
   }
   async markCompleted(id: number){
-    const task: Task = await this.taskRepository.findOne(id);
+    const task: Task = await this.findById(id);
     task.isCompleted = true;
     task.completionTime = (new Date()).toISOString();
     return await this.taskRepository.save(task);
@@ -53,10 +70,10 @@ export class TaskService {
   }
   async assignUsers(id: number, assignedUserIds: number[]): Promise<Task>{
     const that = this;
-    const task = await this.taskRepository.findOne(id);
+    const task = await this.findByIdWithAssignedUsers(id);
     const filteredIds = assignedUserIds.filter( uId => !task.assignedUsers.reduce((acc, el) => acc || uId === el.id, false))
-    const users: User[] = await Promise.all(assignedUserIds.map( async uId => await that.userService.findById(uId)));
-    task.assignedUsers.concat(users);
+    const users: User[] = await Promise.all(filteredIds.map( async uId => await that.userService.findById(uId)));
+    task.assignedUsers = task.assignedUsers.concat(users);
     return await this.taskRepository.save(task);
   }
 }

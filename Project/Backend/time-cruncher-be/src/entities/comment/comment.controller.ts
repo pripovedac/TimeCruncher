@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { Comment } from './comment.entity';
 import { CreateCommentDto } from './DTOs/create-comment.dto';
 import { UserService } from '../user/user.service';
 import { TaskService } from '../task/task.service';
 import { EditCommentDto } from './DTOs/edit-comment.dto';
-@Controller('comment')
+import { CommentNotFoundException } from '../../custom-exceptions/comment-not-found.exception';
+@Controller('comments')
 export class CommentController {
   constructor(
     private readonly commentService: CommentService,
@@ -27,13 +28,17 @@ export class CommentController {
     const creator = await this.userService.findById(createCommentDto.creatorId);
     const task = await this.taskService.findById(createCommentDto.taskId);
     const newComment: Partial<Comment> = {text: createCommentDto.text, creator, task};
-    return await this.commentService.create(newComment);
+    return await this.commentService.create(newComment as Comment);
   }
 
   @Delete(':id')
   async deleteComment(@Param() params){
+    if (!await this.commentService.existsWithId(params.id))
+      throw new CommentNotFoundException(params.id);
     const res = await this.commentService.delete(params.id);
-    return res;
+    if (res.raw.affectedRows === 0)
+      throw new HttpException({message: 'There was an error with comment removal.'}, HttpStatus.INTERNAL_SERVER_ERROR);
+    return {message: `Comment with id = ${params.id} successfully removed`};
   }
 
   @Put(':id')

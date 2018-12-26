@@ -49,7 +49,10 @@ export class GroupService {
     return res;
   }
   async findByIdWithTasks(id: number): Promise<Group>{
-    return await this.groupRepository.findOne({ where: {id}, relations: ['tasks']});
+    const res: Group = await this.groupRepository.findOne({ where: {id}, relations: ['tasks']});
+    if (!res)
+      throw new GroupNotFoundException(id);
+    return res;
   }
   async removeById(id: number){
     return await this.groupRepository.delete(id);
@@ -62,9 +65,6 @@ export class GroupService {
     return res;
   }
   async existsWithId(id: number){
-    return await this.groupRepository
-      .createQueryBuilder()
-      .where('id = :id', {id})
-      .getCount() === 1;
+    return (await this.groupRepository.findOne(id)) !== undefined;
   }
 }

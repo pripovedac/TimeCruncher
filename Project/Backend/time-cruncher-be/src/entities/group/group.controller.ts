@@ -48,11 +48,12 @@ export class GroupController {
 
   @Delete(':id')
   async removeGroupById(@Param() params) {
-    if (!this.groupService.existsWithId(params.id))
+    if (!await this.groupService.existsWithId(params.id)){
       throw new GroupNotFoundException(params.id);
+    }
     const res = await this.groupService.removeById(params.id);
     return {
-      message: `Group with id ${params.id} successfully removed.`,
+      message: `Group with id = ${params.id} successfully removed.`,
     };
   }
 

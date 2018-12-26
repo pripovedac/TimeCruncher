@@ -18,6 +18,6 @@ export class CreateTaskDto{
   @IsNumber()
   creatorId: number;
 
-  @IsArray({each: true})
+  @IsArray()
   assignedUserIds: number[];
 }

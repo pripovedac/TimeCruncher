@@ -37,12 +37,14 @@ export class UserController {
 
   @Get()
   async findAllUsers(): Promise<UserInfoDto[]>{
-    return await this.userService.findAll();
+    const res: User[] = await this.userService.findAll();
+    return res.map( x => new UserInfoDto(x) );
   }
 
   @Get(':id')
   async findUserById(@Param() params): Promise<UserInfoDto>{
-    return await this.userService.findById(params.id);
+    const res: User = await this.userService.findById(params.id);
+    return new UserInfoDto(res);
   }
 
   @Delete(':id')
