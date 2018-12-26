@@ -4,7 +4,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpCode, HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Param,
@@ -15,61 +15,50 @@ import { GroupService } from './group.service';
 import { Group } from './group.entity';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
+import { GroupInfoDto } from './DTOs/group-info.dto';
+import { CreateGroupDto } from './DTOs/create-group.dto';
+import { EditGroupDto } from './DTOs/edit-group.dto';
+import { GroupNotFoundException } from '../../custom-exceptions/group-not-found.exception';
 
 @Controller('groups')
 export class GroupController {
   constructor(private readonly groupService: GroupService, private readonly userService: UserService){}
 
   @Post()
-  @HttpCode(201)
-  async addGroup(@Body() body): Promise<object>{
-    try{
-      const creatorId = body.creatorId;
-      const creatorUser = await this.userService.findById(creatorId);
-      if (creatorUser === null || creatorUser === undefined)
-        throw new BadRequestException();
-      delete body.creatorId;
-      const createdGroup: Group = body;
-      createdGroup.users = [];
-      createdGroup.users.push(creatorUser);
-      return await this.groupService.addGroup(createdGroup);
-    }
-    catch (exception){
-      throw new BadRequestException();
-    }
+  @HttpCode(HttpStatus.CREATED)
+  async addGroup(@Body() body: CreateGroupDto): Promise<GroupInfoDto> {
+    const creatorUser: User = await this.userService.findById(body.creatorId);
+    delete body.creatorId;
+    const createdGroup: Partial<Group> = body;
+    createdGroup.users = [];
+    createdGroup.users.push(creatorUser);
+    return await this.groupService.addGroup(createdGroup as Group);
   }
 
   @Get()
-  async findAllGroups(): Promise<Group[]>{
+  async findAllGroups(): Promise<GroupInfoDto[]>{
     return await this.groupService.findAll();
   }
 
   @Get(':id')
-  async findGroupById(@Param() params): Promise<object>{
-    return await this.groupService.findById(params.id);
+  async findGroupById(@Param() params): Promise<GroupInfoDto>{
+    const res: Group = await this.groupService.findById(params.id);
+    return new GroupInfoDto(res);
   }
 
   @Delete(':id')
-  async removeGroupById(@Param() params){
+  async removeGroupById(@Param() params) {
+    if (!this.groupService.existsWithId(params.id))
+      throw new GroupNotFoundException(params.id);
     const res = await this.groupService.removeById(params.id);
-    if (res.raw.affectedRows === 0){
-      throw new NotFoundException();
-    }
     return {
-      statusCode: 200,
-      message: 'Group successfully removed',
+      message: `Group with id ${params.id} successfully removed.`,
     };
   }
 
   @Put(':id')
-  async editGroup(@Param() params, @Body() groupData: Group) {
-    const exists = await this.groupService.existsWithId(params.id);
-    if (!exists)
-      throw new NotFoundException();
-    const res = await this.groupService.edit(params.id, groupData);
-    if (res.raw.affectedRows === 0)
-      throw new InternalServerErrorException();
-    groupData.id = params.id;
-    return groupData;
+  async editGroup(@Param() params, @Body() editGroupDto: EditGroupDto) {
+    const res: Group = await this.groupService.edit(params.id, editGroupDto);
+    return new GroupInfoDto(res);
   }
 }

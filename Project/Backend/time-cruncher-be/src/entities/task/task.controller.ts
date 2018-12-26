@@ -17,6 +17,11 @@ import DateTimeFormat = Intl.DateTimeFormat;
 import { User } from '../user/user.entity';
 import { GroupService } from '../group/group.service';
 import { UserService } from '../user/user.service';
+import { CreateTaskDto } from './DTOs/create-task.dto';
+import { Group } from '../group/group.entity';
+import { create } from 'domain';
+import { TaskInfoDto } from './DTOs/task-info.dto';
+import { EditTaskDto } from './DTOs/edit-task.dto';
 
 @Controller('tasks')
 export class TaskController {
@@ -27,41 +32,36 @@ export class TaskController {
   ) {}
   @Post()
   @HttpCode(201)
-  async addTask(@Body() taskData): Promise<object>{
-    try{
-      if (taskData.group === null || taskData.group === undefined || !await this.groupService.existsWithId(taskData.group))
-        throw new BadRequestException();
-      if (taskData.creator === null || taskData.creator === undefined || !await this.userService.existsWithId(taskData.creator))
-        throw new BadRequestException();
-      if (taskData.assignedUserIds !== undefined && taskData.assignedUserIds !== null){
-        const that = this;
-        taskData.assignedUsers = await Promise.all(taskData.assignedUserIds.map(async u => await that.userService.findById(u) ));
-        delete taskData.assignedUserIds;
-      }
-      return await this.taskService.addTask(taskData);
-    }
-    catch (exception){
-      console.log(exception.message);
-      throw new BadRequestException();
-    }
+  async addTask(@Body() createTaskDto: CreateTaskDto): Promise<object> {
+    const that = this;
+    const assignedUsers: User[] = await Promise.all(createTaskDto.assignedUserIds.map(async u => await that.userService.findById(u)));
+    const creator: User = await this.userService.findById(createTaskDto.creatorId);
+    const group: Group = await this.groupService.findById(createTaskDto.groupId);
+    const newTask: Task = new Task();
+    newTask.creator = creator;
+    newTask.group = group;
+    newTask.assignedUsers = assignedUsers;
+    newTask.dueTime = createTaskDto.dueTime;
+    newTask.description = createTaskDto.description;
+    newTask.isCompleted = false;
+    return await this.taskService.addTask(newTask);
   }
 
   @Get()
-  async findAllTasks(): Promise<Task[]>{
-    return await this.taskService.findAll();
+  async findAllTasks(): Promise<TaskInfoDto[]>{
+    const res: Task[] = await this.taskService.findAll();
+    return res.map( x => new TaskInfoDto(x));
   }
 
   @Get(':id')
-  async findTaskById(@Param() params): Promise<object>{
-    return await this.taskService.findById(params.id);
+  async findTaskById(@Param() params): Promise<TaskInfoDto>{
+    const res: Task = await this.taskService.findById(params.id);
+    return new TaskInfoDto(res);
   }
 
   @Delete(':id')
   async removeTaskById(@Param() params){
     const res = await this.taskService.removeById(params.id);
-    if (res.raw.affectedRows === 0){
-      throw new NotFoundException();
-    }
     return {
       statusCode: 200,
       message: 'Task successfully removed',
@@ -69,14 +69,8 @@ export class TaskController {
   }
 
   @Put(':id')
-  async editTask(@Param() params, @Body() taskData: Task) {
-    const exists = await this.taskService.existsWithId(params.id);
-    if (!exists)
-      throw new NotFoundException();
-    const res = await this.taskService.edit(params.id, taskData);
-    if (res.raw.affectedRows === 0)
-      throw new InternalServerErrorException();
-    taskData.id = params.id;
-    return taskData;
+  async editTask(@Param() params, @Body() editTaskDto: EditTaskDto) {
+    const retTask: Task = await this.taskService.edit(params.id, editTaskDto);
+    return new TaskInfoDto(retTask);
   }
 }

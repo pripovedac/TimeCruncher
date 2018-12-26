@@ -38,11 +38,11 @@ export class Task{
 
   @ManyToOne(type => User, user => user.createdTasks, {onDelete: 'CASCADE'})
   @JoinColumn()
-  creator: number;
+  creator: User;
 
-  @ManyToOne(type => Group, group => group.tasks)
+  @ManyToOne(type => Group, group => group.tasks, {onDelete: 'CASCADE'})
   @JoinColumn()
-  group: number;
+  group: Group;
 
   @ManyToMany(type => User, user => user.assignedTasks)
   assignedUsers: User[];

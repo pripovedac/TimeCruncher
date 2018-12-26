@@ -9,11 +9,12 @@ import { GroupIdController } from './group-id/group-id.controller';
 import { GroupIdModule } from './group-id/group-id.module';
 import { Task } from '../task/task.entity';
 import { TaskService } from '../task/task.service';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Group, User, Task]), GroupIdModule],
+  imports: [TypeOrmModule.forFeature([Group, User, Task]), UserModule],
   controllers: [GroupController, GroupIdController],
-  providers: [GroupService, UserService, TaskService],
+  providers: [GroupService, TaskService],
   exports: [GroupService],
 })
 export class GroupModule {}

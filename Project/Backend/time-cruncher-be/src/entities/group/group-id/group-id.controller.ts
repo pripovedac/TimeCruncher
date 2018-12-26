@@ -2,28 +2,31 @@ import { Body, Controller, Get, NotFoundException, Param, Put } from '@nestjs/co
 import { TaskService } from '../../task/task.service';
 import { GroupService } from '../group.service';
 import { UserService } from '../../user/user.service';
+import { UserIdArrayDto } from '../DTOs/user-id-array.dto';
+import { Group } from '../group.entity';
+import { TaskInfoDto } from '../../task/DTOs/task-info.dto';
+import { GroupWithUsersDto } from '../DTOs/group-with-users.dto';
+import { UserInfoDto } from '../../user/DTOs/user-info.dto';
 
 @Controller('groups/:groupId')
 export class GroupIdController {
   constructor(
               private readonly taskService: TaskService,
               private readonly groupService: GroupService,
-              private readonly userService: UserService,
   ){}
   @Put('addUsers')
-  async addUsersToGroup(@Body() body, @Param() params){
-    return await this.groupService.addUsersToGroup(params.groupId, body.userIds);
+  async addUsersToGroup(@Body() body: UserIdArrayDto, @Param() params): Promise<GroupWithUsersDto>{
+    const res: Group = await this.groupService.addUsersToGroup(params.groupId, body.userIds);
+    return new GroupWithUsersDto(res);
   }
   @Get('tasks')
-  async getTasksForGroup(@Param() params){
-    if (!await this.groupService.existsWithId(params.groupId))
-      throw new NotFoundException();
-    return await this.taskService.findAllByGroupId(params.groupId);
+  async getTasksForGroup(@Param() params): Promise<TaskInfoDto[]>{
+    const res: Group = await this.groupService.findByIdWithTasks(params.groupId);
+    return res.tasks.map( x => new TaskInfoDto(x));
   }
   @Get('users')
-  async getUsersForGroup(@Param() params){
-    if (!await this.groupService.existsWithId(params.groupId))
-      throw new NotFoundException();
-    return (await this.groupService.findByIdWithUsers(params.groupId)).users;
+  async getUsersForGroup(@Param() params): Promise<UserInfoDto[]>{
+    const res: Group = await this.groupService.findByIdWithUsers(params.groupId);
+    return res.users.map( x => new UserInfoDto(x));
   }
 }

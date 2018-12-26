@@ -1,71 +1,65 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpException,
-  HttpStatus,
-  Inject, InternalServerErrorException, NotFoundException,
+  HttpStatus, NotFoundException,
   Param,
   Post, Put,
   Response,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { catchError } from 'rxjs/operators';
-import { getConnection } from 'typeorm';
-import { IdNotAllowedException } from '../../custom-exceptions/idnotallowed.exception';
-import { GroupService } from '../group/group.service';
-import { CreateUserDTO } from './DTOs/createUser.dto';
+import { CreateUserDto } from './DTOs/create-user.dto';
+import { UserInfoDto } from './DTOs/user-info.dto';
+import { SqlException } from '../../custom-exceptions/sql.exception';
+import { EditUserDto } from './DTOs/edit-user.dto';
 
 @Controller('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly groupService: GroupService,
-    ){}
+  ){}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addUser(@Body() userData: CreateUserDTO): Promise<object> {
-    return await this.userService.addUser(userData);
+  async addUser(@Body() createUserDto: CreateUserDto): Promise<UserInfoDto> {
+    try {
+      const res: User = await this.userService.addUser(createUserDto);
+      return new UserInfoDto(res);
+    }
+    catch (exception){
+      throw new SqlException(exception.message);
+    }
   }
 
   @Get()
-  async findAllUsers(): Promise<User[]>{
+  async findAllUsers(): Promise<UserInfoDto[]>{
     return await this.userService.findAll();
   }
 
   @Get(':id')
-  async findUserById(@Param() params): Promise<object>{
-    const res = await this.userService.findById(params.id);
-    if (res === undefined)
-      throw new NotFoundException();
-    return res;
+  async findUserById(@Param() params): Promise<UserInfoDto>{
+    return await this.userService.findById(params.id);
   }
 
   @Delete(':id')
   async removeUserById(@Param() params){
-    await this.groupService.removeGroupsWithLastUser(params.id);
     const res = await this.userService.removeById(params.id);
-    if (res.raw.affectedRows === 0){
-      throw new NotFoundException();
-    }
     return {
-      statusCode: 200,
-      message: 'User successfully removed',
+      message: `User with id = ${params.id} succesfully removed`,
     };
   }
 
   @Put(':id')
-  async editUser(@Param() params, @Body() userData: User) {
+  async editUser(@Param() params, @Body() createUserDto: CreateUserDto): Promise<UserInfoDto>{
     const exists = await this.userService.existsWithId(params.id);
     if (!exists)
-      throw new NotFoundException();
-    userData.id = params.id;
-    const res = await this.userService.edit(userData);
-    return userData;
+      throw new HttpException({message: `User with id = ${params.id} not found.`}, HttpStatus.NOT_FOUND);
+    const editUserDto: EditUserDto = { id: parseInt(params.id, 10), ...createUserDto};
+    const res = await this.userService.edit(editUserDto);
+    return new UserInfoDto(res);
   }
 }
