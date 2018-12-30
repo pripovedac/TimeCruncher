@@ -51,7 +51,7 @@ modela u objektni model pomoću dekoratora kojima se definiše koja se kolona ma
 
 ![api users](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/9.%20api_users.png)
 
-![first dto](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/10.dto_one.png)
+![dto one](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/10.%20dto_one.png)
 
 ### URI: _/groups_
 
