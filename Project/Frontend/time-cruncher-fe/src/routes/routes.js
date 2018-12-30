@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import aPage from '../components/pages/a'
 import bPage from '../components/pages/b'
+import Register from '../components/pages/RegisterPage'
+import Login from '../components/pages/LoginPage'
 
 Vue.use(Router)
 
@@ -23,6 +25,24 @@ const router = new Router({
             meta: {
                 title: 'b page'
             },
+        },
+        {
+            path: '/register',
+            name: 'Register',
+            component: Register,
+            meta: {
+                title: 'Register',
+                isPrivate: false
+            }
+        },
+        {
+            path: '/login',
+            name: 'Login',
+            component: Login,
+            meta: {
+                title: 'Login',
+                isPrivate: false
+            }
         }
     ]
 })

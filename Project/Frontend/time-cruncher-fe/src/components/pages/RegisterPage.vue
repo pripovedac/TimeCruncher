@@ -1,0 +1,107 @@
+<template>
+    <Paper>
+        <h1>Time Cruncher</h1>
+        <p>Feeling ready for some crunching? Try out Time Cruncher for free!</p>
+
+        <form @submit.prevent="register($event)">
+            <PublicInput v-model="user.name"
+                         label="Name"
+                         type="text">
+
+            </PublicInput>
+            <PublicInput v-model="user.lastname"
+                         label="Lastname"
+                         type="text">
+            </PublicInput>
+            <PublicInput v-model="user.email"
+                         label="Email"
+                         type="email">
+            </PublicInput>
+            <PublicInput v-model="user.password"
+                         label="Password"
+                         type="password">
+            </PublicInput>
+            <Button type="submit">Register</Button>
+        </form>
+
+        <p>Hm, you have an accout? Checkout our
+            <router-link :to="{name: 'Login'}">Login page</router-link>.
+        </p>
+    </Paper>
+</template>
+
+<script>
+    import Paper from '../ui/Paper'
+    import PublicInput from '../ui/PublicInput'
+    import Button from '../ui/Button'
+
+    export default {
+        name: "Register",
+        components: {
+            Paper,
+            PublicInput,
+            Button
+        },
+        data() {
+            return {
+                user: {
+                    name: "",
+                    lastname: "",
+                    email: "",
+                    password: ""
+                },
+            }
+        },
+        methods: {
+            register() {
+                console.log('user: ', this.user)
+            }
+        }
+    }
+</script>
+
+<style scoped lang="scss">
+    h1 {
+        margin: 0;
+        color: #13547a;
+    }
+
+    p {
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+
+    .paper {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        margin: 0 auto;
+        margin-top: 5vh;
+        font-family: 'Montserrat', sans-serif;
+        max-width: 26rem;
+        min-height: 32em;
+        padding: calc(1.5em + 1.2vw);
+        padding-bottom: 2rem;
+        text-align: center;
+    }
+
+    form {
+        width: 100%;
+    }
+
+    .public-input {
+        margin-bottom: 1em;
+        font-size: 1.2em;
+        color: #13547a;
+    }
+
+    form + p {
+        margin-top: 1em;
+        margin-bottom: 0;
+    }
+
+    a {
+        text-decoration: none;
+        color: #13547a;
+    }
+</style>

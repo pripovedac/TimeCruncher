@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'app',
@@ -15,12 +14,13 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  html {
+    height: 100%;
+  }
+  body {
+    background: rgb(87,9,255);
+    background: linear-gradient(#80d0c7, #13547a);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
 </style>
