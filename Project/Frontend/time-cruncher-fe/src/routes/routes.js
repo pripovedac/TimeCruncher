@@ -4,6 +4,7 @@ import aPage from '../components/pages/a'
 import bPage from '../components/pages/b'
 import Register from '../components/pages/RegisterPage'
 import Login from '../components/pages/LoginPage'
+import Home from '../components/pages/HomePage'
 
 Vue.use(Router)
 
@@ -42,6 +43,15 @@ const router = new Router({
             meta: {
                 title: 'Login',
                 isPrivate: false
+            }
+        },
+        {
+            path: '/home',
+            name: 'Home',
+            component: Home,
+            meta: {
+                title: 'Home',
+                isPrivate: true
             }
         }
     ]
