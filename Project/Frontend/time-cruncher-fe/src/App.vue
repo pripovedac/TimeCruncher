@@ -22,5 +22,6 @@ export default {
     background: linear-gradient(#80d0c7, #13547a);
     background-repeat: no-repeat;
     background-attachment: fixed;
+    font-family: 'Montserrat', sans-serif;
   }
 </style>
