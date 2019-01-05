@@ -1,22 +1,26 @@
 <template>
-    <div class="task-card">
-        <router-link :to="{path: '/login'}" class="to-do">
-            <CheckCircleIcon class="icon"/>
+    <div class="task-card" :class="{done: done, todo: !done}">
+        <router-link :to="{path: '/login'}" >
+            <CheckCircleIcon v-if="done"
+                             class="icon"/>
+            <InfoIcon v-else class="icon" />
         </router-link>
         <div class="task-data">
             <h1>{{name}}</h1>
             <p>{{description}}</p>
-            <div>{{date}}</div>
+            <div v-if="date">{{date}}</div>
+            <div v-else>Date undefined</div>
         </div>
     </div>
 </template>
 
 <script>
-    import {CheckCircleIcon} from 'vue-feather-icons'
+    import {CheckCircleIcon, InfoIcon} from 'vue-feather-icons'
     export default {
         name: 'TaskCard',
         components: {
-            CheckCircleIcon
+            CheckCircleIcon,
+            InfoIcon
         },
         props: {
             id: {
@@ -30,6 +34,9 @@
             },
             date: {
                 type: String
+            },
+            done: {
+                type: Boolean
             }
         }
     }
@@ -42,7 +49,7 @@
     .task-card {
         display: flex;
         background-color: #fff;
-        width: 35%;
+        width: 100%;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
     }
 
@@ -56,11 +63,19 @@
     }
 
     .done {
-        background-color: $green;
+        border: 1px solid $green;
+
+        a {
+            background-color: $green;
+        }
     }
 
-    .to-do {
-        background-color: $ochre;
+    .todo {
+        border: 1px solid $ochre;
+
+        a {
+            background-color: $ochre;
+        }
     }
 
     .icon {
@@ -71,8 +86,8 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        padding: 0.8em;
-        border: 2px solid $ochre;
+        padding-left: 0.8em;
+        padding-right: 0.8em;
         font-size: inherit;
         font-family: inherit;
 

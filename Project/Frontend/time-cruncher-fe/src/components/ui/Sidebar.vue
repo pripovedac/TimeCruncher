@@ -1,13 +1,21 @@
 <template>
     <div class="sidebar">
+        <!--todo: everything here should be a router-link-->
         <h1>
             <UserIcon class="icon"/>
-            <span>darecare</span>
+            <span>Darko Stevanovic</span>
         </h1>
-        <div class="group-container">
+        <div class="group-header">
             <h2>Groups</h2>
-            <!--todo: everything here should be a router-link-->
             <PlusCircleIcon class="plus-icon"/>
+        </div>
+        <div class="group-container">
+            <span v-for="group in groups"
+                  :key="group.id">
+                <LockIcon v-if="group.isPrivate" class="icon"/>
+                <HashIcon  v-else class="icon"/>
+                {{group.name}}
+            </span>
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
@@ -43,16 +51,13 @@
     .sidebar {
         display: flex;
         flex-direction: column;
-        width: 16%;
+        width: 100%;
         height: 100vh;
         margin: 0;
         padding-left: 1em;
         padding-right: 1em;
         color: #fff;
-        // todo: position in the parent element
-        position: relative;
-        top: 0;
-        left: 0;
+
 
         border-right: 1px solid black;
     }
@@ -70,16 +75,17 @@
         margin-bottom: 0.5em;
     }
 
-    .group-container {
+    .group-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
 
-    .filter-container {
+    .filter-container, .group-container {
         display: flex;
         flex-direction: column;
+        /*border:1px solid black;*/
 
         span {
             /*border: 1px solid black;*/
@@ -89,7 +95,13 @@
         }
     }
 
-
+    // single group name container
+    // e.g. <lock-icon> nabavka
+    .group-container > span {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
 
     .icon {
         width: 1em;
