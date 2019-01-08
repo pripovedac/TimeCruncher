@@ -1,6 +1,10 @@
 <template>
     <span class="checkbox">
-        <input class="visually-hidden" type="checkbox" checked/>
+        <input type="checkbox"
+               checked
+               class="visually-hidden"
+               @click="changeState($event)"
+        />
         <span class="visually-displayed">
             <CheckIcon class="icon"/>
         </span>
@@ -13,7 +17,12 @@
     export default {
         components: {
             CheckIcon
-        }
+        },
+        methods: {
+          changeState(event) {
+              this.$emit('changeState', event.target.checked)
+          }
+        },
     }
 </script>
 

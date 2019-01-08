@@ -5,9 +5,9 @@
             <p>Group is a place where you can store your tasks. They are best when organized around a topic
                 - #shopping, for example.
             </p>
-            <form>
+            <form @submit.prevent="createGroup($event)">
                 <label class="label-checkbox">
-                    <Checkbox/>
+                    <Checkbox @changeState="updatePrivacy($event)"/>
                     Is group private?
                 </label>
                 <PublicInput v-model="group.name"
@@ -16,7 +16,7 @@
                 <PublicInput v-model="group.description"
                              label="Description"
                              type="text"/>
-                <PublicInput v-model="group.members"
+                <PublicInput v-model="group.member"
                              label="Members"
                              type="email"/>
                 <Button type="submit"> Create group</Button>
@@ -32,6 +32,7 @@
     import Checkbox from '../ui/Checkbox'
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
+    import router from '../../routes/routes'
 
     export default {
         name: "NewGroup",
@@ -45,12 +46,46 @@
                 group: {
                     name: "",
                     description: "",
-                    members: "",
+                    member: "",
                     isPrivate: true,
                 }
 
             }
-        }
+        },
+        methods: {
+            createGroup: async function () {
+                // todo: members and privacy should also be sent but currently are not due to BE limitations
+                // todo: update input field for members
+                console.log('isPrivate: ', this.group.isPrivate)
+
+                const newGroup = {
+                    name: this.group.name,
+                    description: this.group.description,
+                    creatorId: 91,
+                    memberEmails: ['darko@carko']
+                }
+
+                const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
+                    method: 'POST',
+                    body: JSON.stringify(newGroup),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    alert('Successfully created group!')
+                    router.go(-1)
+                }
+
+            },
+
+            updatePrivacy(checkboxValue) {
+                // todo: this should be refactored to use v-model directive
+                this.group.isPrivate = checkboxValue
+            }
+
+        },
     }
 </script>
 
@@ -99,7 +134,7 @@
     .checkbox {
         margin-right: 2%;
     }
-    
+
     .public-input {
         margin-bottom: 2em;
     }
