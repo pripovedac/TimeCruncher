@@ -1,58 +1,31 @@
 <template>
-    <div>
+    <div class="home-page">
         <Sidebar :groups="groups"/>
-        <!--<TaskCard name="Go to the market"-->
-                  <!--description="U should buy some things, you know."-->
-                  <!--date="04. 01. 2019"/>-->
-        <TasksPage :tasks="tasks" groupName="Nabavka"/>
-        <TaskInfo />
+        <router-view/>
+        <!--<MainPage :tasks="tasks" groupName="Nabavka"/>-->
     </div>
 </template>
 
 <script>
-    import PublicInput from "../ui/PublicInput"
-    import TaskCard from "../ui/TaskCard"
-    import Sidebar from "../ui/Sidebar";
-    import TasksPage from "./TasksPage";
-    import TaskInfo from "./TaskInfo";
+    import Sidebar from '../ui/Sidebar'
+    import MainPage from './MainPage'
+    import * as global from "../../services/utilites";
+    import {IronMan} from '../../Hero'
 
     export default {
-        name: "a",
-        components: {TasksPage, Sidebar, TaskInfo, PublicInput},
+        name: 'HomePage',
+        components: {
+            Sidebar,
+            MainPage
+        },
         data() {
             return {
-                groups: [
-                    {
-                        id: 1,
-                        name: 'nabavka',
-                        isPrivate: false
-                    },
-                    {
-                        id: 2,
-                        name: 'neopix',
-                        isPrivate: true
-                    },
-                    {
-                        id: 3,
-                        name: 'faks',
-                        isPrivate: false
-                    },
-                    {
-                        id: 4,
-                        name: 'selo',
-                        isPrivate: true
-                    },
-                    {
-                        id: 5,
-                        name: 'teretana',
-                        isPrivate: true
-                    }
-                ],
+                groups: [],
                 tasks: [
                     {
                         id: 1,
                         name: 'Idea',
-                        description: 'Mleko, sir, jogurt',
+                        description: 'Mleko, sir, jogurtMleko, sir, jogurtMleko, sir, jogurtMleko, sir, jogurtMleko, sir, jogurt',
                         date: '14. 04. 1996.',
                         done: true
                     },
@@ -102,27 +75,42 @@
                     },
                 ]
             }
+        },
+        methods: {
+            getGroups: async function () {
+                // todo: here should be fetched only groups for current member, not all of them
+                const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                this.groups = await response.json()
+                global.groupState.save(this.groups)
+            },
+        },
+        created() {
+            IronMan.getDetails()
+            this.getGroups()
         }
-
     }
 </script>
 
-<style scoped lang="scss">
-    div {
+<style scoped>
+
+    .home-page {
         display: flex;
     }
 
     .sidebar {
         width: 15%;
+        position: relative;
+        top: 0;
+        left: 0;
     }
 
-    .tasks-page {
-        width: 55%;
+    .main-page {
+        width: 100%;
     }
-
-    .task-info {
-        width: 30%;
-    }
-
 
 </style>
