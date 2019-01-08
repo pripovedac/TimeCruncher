@@ -81,6 +81,25 @@
                         description: 'Mleko, sir, jogurt',
                         date: '14. 04. 1996.'
                     },
+                    {
+                        id: 13,
+                        name: 'Merkator',
+                        description: 'Mleko',
+                        date: '15. 04. 1996.'
+                    },
+                    {
+                        id: 41,
+                        name: 'Idea',
+                        description: 'Mleko, sir, jogurt',
+                        date: '14. 04. 1996.',
+                        done: true
+                    },
+                    {
+                        id: 51,
+                        name: 'Idea',
+                        description: 'Mleko, sir, jogurt',
+                        date: '14. 04. 1996.'
+                    },
                 ]
             }
         }
@@ -104,5 +123,6 @@
     .task-info {
         width: 30%;
     }
+
 
 </style>

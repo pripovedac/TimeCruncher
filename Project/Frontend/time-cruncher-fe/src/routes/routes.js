@@ -5,6 +5,7 @@ import bPage from '../components/pages/b'
 import Register from '../components/pages/RegisterPage'
 import Login from '../components/pages/LoginPage'
 import Home from '../components/pages/HomePage'
+import NewGroup from '../components/pages/NewGroup'
 
 Vue.use(Router)
 
@@ -53,7 +54,16 @@ const router = new Router({
                 title: 'Home',
                 isPrivate: true
             }
-        }
+        },
+        {
+            path: '/new-group',
+            name: 'NewGroup',
+            component: NewGroup,
+            meta: {
+                title: 'New group',
+                isPrivate: true
+            }
+        },
     ]
 })
 

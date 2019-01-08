@@ -20,7 +20,10 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+    $lightblue: #80d0c7;
+    $darkblue: #13547a;
+
     .primary-button {
         border: none;
         border-radius: 4px;
@@ -31,7 +34,7 @@
         letter-spacing: 1px;
         font-weight: bold;
         font-family: inherit;
-        background-color: #13547a;
+        background: linear-gradient($lightblue, $darkblue);
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
         cursor: pointer;
         outline: none;

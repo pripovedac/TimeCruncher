@@ -50,12 +50,13 @@
         display: flex;
         background-color: #fff;
         width: 100%;
+        box-sizing: border-box;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
     }
 
     a {
         display: flex;
-        width: 2em;
+        width: 10%;
         justify-content: center;
         align-items: center;
         padding: 1.5em;
@@ -85,9 +86,8 @@
     .task-data {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        padding-left: 0.8em;
-        padding-right: 0.8em;
+        width: 90%;
+        padding: 0.5em;
         font-size: inherit;
         font-family: inherit;
 

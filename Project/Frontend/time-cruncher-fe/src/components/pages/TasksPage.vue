@@ -14,11 +14,13 @@
                   :description="task.description"
                   :date="task.date"
                   :done="task.done"
+
         />
     </div>
 </template>
 
 <script>
+    import Vuebar from 'vuebar';
     import TaskCard from '../ui/TaskCard'
     import {PlusCircleIcon} from 'vue-feather-icons'
 
@@ -26,7 +28,8 @@
         name: "TasksPage",
         components: {
             TaskCard,
-            PlusCircleIcon
+            PlusCircleIcon,
+            Vuebar
         },
         props: {
             groupName: {
@@ -48,7 +51,7 @@
         align-items: center;
         /*border-right: 1px solid black;*/
         background-color: #fff;
-        height: 100vh;
+        height: 100%;
     }
 
     .header {
@@ -56,7 +59,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1em;
+        /*margin-bottom: 1em;*/
         /*border: 1px solid black;*/
     }
 
@@ -84,6 +87,7 @@
     .task-card {
         margin-bottom: 1em;
         width: 70%;
+        /*height: 20vh;*/
     }
 
 

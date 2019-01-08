@@ -1,17 +1,20 @@
 <template>
-    <div>
+    <div class="home-page">
         <Sidebar :groups="groups"/>
-        <router-view />
+        <MainPage :tasks="tasks" groupName="Nabavka"/>
     </div>
 </template>
 
 <script>
     import Sidebar from '../ui/Sidebar'
+    import MainPage from './MainPage'
+    import {IronMan} from '../../Hero'
 
     export default {
-        name: "MainPage",
+        name: 'HomePage',
         components: {
-            Sidebar
+            Sidebar,
+            MainPage
         },
         data() {
             return {
@@ -46,13 +49,15 @@
                     {
                         id: 1,
                         name: 'Idea',
-                        description: 'Mleko, sir, jogurt',
-                        date: '14. 04. 1996.'
+                        description: 'Mleko, sir, jogurtMleko, sir, jogurtMleko, sir, jogurtMleko, sir, jogurtMleko, sir, jogurt',
+                        date: '14. 04. 1996.',
+                        done: true
                     },
                     {
                         id: 2,
                         name: 'Pijaca',
                         description: 'Paradajz',
+                        done: true,
                     },
                     {
                         id: 3,
@@ -64,7 +69,8 @@
                         id: 4,
                         name: 'Idea',
                         description: 'Mleko, sir, jogurt',
-                        date: '14. 04. 1996.'
+                        date: '14. 04. 1996.',
+                        done: true
                     },
                     {
                         id: 5,
@@ -72,13 +78,39 @@
                         description: 'Mleko, sir, jogurt',
                         date: '14. 04. 1996.'
                     },
+                    {
+                        id: 13,
+                        name: 'Merkator',
+                        description: 'Mleko',
+                        date: '15. 04. 1996.'
+                    },
+                    {
+                        id: 41,
+                        name: 'Idea',
+                        description: 'Mleko, sir, jogurt',
+                        date: '14. 04. 1996.',
+                        done: true
+                    },
+                    {
+                        id: 51,
+                        name: 'Idea',
+                        description: 'Mleko, sir, jogurt',
+                        date: '14. 04. 1996.'
+                    },
                 ]
             }
+        },
+        created() {
+            IronMan.getDetails()
         }
     }
 </script>
 
 <style scoped>
+
+    .home-page {
+        display: flex;
+    }
 
     .sidebar {
         width: 15%;
@@ -87,8 +119,8 @@
         left: 0;
     }
 
-    .tasks-page {
-        width: 55%;
+    .main-page {
+        width: 100%;
     }
 
 </style>

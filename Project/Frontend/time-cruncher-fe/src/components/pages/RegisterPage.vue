@@ -6,21 +6,16 @@
         <form @submit.prevent="register($event)">
             <PublicInput v-model="user.name"
                          label="Name"
-                         type="text">
-
-            </PublicInput>
+                         type="text" />
             <PublicInput v-model="user.lastname"
                          label="Lastname"
-                         type="text">
-            </PublicInput>
+                         type="text" />
             <PublicInput v-model="user.email"
                          label="Email"
-                         type="email">
-            </PublicInput>
+                         type="email" />
             <PublicInput v-model="user.password"
                          label="Password"
-                         type="password">
-            </PublicInput>
+                         type="password" />
             <Button type="submit">Register</Button>
         </form>
 

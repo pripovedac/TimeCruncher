@@ -7,13 +7,15 @@
         </h1>
         <div class="group-header">
             <h2>Groups</h2>
-            <PlusCircleIcon class="plus-icon"/>
+            <router-link :to="{path:'/new-group'}">
+                <PlusCircleIcon class="plus-icon"/>
+            </router-link>
         </div>
         <div class="group-container">
             <span v-for="group in groups"
                   :key="group.id">
                 <LockIcon v-if="group.isPrivate" class="icon"/>
-                <HashIcon  v-else class="icon"/>
+                <HashIcon v-else class="icon"/>
                 {{group.name}}
             </span>
         </div>
@@ -58,7 +60,6 @@
         padding-right: 1em;
         color: #fff;
 
-
         border-right: 1px solid black;
     }
 
@@ -72,6 +73,7 @@
 
     h2, h3 {
         font-size: 1em;
+        margin-top: 0.5em;
         margin-bottom: 0.5em;
     }
 
@@ -79,8 +81,19 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-    }
+        /*border: 1px solid white;*/
 
+        a {
+            margin-top: 0.5em;
+        }
+    }
+    
+    a {
+        color: white;
+        outline: none;
+        text-decoration: none;
+    }
+    
 
     .filter-container, .group-container {
         display: flex;

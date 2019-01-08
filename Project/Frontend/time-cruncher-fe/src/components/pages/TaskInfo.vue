@@ -61,6 +61,7 @@
         },
         data() {
             return {
+                // todo: this will be props
                 taskName: 'Prodavnica',
                 description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." +
                 ' Nunc malesuada scelerisque turpis, et maximus sem mattis sed.' +
@@ -113,7 +114,6 @@
     }
 
     form {
-
         display: flex;
         flex-direction: column;
         background-color: #fff;
