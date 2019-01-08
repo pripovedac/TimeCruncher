@@ -19,6 +19,8 @@ import { GroupInfoDto } from './DTOs/group-info.dto';
 import { CreateGroupDto } from './DTOs/create-group.dto';
 import { EditGroupDto } from './DTOs/edit-group.dto';
 import { GroupNotFoundException } from '../../custom-exceptions/group-not-found.exception';
+import { pusher } from '../../pusher';
+import { create } from 'domain';
 
 @Controller('groups')
 export class GroupController {
@@ -28,10 +30,27 @@ export class GroupController {
   @HttpCode(HttpStatus.CREATED)
   async addGroup(@Body() body: CreateGroupDto): Promise<GroupInfoDto> {
     const creatorUser: User = await this.userService.findById(body.creatorId);
+    const that = this;
+    const members: User[] = await body.memberEmails.reduce(async (prevAcc, email) => {
+        const acc = await prevAcc;
+        const user = await that.userService.findByEmail(email);
+        if (user){
+          acc.push(user);
+        }
+        return acc;
+      }, Promise.resolve([]));
     delete body.creatorId;
+    delete body.memberEmails;
     const createdGroup: Partial<Group> = body;
     createdGroup.users = [];
     createdGroup.users.push(creatorUser);
+    createdGroup.users = createdGroup.users.concat(members);
+    members.forEach( member => {
+        pusher.trigger('groupManagement' + member.id, 'addedToGroup', {
+          "message": creatorUser.firstname + ' added you to group "' + createdGroup.name + '"',
+        });
+      },
+    );
     return await this.groupService.addGroup(createdGroup as Group);
   }
 

@@ -33,6 +33,10 @@ export class UserService {
       throw new UserNotFoundException(id);
     return res;
   }
+  async findByEmail(email: string): Promise<User> {
+    const res: User = await this.userRepository.findOne({ where: { email } });
+    return res;
+  }
   async findByIdWithGroups(id: number): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { id }, relations: ['groups'] });
     if (!res)

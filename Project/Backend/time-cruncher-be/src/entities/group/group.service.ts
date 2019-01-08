@@ -10,15 +10,16 @@ import { GroupInfoDto } from './DTOs/group-info.dto';
 import { EditGroupDto } from './DTOs/edit-group.dto';
 import { UserNotFoundException } from '../../custom-exceptions/user-not-found.exception';
 import { GroupNotFoundException } from '../../custom-exceptions/group-not-found.exception';
+import { GroupWithUsersDto } from './DTOs/group-with-users.dto';
 @Injectable()
 export class GroupService {
   constructor(
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
   ){}
-  async addGroup(newGroupData: Group): Promise<GroupInfoDto>{
+  async addGroup(newGroupData: Group): Promise<GroupWithUsersDto>{
     const res: Group = await this.groupRepository.save(newGroupData);
-    return new GroupInfoDto(res);
+    return new GroupWithUsersDto(res);
   }
   async addUsersToGroup(groupId: number, userIds: number[]): Promise<Group>{
     const group = await this.findByIdWithUsers(groupId);
