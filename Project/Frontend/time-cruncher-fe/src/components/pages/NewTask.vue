@@ -22,9 +22,12 @@
                              type="email"/>
                 <label class="label-container">
                     Due date:
-                    <input type="date"/>
+                    <input type="date"
+                           :value="currentDate"
+                           :min="currentDate"
+                    />
                 </label>
-                <Button type="submit"> Create group</Button>
+                <Button type="submit"> Create task</Button>
                 <Button>
                     <router-link :to="{path: '/home'}">Cancel</router-link>
                 </Button>
@@ -54,14 +57,28 @@
                 group: {
                     name: 'Nabavka',
                     isPrivate: false
-                }
+                },
+                currentDate: this.initDate(),
+
             }
         },
         methods: {
             createTask: function () {
                 // todo: add publishTime, creatorId  or name, groupId
                 // and task assignments
+            },
+            initDate: function() {
+                const today = new Date()
+                const year = today.getFullYear()
+                let month = today.getMonth() + 1
+                month = month < 10 ? `0${month}` : month
+                let day = today.getDate()
+                day = day < 10 ? `0${day}` : day
+                return `${year}-${month}-${day}`
             }
+        },
+        created() {
+            this.initDate()
         }
     }
 </script>
@@ -95,6 +112,7 @@
     p {
         font-size: 0.8em;
         padding-bottom: 3%;
+        margin: 0;
     }
 
     label {

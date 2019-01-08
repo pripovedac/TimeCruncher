@@ -7,6 +7,7 @@ import Login from '../components/pages/LoginPage'
 import Home from '../components/pages/HomePage'
 import NewGroup from '../components/pages/NewGroup'
 import NewTask from '../components/pages/NewTask'
+import MainPage from '../components/pages/MainPage'
 
 Vue.use(Router)
 
@@ -54,7 +55,14 @@ const router = new Router({
             meta: {
                 title: 'Home',
                 isPrivate: true
-            }
+            },
+            children: [
+                {
+                    path: '/home/groups/:groupId',
+                    name: 'MainPage',
+                    component: MainPage,
+                }
+            ],
         },
         {
             path: '/new-group',
@@ -63,7 +71,7 @@ const router = new Router({
             meta: {
                 title: 'New group',
                 isPrivate: true
-            }
+            },
         },
         {
             path: '/new-task',

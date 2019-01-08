@@ -9,9 +9,10 @@
 
             <div class="date-container">
                 <p>Published on: {{publishTime}}</p>
-                <label>
+                <label class="label-container">
                     Due date:
-                    <input aria-label="due time" :value="dueTime"/>
+                    <input type="date"
+                           :value="1996-10-10"/>
                 </label>
             </div>
 
@@ -137,6 +138,20 @@
     h1 {
         font-size: 1.4em;
         font-weight: bold;
+    }
+
+    .label-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 1em;
+    }
+
+    input[type="date"] {
+        width: 40%;
+        font-family: inherit;
+        outline: none;
+        border: none;
     }
 
     input {

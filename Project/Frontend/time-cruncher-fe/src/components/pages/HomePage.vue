@@ -1,7 +1,8 @@
 <template>
     <div class="home-page">
         <Sidebar :groups="groups"/>
-        <MainPage :tasks="tasks" groupName="Nabavka"/>
+        <router-view/>
+        <!--<MainPage :tasks="tasks" groupName="Nabavka"/>-->
     </div>
 </template>
 
@@ -18,33 +19,7 @@
         },
         data() {
             return {
-                groups: [
-                    {
-                        id: 1,
-                        name: 'nabavka',
-                        isPrivate: false
-                    },
-                    {
-                        id: 2,
-                        name: 'neopix',
-                        isPrivate: true
-                    },
-                    {
-                        id: 3,
-                        name: 'faks',
-                        isPrivate: false
-                    },
-                    {
-                        id: 4,
-                        name: 'selo',
-                        isPrivate: true
-                    },
-                    {
-                        id: 5,
-                        name: 'teretana',
-                        isPrivate: true
-                    }
-                ],
+                groups: [],
                 tasks: [
                     {
                         id: 1,
@@ -100,8 +75,22 @@
                 ]
             }
         },
+        methods: {
+            getGroups: async function () {
+                // todo: here should be fetched only groups for current member, not all of them
+                const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                this.groups = await response.json()
+
+            },
+        },
         created() {
             IronMan.getDetails()
+            this.getGroups()
         }
     }
 </script>

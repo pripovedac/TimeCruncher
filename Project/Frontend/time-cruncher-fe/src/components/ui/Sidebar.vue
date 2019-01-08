@@ -12,12 +12,13 @@
             </router-link>
         </div>
         <div class="group-container">
-            <span v-for="group in groups"
+            <router-link :to="{name: 'MainPage', params: {groupId: group.id}}"
+                    v-for="group in groups"
                   :key="group.id">
                 <LockIcon v-if="group.isPrivate" class="icon"/>
                 <HashIcon v-else class="icon"/>
                 {{group.name}}
-            </span>
+            </router-link>
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
@@ -100,7 +101,7 @@
         flex-direction: column;
         /*border:1px solid black;*/
 
-        span {
+        a {
             /*border: 1px solid black;*/
             padding-left: 0.5em;
             padding-bottom: 0.5em;
@@ -110,7 +111,7 @@
 
     // single group name container
     // e.g. <lock-icon> nabavka
-    .group-container > span {
+    .group-container > a {
         display: flex;
         justify-content: flex-start;
         align-items: center;

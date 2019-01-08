@@ -1,7 +1,7 @@
 <template>
     <div class="main-page">
         <TasksPage :tasks="tasks" groupName="Nabavka"/>
-        <TaskInfo />
+        <TaskInfo/>
     </div>
 </template>
 
@@ -15,14 +15,27 @@
             TasksPage,
             TaskInfo,
         },
-        props: {
-            tasks: {
-                type: Array,
-            },
-            groupName: {
-                type: String
+        data() {
+            return {
+                tasks: [],
+                groupName: 'Dare'
             }
-        }
+        },
+        methods: {
+          initTasks: async function () {
+              const groupId = this.$route.params.groupId
+              const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              })
+              this.tasks = await response.json()
+          }
+        },
+        created() {
+          this.initTasks()
+        },
     }
 </script>
 
