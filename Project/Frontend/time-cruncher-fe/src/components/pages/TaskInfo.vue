@@ -38,6 +38,10 @@
             </span>
             </div>
 
+            <label class="label-checkbox">
+                <Checkbox />
+                Is task completed?
+            </label>
             <button type="submit">Submit</button>
         </form>
         <p>Go to
@@ -51,6 +55,7 @@
 
 <script>
     import {AlignLeftIcon, UsersIcon, XIcon} from 'vue-feather-icons'
+    import Checkbox from '../ui/Checkbox'
 
     export default {
         name: "TaskInfo",
@@ -58,10 +63,12 @@
             AlignLeftIcon,
             UsersIcon,
             XIcon,
+            Checkbox
         },
         data() {
             return {
-                // todo: this will be props
+                // todo: this will remain as data because the data will be get from
+                // BE using the query params
                 taskName: 'Prodavnica',
                 description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." +
                 ' Nunc malesuada scelerisque turpis, et maximus sem mattis sed.' +
@@ -196,10 +203,22 @@
         font-size: 1.2em;
     }
 
+    .label-checkbox {
+        display: flex;
+        margin-top: 1em;
+        justify-content: center;
+        align-self: flex-start;
+    }
+
+    .checkbox {
+        margin-right: 0.8em;
+    }
+
     .icon {
         padding-right: 0.5em;
         width: 1em;
     }
+
 
     button[type="submit"] {
         display: block;

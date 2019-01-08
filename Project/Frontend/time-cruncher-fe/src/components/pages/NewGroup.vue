@@ -45,7 +45,7 @@
                 group: {
                     name: "",
                     description: "",
-                    members: [],
+                    members: "",
                     isPrivate: true,
                 }
 

@@ -4,9 +4,9 @@
             <h1>
                 {{groupName}}
             </h1>
-            <button>
+            <router-link :to="{path: '/new-task'}">
                 <PlusCircleIcon class="icon"/>
-            </button>
+            </router-link>
         </div>
         <TaskCard v-for="task in tasks"
                   :key="task.id"

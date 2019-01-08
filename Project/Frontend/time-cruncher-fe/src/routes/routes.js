@@ -6,6 +6,7 @@ import Register from '../components/pages/RegisterPage'
 import Login from '../components/pages/LoginPage'
 import Home from '../components/pages/HomePage'
 import NewGroup from '../components/pages/NewGroup'
+import NewTask from '../components/pages/NewTask'
 
 Vue.use(Router)
 
@@ -61,6 +62,15 @@ const router = new Router({
             component: NewGroup,
             meta: {
                 title: 'New group',
+                isPrivate: true
+            }
+        },
+        {
+            path: '/new-task',
+            name: 'NewTask',
+            component: NewTask,
+            meta: {
+                title: 'New task',
                 isPrivate: true
             }
         },

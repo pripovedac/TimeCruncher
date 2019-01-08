@@ -49,9 +49,10 @@
     }
     span {
         margin-bottom: 0.5em;
+        font-size: inherit;
     }
     input {
-        width: 65%;
+        width: 100%;
         /*border: 1px solid blue;*/
         border: none;
         outline: none;

@@ -36,7 +36,7 @@
     }
 
     .task-info {
-        width: 30%;
+        min-width: 30%;
         position: sticky;
         top: 0;
         right: 0;
