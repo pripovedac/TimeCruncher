@@ -12,12 +12,12 @@
                 <label class="label-container">
                     Description
                     <textarea v-model="task.description"
-                                rows="8"
+                              rows="8"
                               spellcheck="false"
                               type="text"/>
                 </label>
                 <PublicInput v-if="!group.isPrivate"
-                        v-model="task.members"
+                             v-model="task.members"
                              label="Members"
                              type="email"/>
                 <label class="label-container">
@@ -53,13 +53,14 @@
                 },
                 group: {
                     name: 'Nabavka',
-                    isPrivate: 'false'
+                    isPrivate: false
                 }
             }
         },
         methods: {
             createTask: function () {
-                // todo: add publishTime, creatorId, or name, and groupId
+                // todo: add publishTime, creatorId  or name, groupId
+                // and task assignments
             }
         }
     }
@@ -120,7 +121,7 @@
     }
 
     input[type="date"] {
-        width: 30%;
+        width: 25%;
         /*border: 1px solid green;*/
         margin-top: 2%;
         font-family: inherit;
@@ -149,9 +150,5 @@
         text-decoration: none;
         color: white;
         outline: none;
-    }
-
-    form {
-        /*border: 1px solid violet;*/
     }
 </style>
