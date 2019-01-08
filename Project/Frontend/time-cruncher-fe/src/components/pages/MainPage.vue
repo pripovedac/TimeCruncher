@@ -1,6 +1,6 @@
 <template>
     <div class="main-page">
-        <TasksPage :tasks="tasks" groupName="Nabavka"/>
+        <TasksPage :tasks="tasks" :groupName="group.name"/>
         <TaskInfo/>
     </div>
 </template>
@@ -8,6 +8,7 @@
 <script>
     import TasksPage from './TasksPage'
     import TaskInfo from './TaskInfo'
+    import * as global from "../../services/utilites";
 
     export default {
         name: 'MainPage',
@@ -18,23 +19,31 @@
         data() {
             return {
                 tasks: [],
-                groupName: 'Dare'
+                group: {},
             }
         },
         methods: {
-          initTasks: async function () {
-              const groupId = this.$route.params.groupId
-              const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
-                  method: 'GET',
-                  headers: {
-                      'Content-Type': 'application/json'
-                  }
-              })
-              this.tasks = await response.json()
-          }
+            init: function () {
+                this.initTasks()
+                this.initGroupData()
+            },
+            initTasks: async function () {
+                const groupId = this.$route.params.groupId
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                this.tasks = await response.json()
+            },
+            initGroupData: function () {
+                const groupId = this.$route.params.groupId
+                this.group = global.groupState.loadSingle(groupId)
+            }
         },
         created() {
-          this.initTasks()
+            this.init()
         },
     }
 </script>

@@ -9,6 +9,7 @@
 <script>
     import Sidebar from '../ui/Sidebar'
     import MainPage from './MainPage'
+    import * as global from "../../services/utilites";
     import {IronMan} from '../../Hero'
 
     export default {
@@ -85,7 +86,7 @@
                     }
                 })
                 this.groups = await response.json()
-
+                global.groupState.save(this.groups)
             },
         },
         created() {
