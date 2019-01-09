@@ -23,7 +23,7 @@
                         <option v-for="member in task.members"
                                 :key="member.id"
                                 :value="member.id">
-                            {{member.name}}
+                            {{member.firstname + " " + member.lastname}}
                         </option>
                     </select>
                     <p v-if="selectedMembers.length == 0">
@@ -33,7 +33,8 @@
                         <p>You have selected:</p>
                         <MemberCard v-for="member in selectedMembers"
                                     :key="member.id"
-                                    :name="member.name"
+                                    :firstname="member.firstname"
+                                    :lastname="member.lastname"
                                     :id="member.id"
                                     @click="removeMember($event)"
                         >
@@ -43,7 +44,7 @@
                 <label class="label-container">
                     Due date:
                     <input type="date"
-                           :value="currentDate"
+                           v-model="selectedDate"
                            :min="currentDate"
                     />
                 </label>
@@ -61,6 +62,7 @@
     import Button from '../ui/Button'
     import MemberCard from '../ui/MemberCard'
     import router from '../../routes/routes'
+    import * as global from '../../services/utilites'
 
 
     export default {
@@ -75,51 +77,47 @@
                 task: {
                     name: '',
                     description: '',
-                    members: [
-                        {
-                            name: 'Darko Stevanovic',
-                            id: 91,
-                        },
-                        {
-                            name: 'Milos Stanojevic',
-                            id: 95,
-                        },
-                        {
-                            name: 'Janko Jankovic',
-                            id: 96,
-                        },
-                        {
-                            name: 'Jovica Mirkovic',
-                            id: 4
-                        },
-                        {
-                            name: 'Milica Milovanovic',
-                            id: 5
-                        },
-                        {
-                            name: 'Jovica Mirkovic',
-                            id: 14
-                        },
-                        {
-                            name: 'Milica Milovanovic',
-                            id: 15
-                        },
-                    ],
+                    members: [],
                     isPrivate: true,
                 },
-                group: {
-                    name: 'Nabavka',
-                    isPrivate: false
-                },
+                group: this.loadLastActiveGroup(),
+                selectedDate: this.initDate(),
                 currentDate: this.initDate(),
                 memberNames: "",
                 selectedMembers: [],
             }
         },
         methods: {
-            createTask: function () {
+            createTask: async function () {
                 // todo: add publishTime, creatorId  or name, groupId
                 // and task assignments
+                const selectedMembers = this.selectedMembers.map(member => member.id)
+                const date = new Date(this.selectedDate)
+
+                const newTask = {
+                    name: this.task.name,
+                    description: this.task.description,
+                    groupId: this.group.id,
+                    creatorId: 91,
+                    assignedUserIds: selectedMembers,
+                    dueTime: date.toISOString()
+                }
+
+                const response = await fetch(process.env.VUE_APP_BE_URL + '/tasks', {
+                    method: 'POST',
+                    body: JSON.stringify(newTask),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    // todo: redirect to new group without alert
+                    alert('Successfully created task!')
+                    this.goBack()
+                } else {
+                    alert('The task was not created. Check your entries.')
+                }
             },
 
             initDate: function () {
@@ -140,16 +138,39 @@
             },
 
             removeMember: function (member) {
+                console.log('member: ', member)
                 const memberId = member.id
                 this.task.members.push(member)
                 this.selectedMembers = this.selectedMembers.filter(member => member.id != memberId)
             },
 
-            goBack() {
-                router.go(-1)
+            initMembers: async function() {
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${this.group.id}/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                if (response.ok) {
+                    this.task.members = await response.json()
+                    console.log('members: ', this.task.members)
+                }
             },
 
+            loadLastActiveGroup: function () {
+                const res = global.groupState.getLastActiveGroup()
+                // console.log('res: ', res)
+                return res
+            },
+
+            goBack() {
+                // todo: change this to redirect
+                router.go(-1)
+            },
         },
+        created() {
+            this.initMembers()
+        }
 
     }
 </script>
@@ -174,7 +195,7 @@
         display: flex;
         flex-direction: column;
         margin: 0 auto;
-        padding: 1%;
+        padding: 3%;
         /*border: 1px solid black;*/
     }
 
@@ -184,7 +205,7 @@
 
     p {
         font-size: 0.8em;
-        padding-bottom: 3%;
+        padding-bottom: 2%;
         margin: 0;
     }
 

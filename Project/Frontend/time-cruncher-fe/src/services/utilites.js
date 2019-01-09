@@ -23,7 +23,14 @@ export class GroupState extends StateFactory {
         return res.length > 0 ?
             res[0] :
             null
+    }
 
+    setLastActiveGroup(group) {
+        return localStorage.setItem('lastGroup', JSON.stringify(group))
+    }
+
+    getLastActiveGroup() {
+        return JSON.parse(localStorage.getItem('lastGroup'))
     }
 }
 

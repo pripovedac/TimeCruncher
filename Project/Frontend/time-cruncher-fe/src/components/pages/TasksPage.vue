@@ -20,7 +20,6 @@
 </template>
 
 <script>
-    import Vuebar from 'vuebar';
     import TaskCard from '../ui/TaskCard'
     import {PlusCircleIcon} from 'vue-feather-icons'
 
@@ -29,7 +28,6 @@
         components: {
             TaskCard,
             PlusCircleIcon,
-            Vuebar
         },
         props: {
             groupName: {

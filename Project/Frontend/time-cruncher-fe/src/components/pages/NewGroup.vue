@@ -78,6 +78,7 @@
                 })
 
                 if (response.ok) {
+                    // todo: redirect to new group without alert
                     alert('Successfully created group!')
                     this.goBack()
                 } else {

@@ -1,8 +1,8 @@
 <template>
     <span class="member-card">
-        {{name}}
+        {{firstname}} {{lastname}}
         <button @click="onClick($event)">
-            <XIcon class="icon" />
+            <XIcon class="icon"/>
         </button>
     </span>
 </template>
@@ -16,17 +16,21 @@
             XIcon
         },
         props: {
-          name: {
-              type: String,
-          },
-          id: {
-              type: Number,
-          }
+            firstname: {
+                type: String,
+            },
+            lastname: {
+                type: String
+            },
+            id: {
+                type: Number,
+            }
         },
         methods: {
-            onClick(event) {
+            onClick() {
                 const member = {
-                    name: this.name,
+                    firstname: this.firstname,
+                    lastname: this.lastname,
                     id: this.id
                 }
                 this.$emit('click', member)

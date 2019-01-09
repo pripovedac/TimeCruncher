@@ -42,10 +42,15 @@
             initGroupData: function () {
                 const groupId = this.$route.params.groupId
                 this.group = this.loadSingle(groupId)
+                this.saveLastActiveGroup(this.group)
             },
 
             loadSingle: function (groupId) {
                 return global.groupState.loadSingle(groupId)
+            },
+            
+            saveLastActiveGroup: function (group) {
+                global.groupState.setLastActiveGroup(group)
             }
         },
         watch: {
