@@ -43,7 +43,33 @@ Model perzistencije aplikacije **Time Cruncher** je definisan kroz 4 entiteta, p
 _TypeORM framework_ u okviru _NestJS framework_-a obezbeđuje funkcionalnosti mapiranja relacionog 
 modela u objektni model pomoću dekoratora kojima se definiše koja se kolona mapira na koji atribut klase entiteta.
 
-![code snippet](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/8.%20code_snippet.png)
+```
+@Entity()
+export class Comment{
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({
+    type: 'varchar',
+    length: '300',
+    nullable: false,
+  })
+  text: string;
+
+  @CreateDateColumn({
+    type: 'datetime',
+  })
+  postTime: string;
+
+  @ManyToOne(type => User, user => user.createdComments, {eager: true, nullable: false, onDelete: 'CASCADE'})
+  @JoinColumn()
+  creator: User;
+
+  @ManyToOne(type => Task, task => task.creator, {eager: true, nullable: false, onDelete: 'CASCADE'})
+  @JoinColumn()
+  task: Task;
+}
+```
 
 ## API:
 
