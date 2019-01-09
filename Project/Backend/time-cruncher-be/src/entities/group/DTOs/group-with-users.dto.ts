@@ -13,6 +13,8 @@ export class GroupWithUsersDto{
 
   description: string;
 
+  isPrivate: boolean;
+
   users: User[];
   @Exclude()
   tasks: Task[];

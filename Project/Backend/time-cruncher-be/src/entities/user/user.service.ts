@@ -103,4 +103,12 @@ export class UserService {
   async existsWithId(id: number) {
     return (await this.userRepository.findOne(id) !== undefined);
   }
+  async authUser(userId: number, userPassword: string): Promise<boolean>{
+    const user: User = await this.userRepository.findOne(userId);
+    if (!user)
+      return false;
+    if (user.password !== userPassword)
+      return false;
+    return true;
+  }
 }

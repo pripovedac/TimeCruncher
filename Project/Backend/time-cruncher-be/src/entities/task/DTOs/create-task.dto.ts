@@ -7,6 +7,9 @@ export class CreateTaskDto{
     Object.assign(this, plainToClass(CreateTaskDto, classToPlain(task)));
   }
   @IsString()
+  name: string;
+
+  @IsString()
   description: string;
 
   @Allow()

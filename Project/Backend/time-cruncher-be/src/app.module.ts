@@ -12,10 +12,11 @@ import { TaskModule } from './entities/task/task.module';
 import { UserIdController } from './entities/user/user-id/user-id.controller';
 import { CommentModule } from './entities/comment/comment.module';
 import { GroupService } from './entities/group/group.service';
+import { PusherAuthController } from './pusher-auth/pusher-auth.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UserModule, GroupModule, TaskModule, CommentModule],
-  controllers: [AppController, UserController, GroupController, TaskController, UserIdController],
+  controllers: [AppController, UserController, GroupController, TaskController, UserIdController, PusherAuthController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -11,6 +11,11 @@ export class Task{
   @Column({
     nullable: false,
   })
+  name: string;
+
+  @Column({
+    nullable: true,
+  })
   description: string;
 
   @CreateDateColumn({

@@ -23,6 +23,7 @@ import { create } from 'domain';
 import { TaskInfoDto } from './DTOs/task-info.dto';
 import { EditTaskDto } from './DTOs/edit-task.dto';
 import { TaskNotFoundException } from '../../custom-exceptions/task-not-found.exception';
+import { pusher } from '../../pusher';
 
 @Controller('tasks')
 export class TaskController {
@@ -43,9 +44,11 @@ export class TaskController {
     newTask.group = group;
     newTask.assignedUsers = assignedUsers;
     newTask.dueTime = createTaskDto.dueTime;
+    newTask.name = createTaskDto.name;
     newTask.description = createTaskDto.description;
     newTask.isCompleted = false;
     const res: Task = await this.taskService.addTask(newTask);
+    pusher.trigger('private-channel_for_group-' + group.id, 'task_added', JSON.stringify(res));
     return new TaskInfoDto(res);
   }
 
