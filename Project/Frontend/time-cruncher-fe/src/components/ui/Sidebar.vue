@@ -49,7 +49,8 @@
 </script>
 
 <style scoped lang="scss">
-    $darkblue: #191970;
+    $lightblue: #80d0c7;
+    $darkblue: #13547a;
 
     .sidebar {
         display: flex;
@@ -60,7 +61,7 @@
         padding-left: 1em;
         padding-right: 1em;
         color: #fff;
-
+        background: linear-gradient($lightblue, $darkblue);
         border-right: 1px solid black;
     }
 

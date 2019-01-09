@@ -1,24 +1,27 @@
 <template>
-    <Paper>
-        <h1>Time Cruncher</h1>
-        <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
+    <div class="login-page">
+        <Paper>
+            <h1>Time Cruncher</h1>
+            <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
 
-        <form @submit.prevent="register($event)">
-            <PublicInput v-model="user.email"
-                         label="Email"
-                         type="email">
-            </PublicInput>
-            <PublicInput v-model="user.password"
-                         label="Password"
-                         type="password">
-            </PublicInput>
-            <Button type="submit">Login</Button>
-        </form>
+            <form @submit.prevent="register($event)">
+                <PublicInput v-model="user.email"
+                             label="Email"
+                             type="email">
+                </PublicInput>
+                <PublicInput v-model="user.password"
+                             label="Password"
+                             type="password">
+                </PublicInput>
+                <Button type="submit">Login</Button>
+            </form>
 
-        <p>You don't have an account? You can fix that at our
-            <router-link :to="{name: 'Register'}">Register page</router-link>.
-        </p>
-    </Paper>
+            <p>You don't have an account? You can fix that at our
+                <router-link :to="{name: 'Register'}">Register page</router-link>
+                .
+            </p>
+        </Paper>
+    </div>
 </template>
 
 <script>
@@ -50,6 +53,15 @@
 </script>
 
 <style scoped lang="scss">
+    $lightblue: #80d0c7;
+    $darkblue: #13547a;
+
+    .login-page {
+        height: 100vh;
+        padding-top: 5vh;
+        background: linear-gradient($lightblue, $darkblue);
+    }
+
     h1 {
         margin: 0;
         color: #13547a;
@@ -65,7 +77,6 @@
         align-items: center;
         flex-direction: column;
         margin: 0 auto;
-        margin-top: 5vh;
         font-family: 'Montserrat', sans-serif;
         max-width: 26rem;
         min-height: 32em;

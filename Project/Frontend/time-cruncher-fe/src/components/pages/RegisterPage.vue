@@ -1,28 +1,31 @@
 <template>
-    <Paper>
-        <h1>Time Cruncher</h1>
-        <p>Feeling ready for some crunching? Try out Time Cruncher for free!</p>
+    <div class="register-page">
+        <Paper>
+            <h1>Time Cruncher</h1>
+            <p>Feeling ready for some crunching? Try out Time Cruncher for free!</p>
 
-        <form @submit.prevent="register($event)">
-            <PublicInput v-model="user.name"
-                         label="Name"
-                         type="text" />
-            <PublicInput v-model="user.lastname"
-                         label="Lastname"
-                         type="text" />
-            <PublicInput v-model="user.email"
-                         label="Email"
-                         type="email" />
-            <PublicInput v-model="user.password"
-                         label="Password"
-                         type="password" />
-            <Button type="submit">Register</Button>
-        </form>
+            <form @submit.prevent="register($event)">
+                <PublicInput v-model="user.name"
+                             label="Name"
+                             type="text"/>
+                <PublicInput v-model="user.lastname"
+                             label="Lastname"
+                             type="text"/>
+                <PublicInput v-model="user.email"
+                             label="Email"
+                             type="email"/>
+                <PublicInput v-model="user.password"
+                             label="Password"
+                             type="password"/>
+                <Button type="submit">Register</Button>
+            </form>
 
-        <p>Hm, you have an accout? Checkout our
-            <router-link :to="{name: 'Login'}">Login page</router-link>.
-        </p>
-    </Paper>
+            <p>Hm, you have an accout? Checkout our
+                <router-link :to="{name: 'Login'}">Login page</router-link>
+                .
+            </p>
+        </Paper>
+    </div>
 </template>
 
 <script>
@@ -56,6 +59,15 @@
 </script>
 
 <style scoped lang="scss">
+    $lightblue: #80d0c7;
+    $darkblue: #13547a;
+
+    .register-page {
+        height: 100vh;
+        padding-top: 5vh;
+        background: linear-gradient($lightblue, $darkblue);
+    }
+
     h1 {
         margin: 0;
         color: #13547a;
@@ -71,7 +83,6 @@
         align-items: center;
         flex-direction: column;
         margin: 0 auto;
-        margin-top: 5vh;
         font-family: 'Montserrat', sans-serif;
         max-width: 26rem;
         min-height: 32em;
