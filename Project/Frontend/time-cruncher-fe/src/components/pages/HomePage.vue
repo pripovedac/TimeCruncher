@@ -77,7 +77,13 @@
             }
         },
         methods: {
-            getGroups: async function () {
+            initGroups: function () {
+              this.groups = this.loadGroups()
+              if (this.groups.length == 0) {
+                  this.groups = this.fetchGroups()
+              }
+            },
+            fetchGroups: async function () {
                 // todo: here should be fetched only groups for current member, not all of them
                 const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
                     method: 'GET',
@@ -85,13 +91,19 @@
                         'Content-Type': 'application/json'
                     }
                 })
-                this.groups = await response.json()
+                if (response.ok) {
+                    return await response.json()
+                }
                 global.groupState.save(this.groups)
             },
+            loadGroups: function () {
+                return global.groupState.load()
+            },
         },
+
         created() {
-            IronMan.getDetails()
-            this.getGroups()
+            //IronMan.getDetails()
+            this.initGroups()
         }
     }
 </script>
