@@ -139,7 +139,7 @@
     }
 
     input[type="date"] {
-        width: 25%;
+        width: 40%;
         /*border: 1px solid green;*/
         margin-top: 2%;
         font-family: inherit;
