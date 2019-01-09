@@ -1,6 +1,6 @@
 <template>
     <span class="member-card">
-        Darko Stevanovic
+        {{name}}
         <button @click="onClick($event)">
             <XIcon class="icon" />
         </button>
@@ -15,6 +15,14 @@
         components: {
             XIcon
         },
+        props: {
+          name: {
+              type: String,
+          },
+          id: {
+              type: Number,
+          }
+        },
         methods: {
             onClick(event) {
                 this.$emit('click', event)
@@ -28,7 +36,7 @@
     $darkblue: #13547a;
 
     .member-card {
-        border: 1px solid white;
+        /*border: 1px solid white;*/
         width: 100%;
         display: flex;
         justify-content: space-between;
