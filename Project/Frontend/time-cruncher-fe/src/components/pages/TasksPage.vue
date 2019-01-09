@@ -12,9 +12,8 @@
                   :key="task.id"
                   :name="task.name"
                   :description="task.description"
-                  :date="task.date"
+                  :date="task.dueTime"
                   :done="task.done"
-
         />
     </div>
 </template>

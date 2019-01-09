@@ -8,7 +8,7 @@
         <div class="task-data">
             <h1>{{name}}</h1>
             <p>{{description}}</p>
-            <div v-if="date">{{date}}</div>
+            <div v-if="date">{{displayedDate}}</div>
             <div v-else>Date undefined</div>
         </div>
     </div>
@@ -16,6 +16,8 @@
 
 <script>
     import {CheckCircleIcon, InfoIcon} from 'vue-feather-icons'
+    import {dateController} from "../../services/dateTransformations";
+
     export default {
         name: 'TaskCard',
         components: {
@@ -38,7 +40,12 @@
             done: {
                 type: Boolean
             }
-        }
+        },
+        computed: {
+            displayedDate() {
+                return dateController.initDate(new Date(this.date))
+            },
+        },
     }
 </script>
 

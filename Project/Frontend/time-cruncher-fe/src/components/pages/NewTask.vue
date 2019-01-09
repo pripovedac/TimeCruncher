@@ -63,6 +63,7 @@
     import MemberCard from '../ui/MemberCard'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
+    import {dateController} from "../../services/dateTransformations";
 
 
     export default {
@@ -121,13 +122,7 @@
             },
 
             initDate: function () {
-                const today = new Date()
-                const year = today.getFullYear()
-                let month = today.getMonth() + 1
-                month = month < 10 ? `0${month}` : month
-                let day = today.getDate()
-                day = day < 10 ? `0${day}` : day
-                return `${year}-${month}-${day}`
+                return this.getCurrentDate()
             },
 
             selectMember: function (event) {
@@ -144,7 +139,7 @@
                 this.selectedMembers = this.selectedMembers.filter(member => member.id != memberId)
             },
 
-            initMembers: async function() {
+            initMembers: async function () {
                 const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${this.group.id}/users`, {
                     method: 'GET',
                     headers: {
@@ -161,6 +156,10 @@
                 const res = global.groupState.getLastActiveGroup()
                 // console.log('res: ', res)
                 return res
+            },
+
+            getCurrentDate: function () {
+                return dateController.initDate(new Date())
             },
 
             goBack() {

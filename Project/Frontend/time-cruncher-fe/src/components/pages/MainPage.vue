@@ -37,6 +37,7 @@
                     }
                 })
                 this.tasks = await response.json()
+                console.log('this.tasks: ', this.tasks)
             },
 
             initGroupData: function () {
