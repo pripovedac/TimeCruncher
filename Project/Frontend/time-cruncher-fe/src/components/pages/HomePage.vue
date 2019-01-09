@@ -77,14 +77,15 @@
             }
         },
         methods: {
-            initGroups: function () {
+            initGroups: async function () {
               this.groups = this.loadGroups()
-              if (this.groups.length == 0) {
-                  this.groups = this.fetchGroups()
+              if (!this.groups) {
+                  this.groups = await this.fetchGroups()
               }
             },
             fetchGroups: async function () {
                 // todo: here should be fetched only groups for current member, not all of them
+                console.log('fetching groups')
                 const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
                     method: 'GET',
                     headers: {
@@ -92,9 +93,11 @@
                     }
                 })
                 if (response.ok) {
-                    return await response.json()
+                    const groups = await response.json()
+                    global.groupState.save(groups)
                 }
-                global.groupState.save(this.groups)
+
+
             },
             loadGroups: function () {
                 return global.groupState.load()

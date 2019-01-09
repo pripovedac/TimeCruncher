@@ -27,6 +27,7 @@
                 this.initTasks()
                 this.initGroupData()
             },
+
             initTasks: async function () {
                 const groupId = this.$route.params.groupId
                 const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
@@ -37,9 +38,14 @@
                 })
                 this.tasks = await response.json()
             },
+
             initGroupData: function () {
                 const groupId = this.$route.params.groupId
-                this.group = global.groupState.loadSingle(groupId)
+                this.group = this.loadSingle(groupId)
+            },
+
+            loadSingle: function (groupId) {
+                return global.groupState.loadSingle(groupId)
             }
         },
         created() {

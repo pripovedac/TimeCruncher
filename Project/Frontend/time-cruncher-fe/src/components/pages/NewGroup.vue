@@ -16,9 +16,14 @@
                 <PublicInput v-model="group.description"
                              label="Description"
                              type="text"/>
-                <PublicInput v-model="group.member"
-                             label="Members"
-                             type="email"/>
+                <label class="label-container">
+                    Members
+                    <textarea v-model="group.members"
+                              rows="8"
+                              spellcheck="false"
+                              type="text"/>
+                    <span>Please separate multiple addresses with single space.</span>
+                </label>
                 <Button type="submit"> Create group</Button>
                 <Button>
                     <router-link :to="{path: '/home'}">Cancel</router-link>
@@ -46,7 +51,7 @@
                 group: {
                     name: "",
                     description: "",
-                    member: "",
+                    members: "",
                     isPrivate: true,
                 }
 
@@ -56,13 +61,12 @@
             createGroup: async function () {
                 // todo: members and privacy should also be sent but currently are not due to BE limitations
                 // todo: update input field for members
-                console.log('isPrivate: ', this.group.isPrivate)
-
+                const memberMails = this.separateMails(this.group.members)
                 const newGroup = {
                     name: this.group.name,
                     description: this.group.description,
                     creatorId: 91,
-                    memberEmails: ['darko@carko']
+                    memberEmails: memberMails
                 }
 
                 const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
@@ -76,6 +80,8 @@
                 if (response.ok) {
                     alert('Successfully created group!')
                     router.go(-1)
+                } else {
+                    alert('The group was not created. Check your entries.')
                 }
 
             },
@@ -83,6 +89,10 @@
             updatePrivacy(checkboxValue) {
                 // todo: this should be refactored to use v-model directive
                 this.group.isPrivate = checkboxValue
+            },
+
+            separateMails(mails) {
+                return mails.split(' ')
             }
 
         },
@@ -137,6 +147,28 @@
 
     .public-input {
         margin-bottom: 2em;
+    }
+
+    .label-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-self: center;
+        font-size: 1em;
+
+        span {
+            margin-top: 0.3em;
+            color: darkgray;
+            font-size: 0.7em;
+        }
+    }
+
+    textarea {
+        margin-top: 2%;
+        resize: none;
+        border: 1px solid #eee;
+        outline: none;
+        font-family: inherit;
     }
 
     .primary-button {
