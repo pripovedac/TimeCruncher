@@ -25,8 +25,8 @@
                     <span>Please separate multiple addresses with single space.</span>
                 </label>
                 <Button type="submit"> Create group</Button>
-                <Button>
-                    <router-link :to="{path: '/home'}">Cancel</router-link>
+                <Button @click="goBack($event)">
+                    Cancel
                 </Button>
             </form>
         </div>
@@ -79,7 +79,7 @@
 
                 if (response.ok) {
                     alert('Successfully created group!')
-                    router.go(-1)
+                    this.goBack()
                 } else {
                     alert('The group was not created. Check your entries.')
                 }
@@ -93,7 +93,11 @@
 
             separateMails(mails) {
                 return mails.split(' ')
-            }
+            },
+
+            goBack() {
+                router.go(-1)
+            },
 
         },
     }
@@ -115,7 +119,7 @@
         display: flex;
         flex-direction: column;
         margin: 0 auto;
-        padding: 3%;
+        padding: 1%;
         /*border: 1px solid black;*/
     }
 
@@ -161,6 +165,7 @@
             color: darkgray;
             font-size: 0.7em;
         }
+
     }
 
     textarea {

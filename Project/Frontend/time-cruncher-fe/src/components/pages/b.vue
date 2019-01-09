@@ -1,10 +1,12 @@
 <template>
-    <p>Hello from page B!</p>
+    <member-card name="Darko"></member-card>
 </template>
 
 <script>
+    import MemberCard from "../ui/MemberCard";
     export default {
-        name: "b"
+        name: "b",
+        components: {MemberCard}
     }
 </script>
 

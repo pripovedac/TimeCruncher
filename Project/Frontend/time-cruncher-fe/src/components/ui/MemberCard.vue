@@ -25,7 +25,11 @@
         },
         methods: {
             onClick(event) {
-                this.$emit('click', event)
+                const member = {
+                    name: this.name,
+                    id: this.id
+                }
+                this.$emit('click', member)
             }
         }
     }
@@ -43,8 +47,7 @@
         align-items: center;
         padding-left: 0.2em;
         padding-right: 0.2em;
-        background-color: linear-gradient($lightblue, $darkblue);
-        color: white;
+        color: black;
         font-size: inherit;
         border-radius: 4px;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
@@ -54,7 +57,7 @@
         padding: 0;
         border-radius: 50%;
         border: none;
-        color: white;
+        color: $lightblue;
         font-size: 0.5em;
         background-color: inherit;
     }

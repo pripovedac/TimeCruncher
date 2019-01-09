@@ -16,10 +16,30 @@
                               spellcheck="false"
                               type="text"/>
                 </label>
-                <PublicInput v-if="!group.isPrivate"
-                             v-model="task.members"
-                             label="Members"
-                             type="email"/>
+                <label class="label-select">
+                    Members
+                    <select @change="selectMember($event)">
+                        <option value="">Member list</option>
+                        <option v-for="member in task.members"
+                                :key="member.id"
+                                :value="member.id">
+                            {{member.name}}
+                        </option>
+                    </select>
+                    <p v-if="selectedMembers.length == 0">
+                        You haven't selected anyone yet.
+                    </p>
+                    <div v-else class="selected-members">
+                        <p>You have selected:</p>
+                        <MemberCard v-for="member in selectedMembers"
+                                    :key="member.id"
+                                    :name="member.name"
+                                    :id="member.id"
+                                    @click="removeMember($event)"
+                        >
+                        </MemberCard>
+                    </div>
+                </label>
                 <label class="label-container">
                     Due date:
                     <input type="date"
@@ -28,8 +48,8 @@
                     />
                 </label>
                 <Button type="submit"> Create task</Button>
-                <Button>
-                    <router-link :to="{path: '/home'}">Cancel</router-link>
+                <Button @click="goBack($event)">
+                    Cancel
                 </Button>
             </form>
         </div>
@@ -39,19 +59,52 @@
 <script>
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
+    import MemberCard from '../ui/MemberCard'
+    import router from '../../routes/routes'
+
 
     export default {
         name: 'NewTask',
         components: {
             PublicInput,
             Button,
+            MemberCard,
         },
         data() {
             return {
                 task: {
                     name: '',
                     description: '',
-                    members: '',
+                    members: [
+                        {
+                            name: 'Darko Stevanovic',
+                            id: 91,
+                        },
+                        {
+                            name: 'Milos Stanojevic',
+                            id: 95,
+                        },
+                        {
+                            name: 'Janko Jankovic',
+                            id: 96,
+                        },
+                        {
+                            name: 'Jovica Mirkovic',
+                            id: 4
+                        },
+                        {
+                            name: 'Milica Milovanovic',
+                            id: 5
+                        },
+                        {
+                            name: 'Jovica Mirkovic',
+                            id: 14
+                        },
+                        {
+                            name: 'Milica Milovanovic',
+                            id: 15
+                        },
+                    ],
                     isPrivate: true,
                 },
                 group: {
@@ -59,7 +112,8 @@
                     isPrivate: false
                 },
                 currentDate: this.initDate(),
-
+                memberNames: "",
+                selectedMembers: [],
             }
         },
         methods: {
@@ -67,7 +121,8 @@
                 // todo: add publishTime, creatorId  or name, groupId
                 // and task assignments
             },
-            initDate: function() {
+
+            initDate: function () {
                 const today = new Date()
                 const year = today.getFullYear()
                 let month = today.getMonth() + 1
@@ -75,15 +130,33 @@
                 let day = today.getDate()
                 day = day < 10 ? `0${day}` : day
                 return `${year}-${month}-${day}`
-            }
+            },
+
+            selectMember: function (event) {
+                const memberId = event.target.value
+                const newMember = this.task.members.find(({id}) => id == memberId)
+                this.selectedMembers.push(newMember)
+                this.task.members = this.task.members.filter(member => member.id != memberId)
+            },
+
+            removeMember: function (member) {
+                const memberId = member.id
+                this.task.members.push(member)
+                this.selectedMembers = this.selectedMembers.filter(member => member.id != memberId)
+            },
+
+            goBack() {
+                router.go(-1)
+            },
+
         },
-        created() {
-            this.initDate()
-        }
+
     }
 </script>
 
 <style scoped lang="scss">
+    $lightblue: #80d0c7;
+    $darkblue: #13547a;
 
     .new-task {
         /*border: 3px solid green;*/
@@ -136,6 +209,52 @@
         border: 1px solid #eee;
         outline: none;
         font-family: inherit;
+    }
+
+    .label-select {
+        /*border: 1px solid green;*/
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        select {
+            width: 40%;
+            margin-top: 2%;
+            padding: 1%;
+            border: 1px solid #eee;
+            outline: none;
+        }
+
+        p {
+            color: darkgray;
+            font-size: 0.7em;
+        }
+
+    }
+
+    .selected-members {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        /*border: 2px solid blue;*/
+        margin-top: 0.3em;
+        display: flex;
+        color: black;
+        font-size: 0.7em;
+
+        p {
+            font-size: inherit;
+            padding-bottom: 0;
+            margin-right: 0.5em;
+        }
+    }
+
+    .member-card {
+        border: 2px solid $lightblue;
+        width: 25%;
+        margin: 0.2em;
     }
 
     input[type="date"] {

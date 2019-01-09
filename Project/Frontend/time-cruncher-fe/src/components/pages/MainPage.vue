@@ -48,6 +48,11 @@
                 return global.groupState.loadSingle(groupId)
             }
         },
+        watch: {
+          $route() {
+              this.init()
+          }
+        },
         created() {
             this.init()
         },
