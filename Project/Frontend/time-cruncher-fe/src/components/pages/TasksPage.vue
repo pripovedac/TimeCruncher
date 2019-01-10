@@ -10,6 +10,7 @@
         </div>
         <TaskCard v-for="task in tasks"
                   :key="task.id"
+                  :id="task.id"
                   :name="task.name"
                   :description="task.description"
                   :date="task.dueTime"

@@ -8,7 +8,8 @@ import Home from '../components/pages/HomePage'
 import NewGroup from '../components/pages/NewGroup'
 import NewTask from '../components/pages/NewTask'
 import MainPage from '../components/pages/MainPage'
-import InfoPage from '../components/pages/InfoPage'
+import TaskInfoPage from '../components/pages/TaskInfoPage'
+import GroupInfoPage from '../components/pages/GroupInfoPage'
 
 
 Vue.use(Router)
@@ -65,11 +66,17 @@ const router = new Router({
                     component: MainPage,
                     children: [
                         {
-                            path: 'info/:infoId',
-                            name: 'InfoPage',
-                            component: InfoPage,
+                            path: 'tasks/:taskId',
+                            name: 'TaskInfo',
+                            component: TaskInfoPage,
+                        },
+                        {
+                            path: 'details',
+                            name: 'GroupInfo',
+                            component: GroupInfoPage,
                         }
                     ],
+
                  },
              ],
         },

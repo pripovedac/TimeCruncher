@@ -12,9 +12,9 @@
             </router-link>
         </div>
         <div class="group-container">
-            <router-link :to="{name: 'MainPage', params: {groupId: group.id}}"
-                    v-for="group in groups"
-                  :key="group.id">
+            <router-link :to="{name: 'GroupInfo', params: {groupId: group.id}}"
+                         v-for="group in groups"
+                         :key="group.id">
                 <LockIcon v-if="group.isPrivate" class="icon"/>
                 <HashIcon v-else class="icon"/>
                 {{group.name}}
@@ -89,13 +89,12 @@
             margin-top: 0.5em;
         }
     }
-    
+
     a {
         color: white;
         outline: none;
         text-decoration: none;
     }
-    
 
     .filter-container, .group-container {
         display: flex;

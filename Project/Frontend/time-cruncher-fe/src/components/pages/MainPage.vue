@@ -7,7 +7,7 @@
 
 <script>
     import TasksPage from './TasksPage'
-    import Info from './InfoPage'
+    import Info from './TaskInfoPage'
     import * as global from "../../services/utilites";
 
     export default {

@@ -1,6 +1,6 @@
 <template>
     <div class="task-card" :class="{done: done, todo: !done}">
-        <router-link :to="{path: '/login'}" >
+        <router-link :to="{name: 'TaskInfo',  params: {taskId: id} }" >
             <CheckCircleIcon v-if="done"
                              class="icon"/>
             <InfoIcon v-else class="icon" />
@@ -39,6 +39,11 @@
             },
             done: {
                 type: Boolean
+            }
+        },
+        data() {
+            return {
+
             }
         },
         computed: {

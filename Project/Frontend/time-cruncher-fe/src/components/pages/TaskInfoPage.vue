@@ -1,61 +1,57 @@
 <template>
     <div class="task-info">
-        <!--<form @submit.prevent="updateTask($event)">-->
-            <!--<h1>-->
-                <!--<input aria-label="title" placeholder="Task name"-->
-                       <!--v-model="info.name"-->
-                       <!--spellcheck="false"/>-->
-            <!--</h1>-->
+        <form @submit.prevent="updateTask($event)">
+            <h1>
+                <input aria-label="title" placeholder="Task name"
+                       v-model="group.name"
+                       spellcheck="false"/>
+            </h1>
 
-            <!--<div class="date-container" v-if="info.type == 'group'">-->
-                <!--<p>Published on: {{publishTime}}</p>-->
-                <!--<label class="label-container">-->
-                    <!--Due date:-->
-                    <!--<input type="date"-->
-                           <!--:value="1996-10-10"/>-->
-                <!--</label>-->
-            <!--</div>-->
+            <div class="date-container">
+                <p>Published on: {{publishTime}}</p>
+                <label class="label-container">
+                    Due date:
+                    <input type="date"
+                           :value="1996-10-10"/>
+                </label>
+            </div>
 
-            <!--<h2>-->
-                <!--<AlignLeftIcon class="icon"/>-->
-                <!--Description-->
-            <!--</h2>-->
-            <!--<textarea placeholder="Description"-->
-                      <!--v-model="group.description"-->
-                      <!--rows="8"-->
-                      <!--spellcheck="false"-->
-            <!--/>-->
+            <h2>
+                <AlignLeftIcon class="icon"/>
+                Description
+            </h2>
+            <textarea placeholder="Description"
+                      v-model="group.description"
+                      rows="8"
+                      spellcheck="false"
+            />
 
-            <!--<div class="members">-->
-                <!--<h2>-->
-                    <!--<UsersIcon class="icon"/>-->
-                    <!--Members-->
-                <!--</h2>-->
-                <!--<span v-for="member in members" :key="member.id">-->
-                <!--{{member.name}} {{member.lastname}}-->
-                    <!--&lt;!&ndash;<button>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<XIcon class="icon"/>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</button>&ndash;&gt;-->
-            <!--</span>-->
-            <!--</div>-->
+            <div class="members">
+                <h2>
+                    <UsersIcon class="icon"/>
+                    Members
+                </h2>
+                <span v-for="member in members" :key="member.id">
+                {{member.name}} {{member.lastname}}
+            </span>
+            </div>
 
-            <!--<label class="label-checkbox">-->
-                <!--<Checkbox />-->
-                <!--Is task completed?-->
-            <!--</label>-->
-            <!--<button type="submit">Submit</button>-->
-        <!--</form>-->
-        <!--<p>Go to-->
-            <!--<router-link :to="{path: '/login'}" class="comments">-->
-                <!--comment section-->
-            <!--</router-link>-->
-        <!--</p>-->
-        <p>Dare care</p>
+            <label class="label-checkbox">
+                <Checkbox />
+                Is task completed?
+            </label>
+            <button type="submit">Submit</button>
+        </form>
+        <p>Go to
+            <router-link :to="{path: '/login'}" class="comments">
+                comment section
+            </router-link>
+        </p>
     </div>
 </template>
 
 <script>
-    import {AlignLeftIcon, UsersIcon, XIcon} from 'vue-feather-icons'
+    import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
     import * as global from "../../services/utilites";
 
@@ -64,7 +60,6 @@
         components: {
             AlignLeftIcon,
             UsersIcon,
-            XIcon,
             Checkbox
         },
         props: {
@@ -115,7 +110,12 @@
                 console.log('group: ', global.groupState.getLastActiveGroup())
                 return global.groupState.getLastActiveGroup()
             },
-        }
+        },
+        watch: {
+            $route() {
+                this.group = this.loadLastActiveGroup()
+            }
+        },
     }
 </script>
 
