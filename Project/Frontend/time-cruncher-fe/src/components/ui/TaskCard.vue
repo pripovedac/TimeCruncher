@@ -38,7 +38,7 @@
                 type: String
             },
             done: {
-                type: Boolean
+                type: Number
             }
         },
         data() {

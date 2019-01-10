@@ -22,9 +22,9 @@
                     <UsersIcon class="icon"/>
                     Members
                 </h2>
-                <!--<span v-for="member in members" :key="member.id">-->
-                <!--{{member.name}} {{member.lastname}}-->
-                 <!--</span>-->
+                <span v-for="member in members" :key="member.id">
+                {{member.firstname}} {{member.lastname}}
+                 </span>
             </div>
 
             <button type="submit">Submit</button>
@@ -49,17 +49,10 @@
             UsersIcon,
             Checkbox
         },
-        props: {
-            info: {
-                type: Object
-            }
-        },
-
         data() {
             return {
-                // todo: this will remain as data because the data will be get from
-                // BE using the query params
                 group: this.loadLastActiveGroup(),
+                members: []
             }
         },
         methods: {
@@ -68,15 +61,33 @@
             },
 
             loadLastActiveGroup: function () {
-                console.log('group: ', global.groupState.getLastActiveGroup())
                 return global.groupState.getLastActiveGroup()
             },
+
+            initMembers: async function () {
+                const groupId = this.$route.params.groupId
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    this.members = await response.json()
+                    console.log('this.members: ', this.members)
+                }
+            }
         },
         watch: {
             $route() {
                 this.group = this.loadLastActiveGroup()
+                this.initMembers()
             }
         },
+        created() {
+            this.initMembers()
+        }
     }
 </script>
 

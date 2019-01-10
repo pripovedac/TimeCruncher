@@ -46,7 +46,6 @@
                     ...this.group,
                     type: 'group'
                 }
-                console.log('this.info: ', this.info)
                 this.saveLastActiveGroup(this.group)
             },
 

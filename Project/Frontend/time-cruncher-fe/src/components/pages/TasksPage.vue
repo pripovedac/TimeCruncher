@@ -14,7 +14,7 @@
                   :name="task.name"
                   :description="task.description"
                   :date="task.dueTime"
-                  :done="task.done"
+                  :done="task.isCompleted"
         />
     </div>
 </template>
