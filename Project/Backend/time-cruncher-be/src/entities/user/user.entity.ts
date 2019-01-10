@@ -1,7 +1,8 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, OneToOne } from 'typeorm';
 import {Group} from '../group/group.entity';
 import { Task } from '../task/task.entity';
 import {Comment} from '../comment/comment.entity';
+import { AccessToken } from '../access-token/access-token.entity';
 
 @Entity()
 export class User{
@@ -52,4 +53,7 @@ export class User{
 
   @OneToMany(type => Comment, comment => comment.creator)
   createdComments: Comment[];
+
+  @OneToOne(type => AccessToken, accessToken => accessToken.user )
+  accessToken: AccessToken;
 }

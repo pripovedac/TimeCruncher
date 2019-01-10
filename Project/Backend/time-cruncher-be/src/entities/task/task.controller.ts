@@ -36,9 +36,14 @@ export class TaskController {
   @HttpCode(HttpStatus.CREATED)
   async addTask(@Body() createTaskDto: CreateTaskDto): Promise<TaskInfoDto> {
     const that = this;
-    const assignedUsers: User[] = await Promise.all(createTaskDto.assignedUserIds.map(async u => await that.userService.findById(u)));
+    const group: Group = await this.groupService.findByIdWithUsers(createTaskDto.groupId);
+    const assignedUsers: User[] = await createTaskDto.assignedUserIds.reduce(async (prevAcc, u) => {
+      const acc = await prevAcc;
+      if (group.users.filter(user => user.id == u).length > 0)
+        acc.push(await that.userService.findById(u));
+      return acc;
+    }, Promise.resolve([]));
     const creator: User = await this.userService.findById(createTaskDto.creatorId);
-    const group: Group = await this.groupService.findById(createTaskDto.groupId);
     const newTask: Task = new Task();
     newTask.creator = creator;
     newTask.group = group;

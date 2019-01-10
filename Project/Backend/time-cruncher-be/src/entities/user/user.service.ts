@@ -19,11 +19,11 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly groupService: GroupService,
   ){}
-  async addUser(createUserDTO: CreateUserDto): Promise<UserInfoDto>{
-    const res: User = await this.userRepository.save(createUserDTO as User);
-    return new UserInfoDto(res);
+  async addUser(newUser: User): Promise<User>{
+    const res: User = await this.userRepository.save(newUser);
+    return res;
   }
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserInfoDto[]> {
     const res: User[] = await this.userRepository.find();
     return res.map( x => new UserInfoDto(x));
   }
@@ -35,6 +35,14 @@ export class UserService {
   }
   async findByEmail(email: string): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { email } });
+    if (!res)
+      throw new NotFoundException();
+    return res;
+  }
+  async findByEmailWithAccessToken(email: string): Promise<User> {
+    const res: User = await this.userRepository.findOne({ where: { email }, relations: ['accessToken'] });
+    if (!res)
+      throw new NotFoundException();
     return res;
   }
   async findByIdWithGroups(id: number): Promise<User> {
