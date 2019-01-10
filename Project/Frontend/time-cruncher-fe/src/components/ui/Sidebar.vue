@@ -22,9 +22,9 @@
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
-            <span>Daily</span>
-            <span>Weekly</span>
-            <span>Uncategorized</span>
+            <router-link :to="{path: '/login'}">Daily</router-link>
+            <router-link :to="{path: '/login'}">Weekly</router-link>
+            <router-link :to="{path: '/login'}">Uncategorized</router-link>
         </div>
     </div>
 </template>

@@ -8,6 +8,8 @@ import Home from '../components/pages/HomePage'
 import NewGroup from '../components/pages/NewGroup'
 import NewTask from '../components/pages/NewTask'
 import MainPage from '../components/pages/MainPage'
+import InfoPage from '../components/pages/InfoPage'
+
 
 Vue.use(Router)
 
@@ -58,11 +60,18 @@ const router = new Router({
             },
             children: [
                 {
-                    path: '/home/groups/:groupId',
+                    path: 'groups/:groupId',
                     name: 'MainPage',
                     component: MainPage,
-                }
-            ],
+                    children: [
+                        {
+                            path: 'info/:infoId',
+                            name: 'InfoPage',
+                            component: InfoPage,
+                        }
+                    ],
+                 },
+             ],
         },
         {
             path: '/new-group',

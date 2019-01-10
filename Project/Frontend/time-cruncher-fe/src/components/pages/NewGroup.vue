@@ -38,6 +38,7 @@
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
     import router from '../../routes/routes'
+    import * as global from '../../services/utilites'
 
     export default {
         name: "NewGroup",
@@ -53,23 +54,22 @@
                     description: "",
                     members: "",
                     isPrivate: true,
-                }
-
+                },
+                userId: this.getUserId()
             }
         },
         methods: {
             createGroup: async function () {
-                // todo: members and privacy should also be sent but currently are not due to BE limitations
-                // todo: update input field for members
                 const memberMails = this.separateMails(this.group.members)
                 const newGroup = {
                     name: this.group.name,
                     description: this.group.description,
-                    creatorId: 91,
-                    memberEmails: memberMails
+                    creatorId: this.userId,
+                    memberEmails: memberMails,
+                    isPrivate: this.group.isPrivate
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
+                const response = await fetch(process.env.VUE_APP_BE_URL + `users/${this.userId}/groups`, {
                     method: 'POST',
                     body: JSON.stringify(newGroup),
                     headers: {
@@ -87,19 +87,22 @@
 
             },
 
-            updatePrivacy(checkboxValue) {
+            updatePrivacy: function (checkboxValue) {
                 // todo: this should be refactored to use v-model directive
                 this.group.isPrivate = checkboxValue
             },
 
-            separateMails(mails) {
+            separateMails: function (mails) {
                 return mails.split(' ')
             },
 
-            goBack() {
+            goBack: function() {
                 router.go(-1)
             },
 
+            getUserId: function () {
+                return global.userState.load()
+            }
         },
     }
 </script>

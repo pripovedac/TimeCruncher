@@ -34,5 +34,16 @@ export class GroupState extends StateFactory {
     }
 }
 
+export class UserState extends StateFactory {
+    save(value) {
+        super.save('userId', value)
+    }
+
+    load() {
+        return super.load('userId')
+    }
+}
+
 
 export const groupState = new GroupState()
+export const userState = new UserState()

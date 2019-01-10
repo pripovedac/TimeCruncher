@@ -1,25 +1,25 @@
 <template>
     <div class="main-page">
         <TasksPage :tasks="tasks" :groupName="group.name"/>
-        <TaskInfo/>
+        <router-view />
     </div>
 </template>
 
 <script>
     import TasksPage from './TasksPage'
-    import TaskInfo from './TaskInfo'
+    import Info from './InfoPage'
     import * as global from "../../services/utilites";
 
     export default {
         name: 'MainPage',
         components: {
             TasksPage,
-            TaskInfo,
         },
         data() {
             return {
                 tasks: [],
                 group: {},
+                info: {},
             }
         },
         methods: {
@@ -37,12 +37,16 @@
                     }
                 })
                 this.tasks = await response.json()
-                console.log('this.tasks: ', this.tasks)
             },
 
             initGroupData: function () {
                 const groupId = this.$route.params.groupId
                 this.group = this.loadSingle(groupId)
+                this.info = {
+                    ...this.group,
+                    type: 'group'
+                }
+                console.log('this.info: ', this.info)
                 this.saveLastActiveGroup(this.group)
             },
 

@@ -14,7 +14,7 @@
     import TaskCard from "../ui/TaskCard"
     import Sidebar from "../ui/Sidebar";
     import TasksPage from "./TasksPage";
-    import TaskInfo from "./TaskInfo";
+    import TaskInfo from "./InfoPage";
 
     export default {
         name: "a",
