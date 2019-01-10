@@ -7,6 +7,7 @@ import { EditTaskDto } from './DTOs/edit-task.dto';
 import { UserService } from '../user/user.service';
 import { TaskNotFoundException } from '../../custom-exceptions/task-not-found.exception';
 import { UserIdArrayDto } from '../group/DTOs/user-id-array.dto';
+import { pusher } from '../../pusher';
 @Injectable()
 export class TaskService {
   constructor(
@@ -22,6 +23,12 @@ export class TaskService {
   }
   async findById(id: number): Promise<Task>{
     const res: Task = await this.taskRepository.findOne({ where: {id}});
+    if (!res)
+      throw new TaskNotFoundException(id);
+    return res;
+  }
+  async findByIdWithGroup(id: number): Promise<Task>{
+    const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['group']});
     if (!res)
       throw new TaskNotFoundException(id);
     return res;
@@ -74,6 +81,10 @@ export class TaskService {
     const filteredIds = assignedUserIds.filter( uId => !task.assignedUsers.reduce((acc, el) => acc || uId === el.id, false))
     const users: User[] = await Promise.all(filteredIds.map( async uId => await that.userService.findById(uId)));
     task.assignedUsers = task.assignedUsers.concat(users);
-    return await this.taskRepository.save(task);
+    const res: Task = await this.taskRepository.save(task);
+    users.forEach( user => {
+      pusher.trigger('private-channel_for_user-' + user.id, 'assigned_to_task', JSON.stringify(res));
+    });
+    return res;
   }
 }

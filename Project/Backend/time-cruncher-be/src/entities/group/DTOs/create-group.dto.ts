@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class CreateGroupDto{
   @IsString()
@@ -6,6 +6,9 @@ export class CreateGroupDto{
 
   @IsString()
   description: string;
+
+  @IsBoolean()
+  isPrivate: boolean;
 
   @IsNumber()
   creatorId: number;

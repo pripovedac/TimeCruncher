@@ -21,6 +21,11 @@ export class Group{
   })
   description: string;
 
+  @Column({
+    nullable: false,
+  })
+  isPrivate: boolean;
+
   @ManyToMany(type => User, user => user.groups, {nullable: false, cascade: true})
   users: User[];
 

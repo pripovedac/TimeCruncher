@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { TaskService } from '../task/task.service';
 import { EditCommentDto } from './DTOs/edit-comment.dto';
 import { CommentNotFoundException } from '../../custom-exceptions/comment-not-found.exception';
+import { pusher } from '../../pusher';
 @Controller('comments')
 export class CommentController {
   constructor(
@@ -26,9 +27,11 @@ export class CommentController {
   @Post()
   async createComment(@Body() createCommentDto: CreateCommentDto){
     const creator = await this.userService.findById(createCommentDto.creatorId);
-    const task = await this.taskService.findById(createCommentDto.taskId);
+    const task = await this.taskService.findByIdWithGroup(createCommentDto.taskId);
     const newComment: Partial<Comment> = {text: createCommentDto.text, creator, task};
-    return await this.commentService.create(newComment as Comment);
+    const res: Comment = await this.commentService.create(newComment as Comment);
+    pusher.trigger('private-channel_for_group-' + task.group.id, 'comment_added', JSON.stringify(res));
+    return res;
   }
 
   @Delete(':id')

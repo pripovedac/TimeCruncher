@@ -10,6 +10,8 @@ export class TaskWithAssignedUsersDto{
 
   id: number;
 
+  name: string;
+
   description: string;
 
   publishTime: string;

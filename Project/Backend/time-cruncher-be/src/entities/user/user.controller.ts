@@ -23,17 +23,7 @@ export class UserController {
     private readonly userService: UserService,
   ){}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async addUser(@Body() createUserDto: CreateUserDto): Promise<UserInfoDto> {
-    try {
-      const res: User = await this.userService.addUser(createUserDto);
-      return new UserInfoDto(res);
-    }
-    catch (exception){
-      throw new SqlException(exception.message);
-    }
-  }
+
 
   @Get()
   async findAllUsers(): Promise<UserInfoDto[]>{

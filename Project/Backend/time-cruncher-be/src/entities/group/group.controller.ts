@@ -31,29 +31,33 @@ export class GroupController {
   async addGroup(@Body() body: CreateGroupDto): Promise<GroupInfoDto> {
     const creatorUser: User = await this.userService.findById(body.creatorId);
     const that = this;
-    const members: User[] = await body.memberEmails.reduce(async (prevAcc, email) => {
+    delete body.creatorId;
+
+    const createdGroup: Partial<Group> = body;
+    createdGroup.users = [];
+    createdGroup.users.push(creatorUser);
+    let members: User[] = [];
+    if (!body.isPrivate){
+      members = await body.memberEmails.reduce(async (prevAcc, email) => {
         const acc = await prevAcc;
         const user = await that.userService.findByEmail(email);
-        if (user){
+        if (user && user.id !== creatorUser.id){
           acc.push(user);
         }
         return acc;
       }, Promise.resolve([]));
-    delete body.creatorId;
+      createdGroup.users = createdGroup.users.concat(members);
+    }
     delete body.memberEmails;
-    const createdGroup: Partial<Group> = body;
-    createdGroup.users = [];
-    createdGroup.users.push(creatorUser);
-    createdGroup.users = createdGroup.users.concat(members);
-    members.forEach( member => {
-        pusher.trigger('groupManagement' + member.id, 'addedToGroup', {
-          "message": creatorUser.firstname + ' added you to group "' + createdGroup.name + '"',
-        });
-      },
-    );
-    return await this.groupService.addGroup(createdGroup as Group);
+    const res: Group = await this.groupService.addGroup(createdGroup as Group);
+    if (!body.isPrivate){
+      members.forEach( member => {
+          pusher.trigger('private-channel_for_user-' + member.id, 'added_to_group', JSON.stringify(res));
+        },
+      );
+    }
+    return res;
   }
-
   @Get()
   async findAllGroups(): Promise<GroupInfoDto[]>{
     return await this.groupService.findAll();

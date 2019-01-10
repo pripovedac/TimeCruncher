@@ -11,6 +11,7 @@ import { EditGroupDto } from './DTOs/edit-group.dto';
 import { UserNotFoundException } from '../../custom-exceptions/user-not-found.exception';
 import { GroupNotFoundException } from '../../custom-exceptions/group-not-found.exception';
 import { GroupWithUsersDto } from './DTOs/group-with-users.dto';
+import { pusher } from '../../pusher';
 @Injectable()
 export class GroupService {
   constructor(
@@ -31,7 +32,12 @@ export class GroupService {
       return user;
     }));
     group.users = group.users.concat(users);
-    return await this.groupRepository.save(group);
+    const res: Group = await this.groupRepository.save(group);
+    users.forEach( member => {
+        pusher.trigger('private-channel_for_user-' + member.id, 'added_to_group', JSON.stringify(res));
+      },
+    );
+    return res;
   }
   async findAll(): Promise<GroupInfoDto[]>{
     const res: Group[] = await this.groupRepository.find();

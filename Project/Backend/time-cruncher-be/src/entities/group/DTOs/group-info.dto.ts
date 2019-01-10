@@ -14,6 +14,8 @@ export class GroupInfoDto{
 
   description: string;
 
+  isPrivate: boolean;
+
   @Exclude()
   users: User[];
   @Exclude()

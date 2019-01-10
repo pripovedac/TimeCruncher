@@ -5,6 +5,7 @@ import { JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Task } from '../../task/task.entity';
 import { Comment } from '../../comment/comment.entity';
 import { User } from '../user.entity';
+import { AccessToken } from '../../access-token/access-token.entity';
 
 export class UserInfoDto{
 
@@ -32,4 +33,7 @@ export class UserInfoDto{
 
   @Exclude()
   createdComments: Comment[];
+
+  @Exclude()
+  token: AccessToken;
 }
