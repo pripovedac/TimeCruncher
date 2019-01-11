@@ -1,14 +1,19 @@
 <template>
     <button class="load-button"
             type="button"
-            @click="click($event)">
+            @click="onClick($event)">
         <slot></slot>
     </button>
 </template>
 
 <script>
     export default {
-        name: 'LoadButton'
+        name: 'LoadButton',
+        methods: {
+            onClick(event) {
+                this.$emit('click', event)
+            }
+        }
     }
 </script>
 

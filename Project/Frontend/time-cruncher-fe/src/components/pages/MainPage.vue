@@ -1,6 +1,6 @@
 <template>
     <div class="main-page">
-        <TasksPage :tasks="tasks" :groupName="group.name"/>
+        <TasksPage />
         <router-view />
     </div>
 </template>

@@ -9,7 +9,10 @@
             </router-link>
         </div>
 
-        <LoadButton>Load new tasks</LoadButton>
+        <LoadButton v-if="newTasks.length > 0"
+                    @click="mergeTasks($event)">
+            Load new tasks
+        </LoadButton>
 
         <TaskCard v-for="task in tasks"
                   :key="task.id"
@@ -27,6 +30,7 @@
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
     import * as global from '../../services/utilites'
+    import * as newTask$ from '../../event-buses/newTask'
 
     export default {
         name: "TasksPage",
@@ -38,14 +42,13 @@
         data() {
             return {
                 channel: {},
-                mirko: {},
                 tasks: [],
+                newTasks: [],
                 group: this.loadGroup()
             }
         },
         methods: {
             initTasks: async function () {
-                console.log('woho')
                 const groupId = this.$route.params.groupId
                 const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
                     method: 'GET',
@@ -57,18 +60,28 @@
                 this.tasks = tasks.reverse()
             },
 
+            mergeTasks: function () {
+                this.tasks = [...this.newTasks.reverse(), ...this.tasks]
+                this.newTasks = []
+            },
+
             loadGroup: function () {
-                return global.groupState.getLastActiveGroup()
+              return global.groupState.getLastActiveGroup()
             }
         },
 
         watch: {
             $route() {
                 this.initTasks()
+                this.group = this.loadGroup()
             }
         },
         created() {
             this.initTasks()
+
+            newTask$.subscribe((newTask) => {
+                this.newTasks.push(newTask)
+            })
         },
     }
 </script>
