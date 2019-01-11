@@ -26,9 +26,7 @@
         methods: {
             initGroups: async function () {
                 // todo: check LS
-                console.log('iniiiiit')
                 this.groups = await this.fetchGroups()
-                console.log('init: ', this.groups)
             },
 
             fetchGroups: async function () {
@@ -61,7 +59,6 @@
 
             subscribeToAll: function (ids) {
                 ids.forEach(id => {
-                    console.log('woho')
                     const channel = pusher.subscribe(`private-channel_for_group-${id}`)
                     channel.bind('task_added', function (newTask) {
                         alert('ojsa!')

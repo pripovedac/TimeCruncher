@@ -36,7 +36,8 @@
                         'Content-Type': 'application/json'
                     }
                 })
-                this.tasks = await response.json()
+                const tasks = await response.json()
+                this.tasks = tasks.reverse()
             },
 
             initGroupData: function () {
