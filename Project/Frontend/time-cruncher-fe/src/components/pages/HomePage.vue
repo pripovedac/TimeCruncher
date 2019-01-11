@@ -9,7 +9,7 @@
 <script>
     import Sidebar from '../ui/Sidebar'
     import * as global from '../../services/utilites'
-    import {IronMan} from '../../Hero'
+    import {pusher} from '../../services/pusher'
 
     export default {
         name: 'HomePage',
@@ -25,14 +25,13 @@
         },
         methods: {
             initGroups: async function () {
-                // this.groups = this.loadGroups()
-                //if (!this.groups) {
+                // todo: check LS
+                console.log('iniiiiit')
                 this.groups = await this.fetchGroups()
-                //}
+                console.log('init: ', this.groups)
             },
 
             fetchGroups: async function () {
-                // todo: here should be fetched only groups for current member, not all of them
                 console.log('Fetching groups...')
                 const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}/groups`, {
                     method: 'GET',
@@ -44,11 +43,32 @@
                 if (response.ok) {
                     groups = await response.json()
                     global.groupState.save(groups)
+                    return groups
                 }
+            },
 
-                return groups
+            subscribeToChannels: function () {
+                console.log('this.groups: ', this.groups)
+                const groupIds = this.groups.map(group => group.id)
+                console.log('groupIds: ', groupIds)
+                this.unsubscribeFromAll(groupIds)
+                this.subscribeToAll(groupIds)
+            },
 
+            unsubscribeFromAll: function(ids) {
+                ids.forEach(id =>  pusher.unsubscribe(`private-channel_for_group-${id}`))
+            },
 
+            subscribeToAll: function (ids) {
+                ids.forEach(id => {
+                    console.log('woho')
+                    const channel = pusher.subscribe(`private-channel_for_group-${id}`)
+                    channel.bind('task_added', function (newTask) {
+                        alert('ojsa!')
+                        console.log('newTask: ', newTask)
+                        this.tasks.push(newTask)
+                    })
+                })
             },
 
             loadGroups: function () {
@@ -60,9 +80,9 @@
             }
         },
 
-        created() {
-            //IronMan.getDetails()
-            this.initGroups()
+        async created() {
+            await this.initGroups()
+            this.subscribeToChannels()
         }
     }
 </script>
