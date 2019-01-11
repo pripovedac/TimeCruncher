@@ -1,8 +1,7 @@
 <template>
     <button class="load-button"
             type="button"
-            @click="click($event)"
-            :disabled="disabled">
+            @click="click($event)">
         <slot></slot>
     </button>
 </template>
@@ -31,8 +30,4 @@
         outline: none;
     }
 
-    button[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
 </style>

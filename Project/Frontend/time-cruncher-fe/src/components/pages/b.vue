@@ -1,12 +1,13 @@
 <template>
-    <member-card name="Darko"></member-card>
+    <LoadButton>Load new tasks</LoadButton>
 </template>
 
 <script>
     import MemberCard from "../ui/MemberCard";
+    import LoadButton from "../ui/LoadButton";
     export default {
         name: "b",
-        components: {MemberCard}
+        components: {LoadButton, MemberCard}
     }
 </script>
 

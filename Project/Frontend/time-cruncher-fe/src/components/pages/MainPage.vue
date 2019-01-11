@@ -15,6 +15,7 @@
         components: {
             TasksPage,
         },
+
         data() {
             return {
                 tasks: [],
@@ -22,6 +23,7 @@
                 info: {},
             }
         },
+
         methods: {
             init: function () {
                 this.initTasks()
@@ -58,11 +60,13 @@
                 global.groupState.setLastActiveGroup(group)
             }
         },
+
         watch: {
           $route() {
               this.init()
           }
         },
+
         created() {
             this.init()
         },

@@ -2,7 +2,6 @@
     <div class="home-page">
         <Sidebar :groups="groups"/>
         <router-view/>
-        <!--<MainPage :tasks="tasks" groupName="Nabavka"/>-->
     </div>
 </template>
 
