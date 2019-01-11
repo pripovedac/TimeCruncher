@@ -7,7 +7,8 @@
             </p>
             <form @submit.prevent="createGroup($event)">
                 <label class="label-checkbox">
-                    <Checkbox @changeState="updatePrivacy($event)"/>
+                    <Checkbox :checked="group.isPrivate"
+                              @changeState="updatePrivacy($event)"/>
                     Is group private?
                 </label>
                 <PublicInput v-model="group.name"
@@ -21,7 +22,9 @@
                     <textarea v-model="group.members"
                               rows="8"
                               spellcheck="false"
-                              type="text"/>
+                              type="text"
+                              :disabled="group.isPrivate"
+                    />
                     <span>Please separate multiple addresses with single space.</span>
                 </label>
                 <Button type="submit"> Create group</Button>
@@ -53,7 +56,7 @@
                     name: "",
                     description: "",
                     members: "",
-                    isPrivate: true,
+                    isPrivate: false,
                 },
                 userId: this.getUserId()
             }
@@ -96,7 +99,7 @@
                 return mails.split(' ')
             },
 
-            goBack: function() {
+            goBack: function () {
                 router.go(-1)
             },
 
@@ -178,6 +181,11 @@
         border: 1px solid #eee;
         outline: none;
         font-family: inherit;
+    }
+
+    textarea[disabled] {
+        background-color: white;
+        cursor: not-allowed;
     }
 
     .primary-button {
