@@ -72,7 +72,7 @@
 
     .sidebar {
         width: 15%;
-        position: relative;
+        position: sticky;
         top: 0;
         left: 0;
     }
