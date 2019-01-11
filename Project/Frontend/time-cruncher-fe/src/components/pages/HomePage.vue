@@ -1,6 +1,6 @@
 <template>
     <div class="home-page">
-        <Sidebar :groups="groups"/>
+        <Sidebar :groups="groups" :user="user"/>
         <router-view/>
     </div>
 </template>
@@ -20,6 +20,7 @@
             return {
                 groups: [],
                 tasks: [],
+                user: {},
                 groupId: this.getGroupId(),
                 userId: this.getUserId()
             }
@@ -34,6 +35,19 @@
                         shouldReload: false
                     }
                 })
+            },
+
+            initUser: async function () {
+                console.log('Fetching user data...')
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                if (response.ok) {
+                    this.user = await response.json()
+                }
             },
 
             fetchGroups: async function () {
@@ -114,6 +128,7 @@
 
         async created() {
             await this.initGroups()
+            await this.initUser()
             this.subscribeToChannels()
         },
     }

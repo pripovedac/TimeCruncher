@@ -3,7 +3,7 @@
         <!--todo: everything here should be a router-link-->
         <h1>
             <UserIcon class="icon"/>
-            <span>Darko Stevanovic</span>
+            <span>{{user.firstname}} {{user.lastname}}</span>
         </h1>
         <div class="group-header">
             <h2>Groups</h2>
@@ -48,6 +48,9 @@
         props: {
             groups: {
                 type: Array,
+            },
+            user: {
+                type: Object
             },
             shouldReload: {
                 type: Boolean,
