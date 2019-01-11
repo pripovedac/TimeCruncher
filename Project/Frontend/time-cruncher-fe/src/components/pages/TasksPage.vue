@@ -22,6 +22,9 @@
 <script>
     import TaskCard from '../ui/TaskCard'
     import {PlusCircleIcon} from 'vue-feather-icons'
+    import * as global from '../../services/utilites'
+    import {pusher} from '../../services/pusher'
+
 
     export default {
         name: "TasksPage",
@@ -35,8 +38,49 @@
             },
             tasks: {
                 type: Array
+            },
+
+        },
+        data() {
+            return {
+                channel: {},
+                mirko: {}
             }
-        }
+        },
+
+        methods: {
+            createTasksChannel: function () {
+                console.log('this.channel: ', this.channel)
+                // if (this.channel.name) {
+                //     pusher.unsubscribe(`private-channel_for_group-${groupId}`)
+                //     // this.channel = {}
+                //     console.log('done')
+                // }
+                const groupId = this.$route.params.groupId
+                const channelName = `private-channel_for_group-${groupId}`
+                console.log('channelName: ', channelName)
+                pusher.unsubscribe(`private-channel_for_group-${groupId}`)
+                this.channel = pusher.subscribe(`private-channel_for_group-${groupId}`);
+                this.channel.bind('task_added', function (newTask) {
+                    alert('ojsa!')
+                    console.log('newTask: ', newTask)
+                    this.tasks.push(newTask)
+                });
+            },
+
+            loadAccessToken: function () {
+                return global.userState.loadAT()
+            },
+        },
+        watch: {
+            $route() {
+                this.createTasksChannel()
+            }
+        },
+        created() {
+            console.log('init pusher: ', pusher)
+            this.createTasksChannel()
+        },
     }
 </script>
 

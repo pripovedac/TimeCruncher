@@ -69,7 +69,7 @@
                     isPrivate: this.group.isPrivate
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + `users/${this.userId}/groups`, {
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups`, {
                     method: 'POST',
                     body: JSON.stringify(newGroup),
                     headers: {

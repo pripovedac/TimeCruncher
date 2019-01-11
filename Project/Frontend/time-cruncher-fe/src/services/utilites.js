@@ -30,7 +30,7 @@ export class GroupState extends StateFactory {
     }
 
     getLastActiveGroup() {
-        return JSON.parse(localStorage.getItem('lastGroup'))
+        return super.load('lastGroup')
     }
 }
 
@@ -41,6 +41,10 @@ export class UserState extends StateFactory {
 
     load() {
         return super.load('userId')
+    }
+
+    loadAT() {
+        return super.load('accessToken')
     }
 }
 

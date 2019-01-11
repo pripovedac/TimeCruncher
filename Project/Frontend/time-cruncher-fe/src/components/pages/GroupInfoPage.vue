@@ -75,7 +75,6 @@
 
                 if (response.ok) {
                     this.members = await response.json()
-                    console.log('this.members: ', this.members)
                 }
             }
         },
