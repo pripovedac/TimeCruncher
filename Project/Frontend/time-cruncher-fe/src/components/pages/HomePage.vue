@@ -1,6 +1,10 @@
 <template>
     <div class="home-page">
-        <Sidebar :groups="groups" :user="user"/>
+        <Sidebar :groups="groups"
+                 :user="user"
+                 :newGroup="newGroups.length > 0"
+                 @mergeGroups="mergeGroups($event)"
+        />
         <router-view/>
     </div>
 </template>
@@ -19,6 +23,7 @@
         data() {
             return {
                 groups: [],
+                newGroups: [],
                 tasks: [],
                 user: {},
                 groupId: this.getGroupId(),
@@ -68,10 +73,12 @@
 
             subscribeToChannels: function () {
                 const groupIds = this.groups.filter(group => !group.isPrivate).map(({id}) => id)
-                console.log('subscription ids: ', groupIds)
+                console.log('Subscription ids: ', groupIds)
 
                 this.unsubscribeFromAll(groupIds)
                 this.subscribeToAll(groupIds)
+                this.unsubscribeFromGroupUpdates()
+                this.subscribeToGroupUpdates()
             },
 
             unsubscribeFromAll: function (ids) {
@@ -87,7 +94,6 @@
                         alert('ojsa!')
                         if (newTask.group.id == that.groupId) {
                             newTask$.publish(newTask)
-                            console.log('ja ga pablisova')
                         } else {
                             that.groups = that.modifyGroupNotifications(that.groups, newTask.group.id, true)
                         }
@@ -95,10 +101,29 @@
                 })
             },
 
+            unsubscribeFromGroupUpdates: function () {
+                console.log('woho')
+                pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
+            },
+
+            subscribeToGroupUpdates: function () {
+                const that = this
+                const channel = pusher.subscribe(`private-channel_for_user-${this.userId}`)
+                channel.bind('added_to_group', function (newGroup) {
+                    alert('New group!')
+                    that.newGroups.push(newGroup)
+                })
+            },
+
             modifyGroupNotifications: function (groups, id, value) {
                 return groups.map(group => group.id == id
                     ? {...group, shouldReload: value}
                     : group)
+            },
+
+            mergeGroups: function () {
+              this.groups = [...this.groups, ...this.newGroups]
+              this.newGroups = []
             },
 
             loadGroups: function () {

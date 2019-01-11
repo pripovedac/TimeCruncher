@@ -6,7 +6,12 @@
             <span>{{user.firstname}} {{user.lastname}}</span>
         </h1>
         <div class="group-header">
-            <h2>Groups</h2>
+            <div>
+                <h2>Groups</h2>
+                <button v-if="newGroup" @click="mergeGroups($event)">
+                    <BellIcon class="icon"/>
+                </button>
+            </div>
             <router-link :to="{path:'/new-group'}">
                 <PlusCircleIcon class="plus-icon"/>
             </router-link>
@@ -49,6 +54,9 @@
             groups: {
                 type: Array,
             },
+            newGroup: {
+              type: Boolean,
+            },
             user: {
                 type: Object
             },
@@ -56,6 +64,11 @@
                 type: Boolean,
             }
         },
+        methods: {
+            mergeGroups: function () {
+                this.$emit('mergeGroups')
+            }
+        }
     }
 </script>
 
@@ -95,9 +108,39 @@
         justify-content: space-between;
         align-items: center;
 
+        div {
+            display: flex;
+            padding-top: 0.3em;
+            align-items: center;
+        }
+
+        h2 {
+            // todo: complete disaster - change this
+            margin-top: 0.1em;
+        }
+        
+        button {
+            margin: 0;
+            padding: 0;
+            margin-left: 0.5em;
+            background: none;
+            color: white;
+            border: none;
+            outline: none;
+            align-items: center;
+            cursor: pointer;
+        }
+
         a {
             margin-top: 0.5em;
         }
+
+        .icon {
+            margin-top: 0;
+            padding-right: 0;
+        }
+
+
     }
 
     a {
