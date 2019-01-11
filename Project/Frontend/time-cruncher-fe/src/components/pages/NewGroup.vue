@@ -7,7 +7,8 @@
             </p>
             <form @submit.prevent="createGroup($event)">
                 <label class="label-checkbox">
-                    <Checkbox @changeState="updatePrivacy($event)"/>
+                    <Checkbox :checked="group.isPrivate"
+                              @changeState="updatePrivacy($event)"/>
                     Is group private?
                 </label>
                 <PublicInput v-model="group.name"
@@ -21,7 +22,9 @@
                     <textarea v-model="group.members"
                               rows="8"
                               spellcheck="false"
-                              type="text"/>
+                              type="text"
+                              :disabled="group.isPrivate"
+                    />
                     <span>Please separate multiple addresses with single space.</span>
                 </label>
                 <Button type="submit"> Create group</Button>
@@ -38,6 +41,7 @@
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
     import router from '../../routes/routes'
+    import * as global from '../../services/utilites'
 
     export default {
         name: "NewGroup",
@@ -52,24 +56,23 @@
                     name: "",
                     description: "",
                     members: "",
-                    isPrivate: true,
-                }
-
+                    isPrivate: false,
+                },
+                userId: this.getUserId()
             }
         },
         methods: {
             createGroup: async function () {
-                // todo: members and privacy should also be sent but currently are not due to BE limitations
-                // todo: update input field for members
                 const memberMails = this.separateMails(this.group.members)
                 const newGroup = {
                     name: this.group.name,
                     description: this.group.description,
-                    creatorId: 91,
-                    memberEmails: memberMails
+                    creatorId: this.userId,
+                    memberEmails: memberMails,
+                    isPrivate: this.group.isPrivate
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups`, {
                     method: 'POST',
                     body: JSON.stringify(newGroup),
                     headers: {
@@ -87,19 +90,22 @@
 
             },
 
-            updatePrivacy(checkboxValue) {
+            updatePrivacy: function (checkboxValue) {
                 // todo: this should be refactored to use v-model directive
                 this.group.isPrivate = checkboxValue
             },
 
-            separateMails(mails) {
+            separateMails: function (mails) {
                 return mails.split(' ')
             },
 
-            goBack() {
+            goBack: function () {
                 router.go(-1)
             },
 
+            getUserId: function () {
+                return global.userState.load()
+            }
         },
     }
 </script>
@@ -175,6 +181,11 @@
         border: 1px solid #eee;
         outline: none;
         font-family: inherit;
+    }
+
+    textarea[disabled] {
+        background-color: white;
+        cursor: not-allowed;
     }
 
     .primary-button {

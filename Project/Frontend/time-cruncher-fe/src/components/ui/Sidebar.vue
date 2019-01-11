@@ -12,25 +12,29 @@
             </router-link>
         </div>
         <div class="group-container">
-            <router-link :to="{name: 'MainPage', params: {groupId: group.id}}"
-                    v-for="group in groups"
-                  :key="group.id">
+            <router-link :to="{name: 'GroupInfo', params: {groupId: group.id}}"
+                         v-for="group in groups"
+                         :key="group.id"
+                         @click="onClick($event)">
                 <LockIcon v-if="group.isPrivate" class="icon"/>
                 <HashIcon v-else class="icon"/>
-                {{group.name}}
+                <div>
+                    {{group.name}}
+                    <BellIcon v-if="group.shouldReload" class="icon"/>
+                </div>
             </router-link>
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
-            <span>Daily</span>
-            <span>Weekly</span>
-            <span>Uncategorized</span>
+            <router-link :to="{path: '/login'}">Daily</router-link>
+            <router-link :to="{path: '/login'}">Weekly</router-link>
+            <router-link :to="{path: '/login'}">Uncategorized</router-link>
         </div>
     </div>
 </template>
 
 <script>
-    import {UserIcon, HashIcon, LockIcon, PlusCircleIcon} from 'vue-feather-icons'
+    import {UserIcon, HashIcon, LockIcon, PlusCircleIcon, BellIcon} from 'vue-feather-icons'
 
     export default {
         name: "Sidebar",
@@ -38,13 +42,17 @@
             UserIcon,
             HashIcon,
             LockIcon,
-            PlusCircleIcon
+            PlusCircleIcon,
+            BellIcon
         },
         props: {
             groups: {
-                type: Array
+                type: Array,
             },
-        }
+            shouldReload: {
+                type: Boolean,
+            }
+        },
     }
 </script>
 
@@ -83,27 +91,23 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        /*border: 1px solid white;*/
 
         a {
             margin-top: 0.5em;
         }
     }
-    
+
     a {
         color: white;
         outline: none;
         text-decoration: none;
     }
-    
 
     .filter-container, .group-container {
         display: flex;
         flex-direction: column;
-        /*border:1px solid black;*/
 
         a {
-            /*border: 1px solid black;*/
             padding-left: 0.5em;
             padding-bottom: 0.5em;
             font-size: 0.8em;
@@ -111,11 +115,18 @@
     }
 
     // single group name container
-    // e.g. <lock-icon> nabavka
+    // e.g. <lock-icon> nabavka [<bell-icon>]
     .group-container > a {
         display: flex;
         justify-content: flex-start;
         align-items: center;
+
+        div {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 
     .icon {

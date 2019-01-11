@@ -86,6 +86,7 @@
                 currentDate: this.initDate(),
                 memberNames: "",
                 selectedMembers: [],
+                userId: this.getUserId(),
             }
         },
         methods: {
@@ -99,7 +100,7 @@
                     name: this.task.name,
                     description: this.task.description,
                     groupId: this.group.id,
-                    creatorId: 91,
+                    creatorId: this.userId,
                     assignedUserIds: selectedMembers,
                     dueTime: date.toISOString()
                 }
@@ -133,7 +134,6 @@
             },
 
             removeMember: function (member) {
-                console.log('member: ', member)
                 const memberId = member.id
                 this.task.members.push(member)
                 this.selectedMembers = this.selectedMembers.filter(member => member.id != memberId)
@@ -148,14 +148,11 @@
                 })
                 if (response.ok) {
                     this.task.members = await response.json()
-                    console.log('members: ', this.task.members)
                 }
             },
 
             loadLastActiveGroup: function () {
-                const res = global.groupState.getLastActiveGroup()
-                // console.log('res: ', res)
-                return res
+                return global.groupState.getLastActiveGroup()
             },
 
             getCurrentDate: function () {
@@ -166,7 +163,12 @@
                 // todo: change this to redirect
                 router.go(-1)
             },
+
+            getUserId: function () {
+                return global.userState.load()
+            }
         },
+
         created() {
             this.initMembers()
         }

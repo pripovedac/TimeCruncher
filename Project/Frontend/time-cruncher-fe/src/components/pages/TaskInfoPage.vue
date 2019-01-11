@@ -3,12 +3,12 @@
         <form @submit.prevent="updateTask($event)">
             <h1>
                 <input aria-label="title" placeholder="Task name"
-                       :value="taskName"
+                       v-model="task.name"
                        spellcheck="false"/>
             </h1>
 
             <div class="date-container">
-                <p>Published on: {{publishTime}}</p>
+                <p>Published on: {{task.publishTime}}</p>
                 <label class="label-container">
                     Due date:
                     <input type="date"
@@ -21,7 +21,7 @@
                 Description
             </h2>
             <textarea placeholder="Description"
-                      :value="description"
+                      v-model="task.description"
                       rows="8"
                       spellcheck="false"
             />
@@ -32,15 +32,12 @@
                     Members
                 </h2>
                 <span v-for="member in members" :key="member.id">
-                {{member.name}} {{member.lastname}}
-                    <!--<button>-->
-                    <!--<XIcon class="icon"/>-->
-                    <!--</button>-->
+                {{member.firstname}} {{member.lastname}}
             </span>
             </div>
 
             <label class="label-checkbox">
-                <Checkbox />
+                <Checkbox :value="task.isCompleted"/>
                 Is task completed?
             </label>
             <button type="submit">Submit</button>
@@ -50,60 +47,80 @@
                 comment section
             </router-link>
         </p>
-
     </div>
 </template>
 
 <script>
-    import {AlignLeftIcon, UsersIcon, XIcon} from 'vue-feather-icons'
+    import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
+    import * as global from "../../services/utilites";
 
     export default {
-        name: "TaskInfo",
+        name: "InfoPage",
         components: {
             AlignLeftIcon,
             UsersIcon,
-            XIcon,
             Checkbox
         },
+        props: {
+            info: {
+                type: Object
+            }
+        },
+
         data() {
             return {
-                // todo: this will remain as data because the data will be get from
-                // BE using the query params
-                taskName: 'Prodavnica',
-                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." +
-                ' Nunc malesuada scelerisque turpis, et maximus sem mattis sed.' +
-                ' Proin fringilla nisl ac nisl commodo volutpat. Vivamus mollis ligula sodales ' +
-                'pulvinar blandit. Maecenas maximus maximus orci, vel congue ' +
-                'sapien aliquet at. Sed facilisis malesuada dui at hendrerit.',
-                publishTime: '04. 01. 2019.',
-                dueTime: '06. 01. 2019.',
-                isCompleted: false,
-                members: [
-                    {
-                        id: 1,
-                        name: 'Darko',
-                        lastname: 'Stevanovic'
-                    },
-                    {
-                        id: 2,
-                        name: 'Milos',
-                        lastname: 'Stanojevic'
-                    },
-                    {
-                        id: 4,
-                        name: 'Marija',
-                        lastname: 'Pajkic'
-                    }
-                ]
-
+                members: [],
+                group: this.loadLastActiveGroup(),
+                task: {},
             }
         },
         methods: {
             updateTask() {
 
             },
-        }
+
+            loadLastActiveGroup: function () {
+                return global.groupState.getLastActiveGroup()
+            },
+
+            fetchTask: async function () {
+                console.log('Fetching task...')
+                const taskId = this.$route.params.taskId
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/tasks/${taskId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                if (response.ok) {
+                    this.task = await response.json()
+                }
+            },
+
+            fetchMembers: async function () {
+                const taskId = this.$route.params.taskId
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/tasks/${taskId}/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    this.members = await response.json()
+                }
+            }
+        },
+        watch: {
+            $route() {
+                this.fetchTask()
+            }
+        },
+        created() {
+            this.fetchTask()
+            this.fetchMembers()
+        },
     }
 </script>
 
@@ -233,7 +250,6 @@
         padding-right: 0.5em;
         width: 1em;
     }
-
 
     button[type="submit"] {
         display: block;

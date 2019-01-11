@@ -2,40 +2,87 @@
     <div class="tasks-page">
         <div class="header">
             <h1>
-                {{groupName}}
+                {{group.name}}
             </h1>
             <router-link :to="{path: '/new-task'}">
                 <PlusCircleIcon class="icon"/>
             </router-link>
         </div>
+
+        <LoadButton v-if="newTasks.length > 0"
+                    @click="mergeTasks($event)">
+            Load new tasks
+        </LoadButton>
+
         <TaskCard v-for="task in tasks"
                   :key="task.id"
+                  :id="task.id"
                   :name="task.name"
                   :description="task.description"
                   :date="task.dueTime"
-                  :done="task.done"
+                  :done="task.isCompleted"
         />
     </div>
 </template>
 
 <script>
     import TaskCard from '../ui/TaskCard'
+    import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
+    import * as global from '../../services/utilites'
+    import * as newTask$ from '../../event-buses/newTask'
 
     export default {
         name: "TasksPage",
         components: {
             TaskCard,
+            LoadButton,
             PlusCircleIcon,
         },
-        props: {
-            groupName: {
-                type: String
-            },
-            tasks: {
-                type: Array
+        data() {
+            return {
+                channel: {},
+                tasks: [],
+                newTasks: [],
+                group: this.loadGroup()
             }
-        }
+        },
+        methods: {
+            initTasks: async function () {
+                const groupId = this.$route.params.groupId
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                const tasks = await response.json()
+                this.tasks = tasks.reverse()
+            },
+
+            mergeTasks: function () {
+                this.tasks = [...this.newTasks.reverse(), ...this.tasks]
+                this.newTasks = []
+            },
+
+            loadGroup: function () {
+              return global.groupState.getLastActiveGroup()
+            }
+        },
+
+        watch: {
+            $route() {
+                this.initTasks()
+                this.group = this.loadGroup()
+            }
+        },
+        created() {
+            this.initTasks()
+
+            newTask$.subscribe((newTask) => {
+                this.newTasks.push(newTask)
+            })
+        },
     }
 </script>
 
@@ -58,6 +105,11 @@
         align-items: center;
         /*margin-bottom: 1em;*/
         /*border: 1px solid black;*/
+    }
+
+    .load-button {
+        width: 70%;
+        margin-bottom: 1em;
     }
 
     button {

@@ -1,27 +1,29 @@
 <template>
     <div class="main-page">
-        <TasksPage :tasks="tasks" :groupName="group.name"/>
-        <TaskInfo/>
+        <TasksPage />
+        <router-view />
     </div>
 </template>
 
 <script>
     import TasksPage from './TasksPage'
-    import TaskInfo from './TaskInfo'
+    import Info from './TaskInfoPage'
     import * as global from "../../services/utilites";
 
     export default {
         name: 'MainPage',
         components: {
             TasksPage,
-            TaskInfo,
         },
+
         data() {
             return {
                 tasks: [],
                 group: {},
+                info: {},
             }
         },
+
         methods: {
             init: function () {
                 this.initTasks()
@@ -36,13 +38,17 @@
                         'Content-Type': 'application/json'
                     }
                 })
-                this.tasks = await response.json()
-                console.log('this.tasks: ', this.tasks)
+                const tasks = await response.json()
+                this.tasks = tasks.reverse()
             },
 
             initGroupData: function () {
                 const groupId = this.$route.params.groupId
                 this.group = this.loadSingle(groupId)
+                this.info = {
+                    ...this.group,
+                    type: 'group'
+                }
                 this.saveLastActiveGroup(this.group)
             },
 
@@ -54,11 +60,13 @@
                 global.groupState.setLastActiveGroup(group)
             }
         },
+
         watch: {
           $route() {
               this.init()
           }
         },
+
         created() {
             this.init()
         },

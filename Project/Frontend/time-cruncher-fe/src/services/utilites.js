@@ -30,9 +30,24 @@ export class GroupState extends StateFactory {
     }
 
     getLastActiveGroup() {
-        return JSON.parse(localStorage.getItem('lastGroup'))
+        return super.load('lastGroup')
+    }
+}
+
+export class UserState extends StateFactory {
+    save(value) {
+        super.save('userId', value)
+    }
+
+    load() {
+        return super.load('userId')
+    }
+
+    loadAT() {
+        return super.load('accessToken')
     }
 }
 
 
 export const groupState = new GroupState()
+export const userState = new UserState()

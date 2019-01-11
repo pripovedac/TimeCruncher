@@ -1,7 +1,7 @@
 <template>
     <span class="checkbox">
         <input type="checkbox"
-               checked
+               :checked="checked"
                class="visually-hidden"
                @click="changeState($event)"
         />
@@ -17,6 +17,11 @@
     export default {
         components: {
             CheckIcon
+        },
+        props: {
+            checked: {
+                type: Boolean,
+            }
         },
         methods: {
           changeState(event) {
