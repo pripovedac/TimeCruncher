@@ -8,7 +8,7 @@ import {
   HttpStatus, NotFoundException,
   Param,
   Post, Put,
-  Response,
+  Response, UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
@@ -16,19 +16,17 @@ import { CreateUserDto } from './DTOs/create-user.dto';
 import { UserInfoDto } from './DTOs/user-info.dto';
 import { SqlException } from '../../custom-exceptions/sql.exception';
 import { EditUserDto } from './DTOs/edit-user.dto';
-
+import {AuthGuard} from '@nestjs/passport';
 @Controller('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
   ){}
 
-
-
   @Get()
   async findAllUsers(): Promise<UserInfoDto[]>{
-    const res: User[] = await this.userService.findAll();
-    return res.map( x => new UserInfoDto(x) );
+    const res: UserInfoDto[] = await this.userService.findAll();
+    return res;
   }
 
   @Get(':id')

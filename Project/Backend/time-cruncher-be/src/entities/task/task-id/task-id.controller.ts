@@ -6,6 +6,7 @@ import { TaskWithAssignedUsersDto } from '../DTOs/task-with-assigned-users.dto';
 import { UserIdArrayDto } from '../../group/DTOs/user-id-array.dto';
 import { TaskNotFoundException } from '../../../custom-exceptions/task-not-found.exception';
 import {Comment} from '../../comment/comment.entity';
+import { User } from '../../user/user.entity';
 
 @Controller('tasks/:id')
 export class TaskIdController {
@@ -32,5 +33,10 @@ export class TaskIdController {
   async assignUsersToTask(@Param() params, @Body() assignedUserIds: UserIdArrayDto): Promise<TaskWithAssignedUsersDto>{
     const res: Task = await this.taskService.assignUsers(params.id, assignedUserIds.userIds);
     return new TaskWithAssignedUsersDto(res);
+  }
+  @Get('users')
+  async findTaskByIdWithAssignedUsers(@Param() params): Promise<User[]>{
+    const res: Task = await this.taskService.findByIdWithAssignedUsers(params.id);
+    return res.assignedUsers;
   }
 }

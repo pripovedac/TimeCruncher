@@ -16,6 +16,8 @@ import { PusherAuthController } from './pusher-auth/pusher-auth.controller';
 import { AccessTokenController } from './entities/access-token/access-token.controller';
 import { AccessTokenService } from './entities/access-token/access-token.service';
 import { AccessToken } from './entities/access-token/access-token.entity';
+import { AuthModule } from './authentication/auth.module';
+import { AuthService } from './authentication/auth.service';
 
 @Module({
   imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature([AccessToken]), UserModule, GroupModule, TaskModule, CommentModule],

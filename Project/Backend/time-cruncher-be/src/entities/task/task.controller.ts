@@ -70,7 +70,6 @@ export class TaskController {
       throw new TaskNotFoundException(params.id);
     return new TaskInfoDto(res);
   }
-
   @Delete(':id')
   async removeTaskById(@Param() params){
     if (!this.taskService.existsWithId(params.id))
