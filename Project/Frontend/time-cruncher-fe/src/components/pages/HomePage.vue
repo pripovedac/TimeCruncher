@@ -25,25 +25,28 @@
         },
         methods: {
             initGroups: async function () {
-              this.groups = this.loadGroups()
-              if (!this.groups) {
-                  this.groups = await this.fetchGroups()
-              }
+                // this.groups = this.loadGroups()
+                //if (!this.groups) {
+                this.groups = await this.fetchGroups()
+                //}
             },
 
             fetchGroups: async function () {
                 // todo: here should be fetched only groups for current member, not all of them
                 console.log('Fetching groups...')
-                const response = await fetch(process.env.VUE_APP_BE_URL + '/groups', {
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}/groups`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 })
+                let groups = {}
                 if (response.ok) {
-                    const groups = await response.json()
+                    groups = await response.json()
                     global.groupState.save(groups)
                 }
+
+                return groups
 
 
             },
