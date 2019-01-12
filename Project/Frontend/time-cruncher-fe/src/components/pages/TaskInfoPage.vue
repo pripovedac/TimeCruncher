@@ -53,7 +53,8 @@
 <script>
     import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
-    import * as global from "../../services/utilites";
+    import * as global from '../../services/utilites'
+    import * as tasksApi from '../../services/api/tasks'
 
     export default {
         name: "InfoPage",
@@ -85,30 +86,27 @@
             },
 
             fetchTask: async function () {
+                // todo: this shouldn't be BE connected
                 console.log('Fetching task...')
                 const taskId = this.$route.params.taskId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/tasks/${taskId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                if (response.ok) {
-                    this.task = await response.json()
+                const response = await tasksApi.getSingleTask(taskId)
+
+                if (!response.errorStatus) {
+                    this.task = response
+                } else {
+                    // todo: handle errors
+                    alert('Problem with loading single task.')
                 }
             },
 
             fetchMembers: async function () {
-                const taskId = this.$route.params.taskId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/tasks/${taskId}/users`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                const id = this.$route.params.taskId
+                const response = await tasksApi.getMembers(id)
 
-                if (response.ok) {
-                    this.members = await response.json()
+                if (!response.errorStatus) {
+                    this.task = response
+                } else {
+                    alert('Problem with fetch members.')
                 }
             }
         },

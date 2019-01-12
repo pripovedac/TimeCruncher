@@ -32,12 +32,11 @@
 
             initTasks: async function () {
                 const groupId = this.$route.params.groupId
-                const response = tasksApi.getTasks(groupId)
+                const response = await tasksApi.getTasks(groupId)
 
                 if (!response.errorStatus) {
                     return response
                 } else {
-                    // todo: handle errors
                     alert('Problem with tasks loading.')
                 }
             },
