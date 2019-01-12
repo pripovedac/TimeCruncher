@@ -9,23 +9,29 @@
             </router-link>
         </div>
 
-        <LoadButton v-if="newTasks.length > 0"
-                    @click="mergeTasks($event)">
-            Load new tasks
-        </LoadButton>
+        <NoTasksCard  v-if="tasks.length == 0"/>
 
-        <TaskCard v-for="task in tasks"
-                  :key="task.id"
-                  :id="task.id"
-                  :name="task.name"
-                  :description="task.description"
-                  :date="task.dueTime"
-                  :done="task.isCompleted"
-        />
+
+        <div v-else>
+            <LoadButton v-if="newTasks.length > 0"
+                        @click="mergeTasks($event)">
+                Load new tasks
+            </LoadButton>
+
+            <TaskCard v-for="task in tasks"
+                      :key="task.id"
+                      :id="task.id"
+                      :name="task.name"
+                      :description="task.description"
+                      :date="task.dueTime"
+                      :done="task.isCompleted"
+            />
+        </div>
     </div>
 </template>
 
 <script>
+    import NoTasksCard from '../ui/NoTasksCard'
     import TaskCard from '../ui/TaskCard'
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
@@ -33,8 +39,9 @@
     import * as newTask$ from '../../event-buses/newTask'
 
     export default {
-        name: "TasksPage",
+        name: 'TasksPage',
         components: {
+            NoTasksCard,
             TaskCard,
             LoadButton,
             PlusCircleIcon,
@@ -66,7 +73,7 @@
             },
 
             loadGroup: function () {
-              return global.groupState.getLastActiveGroup()
+                return global.groupState.getLastActiveGroup()
             }
         },
 
@@ -105,6 +112,15 @@
         align-items: center;
         /*margin-bottom: 1em;*/
         /*border: 1px solid black;*/
+    }
+
+    .no-tasks {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.9em;
     }
 
     .load-button {
