@@ -40,7 +40,7 @@ export class UserState extends StateFactory {
     }
 
     load() {
-        super.load('user')
+        return super.load('user')
     }
 
     saveId(id) {

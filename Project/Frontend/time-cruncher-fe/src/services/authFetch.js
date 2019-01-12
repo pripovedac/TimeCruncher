@@ -4,7 +4,7 @@ function getCredentials() {
     return userState.loadAT()
 }
 
-export function apiFetchFactory({getCredentials, fetch}) {
+function apiFetchFactory({getCredentials, fetch}) {
     return async function apiFetch(method, url, {
         contentType = 'application/json',
         hasAuthHeader = true,
@@ -20,8 +20,9 @@ export function apiFetchFactory({getCredentials, fetch}) {
         })
         if (responseType == "json" && res.status >= 200 && res.status < 300)
             return res.json()
-        else
-            return res.status.toString()
+        else {
+            return {errorStatus: res.status}
+        }
     }
 }
 

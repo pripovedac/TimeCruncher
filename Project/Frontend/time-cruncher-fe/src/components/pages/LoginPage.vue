@@ -48,7 +48,6 @@
         },
         methods: {
              login: async function() {
-                console.log('user: ', this.user)
                 const newUser = {
                     email: this.user.email,
                     password: this.user.password
@@ -63,7 +62,6 @@
                 })
 
                 if (response.ok) {
-                    console.log('here')
                     const userData = await response.json()
                     const filteredData = {
                         firstname: userData.firstname,

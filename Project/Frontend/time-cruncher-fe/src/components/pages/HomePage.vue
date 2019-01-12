@@ -13,7 +13,9 @@
     import Sidebar from '../ui/Sidebar'
     import * as global from '../../services/utilites'
     import {pusher} from '../../services/pusher'
+    import * as groupsApi from '../../services/api/groups'
     import * as newTask$ from '../../event-buses/newTask'
+
 
     export default {
         name: 'HomePage',
@@ -32,7 +34,6 @@
         },
         methods: {
             initGroups: async function () {
-                // todo: check LS
                 const groups = await this.fetchGroups()
                 this.groups = groups.map(group => {
                     return {
@@ -43,31 +44,19 @@
             },
 
             initUser: async function () {
-                console.log('Fetching user data...')
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                if (response.ok) {
-                    this.user = await response.json()
-                }
+                this.user = global.userState.load()
             },
 
             fetchGroups: async function () {
-                console.log('Fetching groups...')
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}/groups`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                let groups = {}
-                if (response.ok) {
-                    groups = await response.json()
+                const response = await groupsApi.getGroups()
+
+                if (!response.errorStatus) {
+                    const groups = response
                     global.groupState.save(groups)
                     return groups
+                } else {
+                    // todo: handle errors
+                    alert('Problem with groups loading.')
                 }
             },
 
@@ -91,7 +80,6 @@
                 ids.forEach(id => {
                     const channel = pusher.subscribe(`private-channel_for_group-${id}`)
                     channel.bind('task_added', function (newTask) {
-                        alert('ojsa!')
                         if (newTask.group.id == that.groupId) {
                             newTask$.publish(newTask)
                         } else {
@@ -102,7 +90,6 @@
             },
 
             unsubscribeFromGroupUpdates: function () {
-                console.log('woho')
                 pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
             },
 
@@ -131,7 +118,7 @@
             },
 
             getUserId: function () {
-                return global.userState.load()
+                return global.userState.loadId()
             },
 
             getGroupId: function () {
