@@ -75,6 +75,7 @@
                     userState.saveAT(userData.token)
                     userState.saveId(userData.user.id)
                     router.push({path: 'home'})
+                    console.log('done')
                 } else {
                     alert('Registration did not go successfully.')
                 }

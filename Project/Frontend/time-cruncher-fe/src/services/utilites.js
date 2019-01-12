@@ -35,12 +35,21 @@ export class GroupState extends StateFactory {
 }
 
 export class UserState extends StateFactory {
+    save(user) {
+        super.save('user', user)
+    }
+
+    load() {
+        super.load('user')
+    }
+
     saveId(id) {
         super.save('userId', id)
     }
 
     loadId() {
-        return super.load('userId')
+        const user = super.load('user')
+        return user ? user.id : null
     }
 
     saveAT(token) {
@@ -48,7 +57,8 @@ export class UserState extends StateFactory {
     }
 
     loadAT() {
-        return super.load('accessToken')
+        const user = super.load('user')
+        return user ? user.accessToken : null
     }
 }
 

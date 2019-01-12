@@ -4,7 +4,7 @@
             <h1>Time Cruncher</h1>
             <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
 
-            <form @submit.prevent="register($event)">
+            <form @submit.prevent="login($event)">
                 <PublicInput v-model="user.email"
                              label="Email"
                              type="email">
@@ -28,6 +28,8 @@
     import Paper from '../ui/Paper'
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
+    import {userState} from '../../services/utilites'
+    import router from '../../routes/routes'
 
     export default {
         name: "Login",
@@ -45,8 +47,35 @@
             }
         },
         methods: {
-            register() {
+             login: async function() {
                 console.log('user: ', this.user)
+                const newUser = {
+                    email: this.user.email,
+                    password: this.user.password
+                }
+
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/login`, {
+                    method: 'POST',
+                    body: JSON.stringify(newUser),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    console.log('here')
+                    const userData = await response.json()
+                    const filteredData = {
+                        firstname: userData.firstname,
+                        lastname: userData.lastname,
+                        accessToken: userData.accessToken.token,
+                        id: userData.id
+                    }
+                    userState.save(filteredData)
+                    router.push({path: 'home'})
+                } else {
+                    alert('Check your credentials, please')
+                }
             }
         }
     }
@@ -92,7 +121,7 @@
 
     .public-input {
         margin-bottom: 1em;
-        font-size: 1.2em;
+        font-size: 1em;
         color: #13547a;
     }
 
