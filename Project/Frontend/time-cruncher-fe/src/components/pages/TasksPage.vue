@@ -34,6 +34,7 @@
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
     import * as global from '../../services/utilites'
+    import * as tasksApi from '../../services/api/tasks'
     import * as newTask$ from '../../event-buses/newTask'
 
     export default {
@@ -49,25 +50,32 @@
                 channel: {},
                 tasks: [],
                 newTasks: [],
-                group: this.loadGroup()
+                group: {},
             }
         },
         methods: {
             initTasks: async function () {
+                console.log('Fetching tasks...')
                 const groupId = this.$route.params.groupId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                const tasks = await response.json()
-                this.tasks = tasks.reverse()
+                const response = await tasksApi.getTasks(groupId)
+
+                if (!response.errorStatus) {
+                    this.tasks = response.reverse()
+                } else {
+                    alert('Problem with tasks loading.')
+                }
+
             },
 
             mergeTasks: function () {
                 this.tasks = [...this.newTasks.reverse(), ...this.tasks]
                 this.newTasks = []
+            },
+
+            saveGroup: function () {
+                const groupId = this.$route.params.groupId
+                const group =  global.groupState.loadSingle(groupId)
+                global.groupState.saveLastActiveGroup(group)
             },
 
             loadGroup: function () {
@@ -78,11 +86,14 @@
         watch: {
             $route() {
                 this.initTasks()
+                this.saveGroup()
                 this.group = this.loadGroup()
             }
         },
         created() {
             this.initTasks()
+            this.saveGroup()
+            this.group = this.loadGroup()
 
             newTask$.subscribe((newTask) => {
                 this.newTasks.push(newTask)

@@ -5,19 +5,22 @@ function getCredentials() {
 }
 
 function apiFetchFactory({getCredentials, fetch}) {
-    return async function apiFetch(method, url, {
+    return async function apiFetch(method, url, body, {
         contentType = 'application/json',
         hasAuthHeader = true,
         responseType = 'json'
-    } = {}, body) {
+    } = {}) {
         const accessToken = getCredentials()
+
         const res = await fetch(url, {
-            method: method,
+            method,
             body: JSON.stringify(body),
             headers: {
-                ...(hasAuthHeader ? {'authorization': accessToken} : {}),
-            }
+                ...(hasAuthHeader ? {'authorization':  + accessToken} : {}),
+                'content-type': contentType,
+            },
         })
+
         if (responseType == "json" && res.status >= 200 && res.status < 300)
             return res.json()
         else {

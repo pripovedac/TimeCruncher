@@ -106,7 +106,7 @@
                 if (!response.errorStatus) {
                     this.task = response
                 } else {
-                    alert('Problem with fetch members.')
+                    alert('Problem with fetching members.')
                 }
             }
         },

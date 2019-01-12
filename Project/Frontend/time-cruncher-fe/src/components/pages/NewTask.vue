@@ -63,6 +63,8 @@
     import MemberCard from '../ui/MemberCard'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
+    import * as tasksApi from '../../services/api/tasks'
+    import * as groupsApi from '../../services/api/groups'
     import {dateController} from "../../services/dateTransformations";
 
 
@@ -91,8 +93,6 @@
         },
         methods: {
             createTask: async function () {
-                // todo: add publishTime, creatorId  or name, groupId
-                // and task assignments
                 const selectedMembers = this.selectedMembers.map(member => member.id)
                 const date = new Date(this.selectedDate)
 
@@ -105,20 +105,13 @@
                     dueTime: date.toISOString()
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + '/tasks', {
-                    method: 'POST',
-                    body: JSON.stringify(newTask),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                const response = await tasksApi.createNew(newTask)
 
-                if (response.ok) {
-                    // todo: redirect to new group without alert
+                if (!response.errorStatus) {
                     alert('Successfully created task!')
                     this.goBack()
                 } else {
-                    alert('The task was not created. Check your entries.')
+                    alert('Problem with creating task.')
                 }
             },
 
@@ -140,14 +133,12 @@
             },
 
             initMembers: async function () {
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${this.group.id}/users`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                if (response.ok) {
-                    this.task.members = await response.json()
+                const response = await groupsApi.getMembers(this.group.id)
+
+                if (!response.errorStatus) {
+                    this.task.members = response
+                } else {
+                    alert('Problem with fetching members.')
                 }
             },
 
@@ -165,7 +156,7 @@
             },
 
             getUserId: function () {
-                return global.userState.load()
+                return global.userState.loadId()
             }
         },
 

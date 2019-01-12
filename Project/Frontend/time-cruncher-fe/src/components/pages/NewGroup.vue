@@ -42,9 +42,10 @@
     import Button from '../ui/Button'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
+    import * as groupsApi from '../../services/api/groups'
 
     export default {
-        name: "NewGroup",
+        name: 'NewGroup',
         components: {
             Checkbox,
             PublicInput,
@@ -68,26 +69,18 @@
                     name: this.group.name,
                     description: this.group.description,
                     creatorId: this.userId,
-                    memberEmails: memberMails,
+                    memberEmails: memberMails[0].length ? memberMails : [],
                     isPrivate: this.group.isPrivate
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups`, {
-                    method: 'POST',
-                    body: JSON.stringify(newGroup),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                const response = await groupsApi.createNew(newGroup)
 
-                if (response.ok) {
-                    // todo: redirect to new group without alert
+                if (!response.errorStatus) {
                     alert('Successfully created group!')
                     this.goBack()
                 } else {
-                    alert('The group was not created. Check your entries.')
+                    alert('Problem with creating group.')
                 }
-
             },
 
             updatePrivacy: function (checkboxValue) {
@@ -104,7 +97,7 @@
             },
 
             getUserId: function () {
-                return global.userState.load()
+                return global.userState.loadId()
             }
         },
     }

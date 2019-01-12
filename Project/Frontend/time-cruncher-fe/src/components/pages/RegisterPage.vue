@@ -54,7 +54,6 @@
         },
         methods: {
             async register() {
-                console.log('user: ', this.user)
                 const newUser = {
                     firstname: this.user.firstname,
                     lastname: this.user.lastname,
@@ -75,7 +74,6 @@
                     userState.saveAT(userData.token)
                     userState.saveId(userData.user.id)
                     router.push({path: 'home'})
-                    console.log('done')
                 } else {
                     alert('Registration did not go successfully.')
                 }

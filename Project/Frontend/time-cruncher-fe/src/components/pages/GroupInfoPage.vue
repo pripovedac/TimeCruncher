@@ -40,7 +40,8 @@
 <script>
     import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
-    import * as global from "../../services/utilites";
+    import * as global from '../../services/utilites'
+    import * as groupsApi from '../../services/api/groups'
 
     export default {
         name: 'GroupInfoPage',
@@ -66,15 +67,12 @@
 
             initMembers: async function () {
                 const groupId = this.$route.params.groupId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/users`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                const response = await groupsApi.getMembers(groupId)
 
-                if (response.ok) {
-                    this.members = await response.json()
+                if (!response.errorStatus) {
+                    this.task = response
+                } else {
+                    alert('Problem with fetch members.')
                 }
             }
         },

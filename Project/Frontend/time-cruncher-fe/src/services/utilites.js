@@ -26,7 +26,7 @@ export class GroupState extends StateFactory {
     }
 
     saveLastActiveGroup(group) {
-        return localStorage.setItem('lastGroup', JSON.stringify(group))
+        super.save('lastGroup', group)
     }
 
     loadLastActiveGroup() {
