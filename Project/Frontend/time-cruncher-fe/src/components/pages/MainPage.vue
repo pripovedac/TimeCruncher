@@ -7,8 +7,8 @@
 
 <script>
     import TasksPage from './TasksPage'
-    import Info from './TaskInfoPage'
-    import * as global from "../../services/utilites";
+    import * as global from '../../services/utilites'
+    import * as tasksApi from '../../services/api/tasks'
 
     export default {
         name: 'MainPage',
@@ -32,14 +32,14 @@
 
             initTasks: async function () {
                 const groupId = this.$route.params.groupId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                const tasks = await response.json()
-                this.tasks = tasks.reverse()
+                const response = tasksApi.getTasks(groupId)
+
+                if (!response.errorStatus) {
+                    return response
+                } else {
+                    // todo: handle errors
+                    alert('Problem with tasks loading.')
+                }
             },
 
             initGroupData: function () {
