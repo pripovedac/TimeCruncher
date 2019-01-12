@@ -152,7 +152,7 @@
             },
 
             loadLastActiveGroup: function () {
-                return global.groupState.getLastActiveGroup()
+                return global.groupState.loadLastActiveGroup()
             },
 
             getCurrentDate: function () {

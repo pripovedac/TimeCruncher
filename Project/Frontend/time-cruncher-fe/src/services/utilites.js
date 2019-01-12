@@ -25,22 +25,26 @@ export class GroupState extends StateFactory {
             null
     }
 
-    setLastActiveGroup(group) {
+    saveLastActiveGroup(group) {
         return localStorage.setItem('lastGroup', JSON.stringify(group))
     }
 
-    getLastActiveGroup() {
+    loadLastActiveGroup() {
         return super.load('lastGroup')
     }
 }
 
 export class UserState extends StateFactory {
-    save(value) {
-        super.save('userId', value)
+    saveId(id) {
+        super.save('userId', id)
     }
 
-    load() {
+    loadId() {
         return super.load('userId')
+    }
+
+    saveAT(token) {
+        super.save('accessToken', token)
     }
 
     loadAT() {

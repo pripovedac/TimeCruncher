@@ -5,7 +5,7 @@
             <p>Feeling ready for some crunching? Try out Time Cruncher for free!</p>
 
             <form @submit.prevent="register($event)">
-                <PublicInput v-model="user.name"
+                <PublicInput v-model="user.firstname"
                              label="Name"
                              type="text"/>
                 <PublicInput v-model="user.lastname"
@@ -32,6 +32,8 @@
     import Paper from '../ui/Paper'
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
+    import {userState} from '../../services/utilites'
+    import router from '../../routes/routes'
 
     export default {
         name: "Register",
@@ -43,7 +45,7 @@
         data() {
             return {
                 user: {
-                    name: "",
+                    firstname: "",
                     lastname: "",
                     email: "",
                     password: ""
@@ -51,8 +53,31 @@
             }
         },
         methods: {
-            register() {
+            async register() {
                 console.log('user: ', this.user)
+                const newUser = {
+                    firstname: this.user.firstname,
+                    lastname: this.user.lastname,
+                    email: this.user.email,
+                    password: this.user.password
+                }
+
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/register`, {
+                    method: 'POST',
+                    body: JSON.stringify(newUser),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    const userData = await response.json()
+                    userState.saveAT(userData.token)
+                    userState.saveId(userData.user.id)
+                    router.push({path: 'home'})
+                } else {
+                    alert('Registration did not go successfully.')
+                }
             }
         }
     }
@@ -97,7 +122,7 @@
 
     .public-input {
         margin-bottom: 1em;
-        font-size: 1.2em;
+        font-size: 1em;
         color: #13547a;
     }
 

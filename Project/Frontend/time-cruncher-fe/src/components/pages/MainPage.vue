@@ -57,7 +57,7 @@
             },
             
             saveLastActiveGroup: function (group) {
-                global.groupState.setLastActiveGroup(group)
+                global.groupState.saveLastActiveGroup(group)
             }
         },
 

@@ -9,24 +9,22 @@
             </router-link>
         </div>
 
-        <NoTasksCard  v-if="tasks.length == 0"/>
+        <NoTasksCard v-if="tasks.length == 0"/>
 
+        <LoadButton v-if="newTasks.length > 0"
+                    @click="mergeTasks($event)">
+            Load new tasks
+        </LoadButton>
 
-        <div v-else>
-            <LoadButton v-if="newTasks.length > 0"
-                        @click="mergeTasks($event)">
-                Load new tasks
-            </LoadButton>
+        <TaskCard v-for="task in tasks"
+                  :key="task.id"
+                  :id="task.id"
+                  :name="task.name"
+                  :description="task.description"
+                  :date="task.dueTime"
+                  :done="task.isCompleted"
+        />
 
-            <TaskCard v-for="task in tasks"
-                      :key="task.id"
-                      :id="task.id"
-                      :name="task.name"
-                      :description="task.description"
-                      :date="task.dueTime"
-                      :done="task.isCompleted"
-            />
-        </div>
     </div>
 </template>
 
@@ -73,7 +71,7 @@
             },
 
             loadGroup: function () {
-                return global.groupState.getLastActiveGroup()
+                return global.groupState.loadLastActiveGroup()
             }
         },
 

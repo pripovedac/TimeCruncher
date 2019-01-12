@@ -61,7 +61,7 @@
             },
 
             loadLastActiveGroup: function () {
-                return global.groupState.getLastActiveGroup()
+                return global.groupState.loadLastActiveGroup()
             },
 
             initMembers: async function () {

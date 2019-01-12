@@ -81,7 +81,7 @@
             },
 
             loadLastActiveGroup: function () {
-                return global.groupState.getLastActiveGroup()
+                return global.groupState.loadLastActiveGroup()
             },
 
             fetchTask: async function () {

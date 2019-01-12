@@ -11,6 +11,7 @@ import MainPage from '../components/pages/MainPage'
 import TaskInfoPage from '../components/pages/TaskInfoPage'
 import GroupInfoPage from '../components/pages/GroupInfoPage'
 
+import {userState} from '../services/utilites'
 
 Vue.use(Router)
 
@@ -69,11 +70,19 @@ const router = new Router({
                             path: 'tasks/:taskId',
                             name: 'TaskInfo',
                             component: TaskInfoPage,
+                            meta: {
+                                title: 'Home',
+                                isPrivate: true
+                            },
                         },
                         {
                             path: 'details',
                             name: 'GroupInfo',
                             component: GroupInfoPage,
+                            meta: {
+                                title: 'Home',
+                                isPrivate: true
+                            },
                         }
                     ],
 
@@ -99,6 +108,19 @@ const router = new Router({
             }
         },
     ]
+})
+
+router.beforeEach((to, from, next) => {
+    const isLoggedIn = userState.loadAT()
+    const isPagePrivate = to.matched.some(record => record.meta.isPrivate)
+
+    if (isLoggedIn && !isPagePrivate) {
+        next('/home')
+    } else if (!isLoggedIn && isPagePrivate) {
+        next('/login')
+    } else {
+        next()
+    }
 })
 
 router.afterEach((to) => {
