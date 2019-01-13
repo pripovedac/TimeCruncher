@@ -6,6 +6,10 @@ export class StateFactory {
     load(name) {
         return JSON.parse(localStorage.getItem(name))
     }
+
+    remove(name) {
+        localStorage.removeItem(name)
+    }
 }
 
 export class GroupState extends StateFactory {
@@ -58,7 +62,13 @@ export class UserState extends StateFactory {
 
     loadAT() {
         const user = super.load('user')
+        console.log('user: ', user ? user.accessToken : null)
         return user ? user.accessToken : null
+    }
+
+    removeUser() {
+        console.log('removal')
+        super.remove('user')
     }
 }
 

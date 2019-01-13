@@ -41,8 +41,8 @@
         data() {
             return {
                 user: {
-                    email: "",
-                    password: ""
+                    email: 'thefirstpresenter@gmail.com',
+                    password: 'daretovasifra'
                 },
             }
         },
@@ -69,11 +69,15 @@
                         accessToken: userData.accessToken.token,
                         id: userData.id
                     }
-                    userState.save(filteredData)
+                    this.saveData(filteredData)
                     router.push({path: 'home'})
                 } else {
                     alert('Check your credentials, please')
                 }
+            },
+
+            saveData: function (data) {
+                userState.save(data)
             }
         }
     }

@@ -1,4 +1,5 @@
-import * as global from './utilites'
+import {userState} from './utilites'
+
 import Pusher from 'pusher-js'
 //
 // class PusherFactory {
@@ -23,7 +24,7 @@ export const pusher = new Pusher(process.env.VUE_APP_PUSHER_KEY, {
     authEndpoint: process.env.VUE_APP_BE_URL + '/pusher/auth',
     auth: {
         headers: {
-            "access_token": global.userState.loadAT()
+            'access_token': localStorage.getItem('user') ? localStorage.getItem('user').accessToken : null
         }
     }
 });

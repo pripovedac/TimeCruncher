@@ -111,6 +111,7 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+    console.log('loading in router')
     const isLoggedIn = userState.loadAT()
     const isPagePrivate = to.matched.some(record => record.meta.isPrivate)
 

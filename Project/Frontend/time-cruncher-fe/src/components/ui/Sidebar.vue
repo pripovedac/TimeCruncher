@@ -6,7 +6,7 @@
                 <UserIcon class="icon"/>
                 <span>{{user.firstname}} {{user.lastname}}</span>
             </h1>
-            <button>
+            <button @click="logout($event)">
                 <LogOutIcon class="icon"/>
             </button>
         </div>
@@ -81,6 +81,10 @@
         methods: {
             mergeGroups: function () {
                 this.$emit('mergeGroups')
+            },
+
+            logout: function () {
+                this.$emit('logout')
             }
         }
     }

@@ -4,6 +4,7 @@
                  :user="user"
                  :newGroup="newGroups.length > 0"
                  @mergeGroups="mergeGroups($event)"
+                 @logout="logout($event)"
         />
         <router-view/>
     </div>
@@ -11,6 +12,7 @@
 
 <script>
     import Sidebar from '../ui/Sidebar'
+    import router from '../../routes/routes'
     import * as global from '../../services/utilites'
     import {pusher} from '../../services/pusher'
     import * as groupsApi from '../../services/api/groups'
@@ -45,6 +47,10 @@
 
             initUser: async function () {
                 this.user = global.userState.load()
+            },
+
+            initPusher: function () {
+                pusher.config.auth.headers = {'access_token': this.loadAT()}
             },
 
             fetchGroups: async function () {
@@ -109,8 +115,13 @@
             },
 
             mergeGroups: function () {
-              this.groups = [...this.groups, ...this.newGroups]
-              this.newGroups = []
+                this.groups = [...this.groups, ...this.newGroups]
+                this.newGroups = []
+            },
+
+            logout: function () {
+                this.clearStorage()
+                router.push({path: '/login'})
             },
 
             loadGroups: function () {
@@ -121,12 +132,20 @@
                 return global.userState.loadId()
             },
 
-            getGroupId: function () {
-                return this.$route.params.groupId
+            loadAT: function () {
+                return global.userState.loadAT()
             },
 
             loadLastActiveGroup: function () {
                 return global.groupState.loadLastActiveGroup()
+            },
+
+            clearStorage: function () {
+                global.userState.removeUser()
+            },
+
+            getGroupId: function () {
+                return this.$route.params.groupId
             },
         },
 
@@ -134,11 +153,13 @@
             $route() {
                 this.groupId = this.$route.params.groupId
                 this.groups = this.modifyGroupNotifications(this.groups, this.groupId, false)
+                this.initPusher()
                 this.subscribeToChannels()
             }
         },
 
         async created() {
+            this.initPusher()
             await this.initGroups()
             await this.initUser()
             this.subscribeToChannels()
