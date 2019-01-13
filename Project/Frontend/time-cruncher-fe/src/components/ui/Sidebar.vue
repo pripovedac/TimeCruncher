@@ -1,16 +1,16 @@
 <template>
     <div class="sidebar">
         <!--todo: everything here should be a router-link-->
-        <h1>
-            <UserIcon class="icon"/>
-            <span>{{user.firstname}} {{user.lastname}}</span>
-        </h1>
-        <button>
-            <span>
-                Logout
-            </span>
-            <LogOutIcon class="icon"/>
-        </button>
+        <div class="top-container">
+            <h1>
+                <UserIcon class="icon"/>
+                <span>{{user.firstname}} {{user.lastname}}</span>
+            </h1>
+            <button>
+                <LogOutIcon class="icon"/>
+            </button>
+        </div>
+
         <div class="group-header">
             <div>
                 <h2>Groups</h2>
@@ -89,9 +89,6 @@
 <style scoped lang="scss">
     @import '../styles/main.scss';
 
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
-
     .sidebar {
         @extend %flexColumn;
 
@@ -105,6 +102,11 @@
         border-right: 1px solid black;
     }
 
+    .top-container {
+        @include centerRowData(space-between);
+        width: 100%;
+    }
+
     h1 {
         @include centerRowData();
 
@@ -114,17 +116,16 @@
     // Logout button
     h1 + button {
         @include centerRowData();
-       @include removeDefault(border, background);
+        @include removeDefault(border, background);
 
-        width: 60%;
         padding: 0;
         color: white;
         cursor: pointer;
         font-family: inherit;
+    }
 
-        span {
-            margin-right: 0.6em;
-        }
+    h1 > .icon {
+        width: 1.3em;
     }
 
     h2, h3 {
@@ -170,7 +171,7 @@
     }
 
     a {
-       @include removeDefault(outline, text-decoration);
+        @include removeDefault(outline, text-decoration);
 
         color: white;
     }
