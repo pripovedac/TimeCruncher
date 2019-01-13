@@ -70,7 +70,7 @@
                 const response = await groupsApi.getMembers(groupId)
 
                 if (!response.errorStatus) {
-                    this.task = response
+                    this.members = response
                 } else {
                     alert('Problem with fetch members.')
                 }
@@ -89,31 +89,30 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .task-info {
+        @extend %flexColumn;
+
         height: 100vh;
         padding-left: 1em;
         padding-right: 1em;
-        display: flex;
-        flex-direction: column;
         background-color: #fff;
         border-left: 2px solid #eee;
     }
 
     form {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         background-color: #fff;
 
     }
 
     input, textarea {
+       @include removeDefault(border, outline);
+
         width: 100%;
         font-family: inherit;
-        border: none;
-        outline: none;
     }
 
     h1 {
@@ -122,17 +121,16 @@
     }
 
     .label-container {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
+
         font-size: 1em;
     }
 
     input[type="date"] {
+        @include removeDefault(border, outline);
+
         width: 40%;
         font-family: inherit;
-        outline: none;
-        border: none;
     }
 
     input {
@@ -171,12 +169,10 @@
     }
 
     .members {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
     }
 
     .members > span {
-        /*border: 1px solid black;*/
         display: flex;
         align-items: center;
         font-size: 0.9em;
@@ -185,11 +181,11 @@
 
     // remove member button
     button {
+        @include removeDefault(border, outline);
+
         display: flex;
         align-items: center;
         background-color: white;
-        border: none;
-        outline: none;
     }
 
     h2 {
@@ -237,7 +233,6 @@
     }
 
     form + p {
-        /*border: 1px solid blue;*/
         width: 100%;
         margin-top: 2em;
         text-align: center;

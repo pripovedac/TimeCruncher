@@ -34,28 +34,30 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+    @import '../styles/main.scss';
+
     label {
+        @extend %flexColumn;
+
         width: 100%;
         padding-bottom: 0.2em;
-        display: flex;
-        flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
-        /*border: 1px solid red;*/
         border-bottom: 1px solid #eee;
         font-family: 'Montserrat', 'sans-serif';
         font-size: inherit;
     }
+
     span {
         margin-bottom: 0.5em;
         font-size: inherit;
     }
+
     input {
+        @include removeDefault(border, outline);
+
         width: 100%;
-        /*border: 1px solid blue;*/
-        border: none;
-        outline: none;
         font-family: inherit;
         font-size: inherit;
     }

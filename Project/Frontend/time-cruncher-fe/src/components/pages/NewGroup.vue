@@ -104,23 +104,21 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/main.scss';
 
     .new-group {
-        /*border: 3px solid green;*/
         display: block;
-        /*width: 100%;*/
         height: 100vh;
         background-color: #fff;
         font-family: 'Montserrat', sans-serif;
     }
 
     .content-container {
+        @extend %flexColumn;
+
         width: 50%;
-        display: flex;
-        flex-direction: column;
         margin: 0 auto;
         padding: 1%;
-        /*border: 1px solid black;*/
     }
 
     h1 {
@@ -139,10 +137,7 @@
     }
 
     .label-checkbox {
-        display: flex;
-        /*border: 1px solid blue;*/
-        justify-content: center;
-        align-self: center;
+        @include centerRowData();
     }
 
     .checkbox {
@@ -154,8 +149,8 @@
     }
 
     .label-container {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         justify-content: center;
         align-self: center;
         font-size: 1em;
@@ -169,10 +164,10 @@
     }
 
     textarea {
+        @include removeDefault(resize, outline);
+
         margin-top: 2%;
-        resize: none;
         border: 1px solid #eee;
-        outline: none;
         font-family: inherit;
     }
 
@@ -190,6 +185,8 @@
     }
 
     a {
+        @include removeDefault(text-decoration, outline);
+
         text-decoration: none;
         color: white;
         outline: none;

@@ -147,7 +147,6 @@
 </script>
 
 <style scoped>
-
     .home-page {
         display: flex;
     }

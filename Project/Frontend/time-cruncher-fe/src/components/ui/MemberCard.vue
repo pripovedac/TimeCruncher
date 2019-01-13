@@ -40,15 +40,12 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .member-card {
-        /*border: 1px solid white;*/
+        @include centerRowData(space-between);
+
         width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         padding-left: 0.2em;
         padding-right: 0.2em;
         color: black;

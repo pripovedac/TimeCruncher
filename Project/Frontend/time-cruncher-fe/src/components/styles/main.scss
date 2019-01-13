@@ -1,0 +1,20 @@
+$lightblue: #80d0c7;
+$darkblue: #13547a;
+
+@mixin centerRowData($alignment: flex-start) {
+  display: flex;
+  justify-content: $alignment;
+  align-items: center;
+}
+
+@mixin removeDefault($values...) {
+  @each $var in $values {
+    #{$var}: none;
+  }
+}
+
+%flexColumn {
+  display: flex;
+  flex-direction: column;
+}
+

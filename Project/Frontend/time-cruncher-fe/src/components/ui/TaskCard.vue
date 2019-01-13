@@ -55,6 +55,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/main.scss';
     $ochre: #F5C52C;
     $green: #32CD32;
 
@@ -67,10 +68,8 @@
     }
 
     a {
-        display: flex;
+        @include centerRowData(center);
         width: 10%;
-        justify-content: center;
-        align-items: center;
         padding: 1.5em;
         background-color: #fff;
     }
@@ -96,8 +95,8 @@
     }
 
     .task-data {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         width: 90%;
         padding: 0.5em;
         font-size: inherit;

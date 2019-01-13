@@ -123,31 +123,30 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .task-info {
+        @extend %flexColumn;
+
         height: 100vh;
         padding-left: 1em;
         padding-right: 1em;
-        display: flex;
-        flex-direction: column;
         background-color: #fff;
         border-left: 2px solid #eee;
     }
 
     form {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         background-color: #fff;
 
     }
 
     input, textarea {
+        @include removeDefault(border, outline);
+
         width: 100%;
         font-family: inherit;
-        border: none;
-        outline: none;
     }
 
     h1 {
@@ -156,17 +155,16 @@
     }
 
     .label-container {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
+
         font-size: 1em;
     }
 
     input[type="date"] {
+        @include removeDefault(border, outline);
+
         width: 40%;
         font-family: inherit;
-        outline: none;
-        border: none;
     }
 
     input {
@@ -250,6 +248,8 @@
     }
 
     button[type="submit"] {
+        @include removeDefault(border, outline);
+
         display: block;
         width: 30%;
         margin-top: 1em;
@@ -262,8 +262,6 @@
         text-align: center;
         text-transform: uppercase;
         color: white;
-        border: none;
-        outline: none;
         background: linear-gradient($lightblue, $darkblue);
         border-radius: 4px;
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);

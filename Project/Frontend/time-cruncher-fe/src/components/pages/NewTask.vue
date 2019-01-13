@@ -168,27 +168,21 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .new-task {
-        /*border: 3px solid green;*/
         display: block;
-        /*width: 100%;*/
         height: 100vh;
         background-color: #fff;
         font-family: 'Montserrat', sans-serif;
     }
 
     .content-container {
-        /*border: 1px solid black;*/
+        @extend %flexColumn;
+
         width: 50%;
-        /*height: 80vh;*/
-        display: flex;
-        flex-direction: column;
         margin: 0 auto;
         padding: 3%;
-        /*border: 1px solid black;*/
     }
 
     h1 {
@@ -208,26 +202,22 @@
     }
 
     .label-container {
-        display: flex;
-        flex-direction: column;
-        /*border: 1px solid blue;*/
+        @extend %flexColumn;
         justify-content: center;
         align-self: center;
         font-size: 1em;
     }
 
     textarea {
+        @include removeDefault(resize, outline);
+
         margin-top: 2%;
-        resize: none;
         border: 1px solid #eee;
-        outline: none;
         font-family: inherit;
     }
 
     .label-select {
-        /*border: 1px solid green;*/
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
         width: 100%;
 
         select {
@@ -246,12 +236,10 @@
     }
 
     .selected-members {
+        @include centerRowData();
+
         width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
         flex-wrap: wrap;
-        /*border: 2px solid blue;*/
         margin-top: 0.3em;
         display: flex;
         color: black;
@@ -271,12 +259,11 @@
     }
 
     input[type="date"] {
+        @include removeDefault(border, outline);
+
         width: 40%;
-        /*border: 1px solid green;*/
         margin-top: 2%;
         font-family: inherit;
-        outline: none;
-        border: none;
     }
 
     .checkbox {
@@ -297,8 +284,8 @@
     }
 
     a {
-        text-decoration: none;
+        @include removeDefault(text-decoration, outline);
+
         color: white;
-        outline: none;
     }
 </style>

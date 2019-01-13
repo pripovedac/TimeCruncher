@@ -103,30 +103,28 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/main.scss';
+
     $green: #32CD32;
 
     .tasks-page {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         align-items: center;
-        /*border-right: 1px solid black;*/
         background-color: #fff;
         height: 100%;
     }
 
     .header {
+        @include centerRowData(space-between);
+
         width: 70%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        /*margin-bottom: 1em;*/
-        /*border: 1px solid black;*/
     }
 
     .no-tasks {
+        @extend %flexColumn;
+
         width: 70%;
-        display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
         font-size: 0.9em;
@@ -138,30 +136,20 @@
     }
 
     button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: none;
-        outline: none;
+        @include removeDefault(border, outline);
+        @include centerRowData(center);
         background-color: #fff;
         color: black;
-        /*border: 1px solid black;*/
     }
 
     .icon {
         font-size: 2em;
         color: black;
-
-    }
-
-    h1 {
-        /*border: 1px solid black;*/
     }
 
     .task-card {
         margin-bottom: 1em;
         width: 70%;
-        /*height: 20vh;*/
     }
 
 

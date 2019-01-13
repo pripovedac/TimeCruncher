@@ -5,6 +5,12 @@
             <UserIcon class="icon"/>
             <span>{{user.firstname}} {{user.lastname}}</span>
         </h1>
+        <button>
+            <span>
+                Logout
+            </span>
+            <LogOutIcon class="icon"/>
+        </button>
         <div class="group-header">
             <div>
                 <h2>Groups</h2>
@@ -39,7 +45,14 @@
 </template>
 
 <script>
-    import {UserIcon, HashIcon, LockIcon, PlusCircleIcon, BellIcon} from 'vue-feather-icons'
+    import {
+        UserIcon,
+        HashIcon,
+        LockIcon,
+        PlusCircleIcon,
+        BellIcon,
+        LogOutIcon
+    } from 'vue-feather-icons'
 
     export default {
         name: "Sidebar",
@@ -48,14 +61,15 @@
             HashIcon,
             LockIcon,
             PlusCircleIcon,
-            BellIcon
+            BellIcon,
+            LogOutIcon
         },
         props: {
             groups: {
                 type: Array,
             },
             newGroup: {
-              type: Boolean,
+                type: Boolean,
             },
             user: {
                 type: Object
@@ -73,12 +87,14 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/main.scss';
+
     $lightblue: #80d0c7;
     $darkblue: #13547a;
 
     .sidebar {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         width: 100%;
         height: 100vh;
         margin: 0;
@@ -90,11 +106,25 @@
     }
 
     h1 {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
+
         font-size: 0.8em;
-        /*border: 1px solid black;*/
+    }
+
+    // Logout button
+    h1 + button {
+        @include centerRowData();
+       @include removeDefault(border, background);
+
+        width: 60%;
+        padding: 0;
+        color: white;
+        cursor: pointer;
+        font-family: inherit;
+
+        span {
+            margin-right: 0.6em;
+        }
     }
 
     h2, h3 {
@@ -104,9 +134,7 @@
     }
 
     .group-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        @include centerRowData(space-between);
 
         div {
             display: flex;
@@ -118,15 +146,14 @@
             // todo: complete disaster - change this
             margin-top: 0.1em;
         }
-        
+
         button {
+            @include removeDefault(background, border, outline);
+
             margin: 0;
             padding: 0;
             margin-left: 0.5em;
-            background: none;
             color: white;
-            border: none;
-            outline: none;
             align-items: center;
             cursor: pointer;
         }
@@ -140,18 +167,16 @@
             padding-right: 0;
         }
 
-
     }
 
     a {
+       @include removeDefault(outline, text-decoration);
+
         color: white;
-        outline: none;
-        text-decoration: none;
     }
 
     .filter-container, .group-container {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
 
         a {
             padding-left: 0.5em;
@@ -163,15 +188,11 @@
     // single group name container
     // e.g. <lock-icon> nabavka [<bell-icon>]
     .group-container > a {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
 
         div {
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            @include centerRowData(space-between);
         }
     }
 

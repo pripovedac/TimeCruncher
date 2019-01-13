@@ -80,8 +80,7 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .login-page {
         height: 100vh;
@@ -100,9 +99,9 @@
     }
 
     .paper {
-        display: flex;
+        @extend %flexColumn;
+
         align-items: center;
-        flex-direction: column;
         margin: 0 auto;
         font-family: 'Montserrat', sans-serif;
         max-width: 26rem;

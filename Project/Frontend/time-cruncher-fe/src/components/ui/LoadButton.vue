@@ -18,7 +18,7 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
+    @import '../styles/main.scss';
 
     button {
         width: 100%;
