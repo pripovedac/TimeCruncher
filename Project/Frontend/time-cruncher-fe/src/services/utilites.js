@@ -29,6 +29,11 @@ export class GroupState extends StateFactory {
             null
     }
 
+    getFirst() {
+        const groups = this.load()
+        return groups.length > 0 ? groups[0] : null
+    }
+
     saveLastActiveGroup(group) {
         super.save('lastGroup', group)
     }

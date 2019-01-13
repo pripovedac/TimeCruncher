@@ -27,6 +27,19 @@
                  </span>
             </div>
 
+            <div class="danger-zone">
+                <h2>
+                    <Trash2Icon class="icon"/>
+                    Danger zone
+                </h2>
+                <div class="delete-container">
+                    <p>Delete this group</p>
+                    <DeleteButton @click="deleteGroup($event)">
+                        Delete
+                    </DeleteButton>
+                </div>
+            </div>
+
             <button type="submit">Submit</button>
         </form>
         <p>Go to
@@ -38,17 +51,20 @@
 </template>
 
 <script>
-    import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
-    import Checkbox from '../ui/Checkbox'
+    import DeleteButton from '../ui/DeleteButton'
+    import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
+    import router from '../../routes/routes'
     import * as global from '../../services/utilites'
     import * as groupsApi from '../../services/api/groups'
+    import * as removeGroup$ from '../../event-buses/remove-group'
 
     export default {
         name: 'GroupInfoPage',
         components: {
+            DeleteButton,
             AlignLeftIcon,
             UsersIcon,
-            Checkbox
+            Trash2Icon,
         },
         data() {
             return {
@@ -61,10 +77,6 @@
 
             },
 
-            loadLastActiveGroup: function () {
-                return global.groupState.loadLastActiveGroup()
-            },
-
             initMembers: async function () {
                 const groupId = this.$route.params.groupId
                 const response = await groupsApi.getMembers(groupId)
@@ -74,6 +86,37 @@
                 } else {
                     alert('Problem with fetch members.')
                 }
+            },
+            
+            deleteGroup: async function () {
+                const shouldDelete = confirm(`Are you sure you want to delete group ${this.group.name}?`)
+                if (shouldDelete) {
+                    console.log('this.groupId: ', this.group.id)
+                    const response = await groupsApi.deleteSingle(this.group.id)
+
+                    if (!response.errorStatus) {
+                        const group = this.getFirstGroup()
+                        if (group) {
+                            this.saveLastActiveGroup(group)
+                            router.push({name: 'GroupInfo', params: {groupId: group.id}})
+                            removeGroup$.publish(this.group.id)
+                        }
+                    } else {
+                        alert('Problem with fetch members.')
+                    }
+                }
+            },
+
+            saveLastActiveGroup: function (group) {
+              global.groupState.saveLastActiveGroup(group)
+            },
+
+            loadLastActiveGroup: function () {
+                return global.groupState.loadLastActiveGroup()
+            },
+
+            getFirstGroup : function () {
+                return global.groupState.getFirst()
             }
         },
         watch: {
@@ -109,7 +152,7 @@
     }
 
     input, textarea {
-       @include removeDefault(border, outline);
+        @include removeDefault(border, outline);
 
         width: 100%;
         font-family: inherit;
@@ -204,6 +247,25 @@
 
     .checkbox {
         margin-right: 0.8em;
+    }
+
+    .danger-zone button {
+        border: 1px solid blue;
+    }
+
+    .delete-container {
+        @include centerRowData(space-between);
+        margin-bottom: 1em;
+        
+        p {
+            margin-bottom: 0;
+        }
+
+        .delete-button {
+            width: 25%;
+            border: 1px solid $darkred;
+            font-size: 0.8em;
+        }
     }
 
     .icon {

@@ -16,7 +16,8 @@
     import * as global from '../../services/utilites'
     import {pusher} from '../../services/pusher'
     import * as groupsApi from '../../services/api/groups'
-    import * as newTask$ from '../../event-buses/newTask'
+    import * as newTask$ from '../../event-buses/new-task'
+    import * as removeGroup$ from '../../event-buses/remove-group'
 
 
     export default {
@@ -163,6 +164,10 @@
             await this.initGroups()
             await this.initUser()
             this.subscribeToChannels()
+
+            removeGroup$.subscribe((groupId) => {
+                this.groups = this.groups.filter(({id}) => id != groupId)
+            })
         },
     }
 </script>

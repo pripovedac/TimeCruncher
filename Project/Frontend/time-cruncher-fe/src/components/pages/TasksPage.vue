@@ -35,7 +35,7 @@
     import {PlusCircleIcon} from 'vue-feather-icons'
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
-    import * as newTask$ from '../../event-buses/newTask'
+    import * as newTask$ from '../../event-buses/new-task'
 
     export default {
         name: 'TasksPage',
