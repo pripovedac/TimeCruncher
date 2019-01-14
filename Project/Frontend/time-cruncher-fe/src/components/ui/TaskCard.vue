@@ -16,7 +16,7 @@
 
 <script>
     import {CheckCircleIcon, InfoIcon} from 'vue-feather-icons'
-    import {dateController} from "../../services/dateTransformations";
+    import {dateController} from "../../services/date-transformations";
 
     export default {
         name: 'TaskCard',
@@ -48,7 +48,7 @@
         },
         computed: {
             displayedDate() {
-                return dateController.initDate(new Date(this.date))
+                return dateController.toString(new Date(this.date))
             },
         },
     }

@@ -1,7 +1,6 @@
 import {userState} from './utilites'
 
 function getCredentials() {
-    console.log('loading in api')
     return userState.loadAT()
 }
 

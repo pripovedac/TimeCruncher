@@ -57,6 +57,7 @@
             fetchGroups: async function () {
                 const response = await groupsApi.getGroups()
 
+                // todo: do not fetch everytime, use LS
                 if (!response.errorStatus) {
                     const groups = response
                     global.groupState.save(groups)

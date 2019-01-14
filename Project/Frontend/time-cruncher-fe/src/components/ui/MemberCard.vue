@@ -1,7 +1,7 @@
 <template>
     <span class="member-card">
         {{firstname}} {{lastname}}
-        <button @click="onClick($event)">
+        <button @click="onClick($event)" type="button">
             <XIcon class="icon"/>
         </button>
     </span>

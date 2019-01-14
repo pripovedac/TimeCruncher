@@ -67,12 +67,10 @@ export class UserState extends StateFactory {
 
     loadAT() {
         const user = super.load('user')
-        console.log('user: ', user ? user.accessToken : null)
         return user ? user.accessToken : null
     }
 
     removeUser() {
-        console.log('removal')
         super.remove('user')
     }
 }

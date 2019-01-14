@@ -91,7 +91,6 @@
             deleteGroup: async function () {
                 const shouldDelete = confirm(`Are you sure you want to delete group ${this.group.name}?`)
                 if (shouldDelete) {
-                    console.log('this.groupId: ', this.group.id)
                     const response = await groupsApi.deleteSingle(this.group.id)
 
                     if (!response.errorStatus) {

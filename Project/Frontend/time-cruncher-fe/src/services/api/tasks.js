@@ -1,4 +1,4 @@
-import {apiFetch} from '../authFetch'
+import {apiFetch} from '../auth-fetch'
 
 const url = path => `${process.env.VUE_APP_BE_URL}${path}`
 

@@ -8,11 +8,11 @@
             </h1>
 
             <div class="date-container">
-                <p>Published on: {{task.publishTime}}</p>
+                <p>Published on: {{publishTime}}</p>
                 <label class="label-container">
                     Due date:
                     <input type="date"
-                           :value="1996-10-10"/>
+                           v-model="dueTime"/>
                 </label>
             </div>
 
@@ -31,9 +31,21 @@
                     <UsersIcon class="icon"/>
                     Members
                 </h2>
-                <span v-for="member in members" :key="member.id">
-                {{member.firstname}} {{member.lastname}}
-            </span>
+                <select @change="selectMember($event)">
+                    <option value="">Member list</option>
+                    <option v-for="member in groupMembers"
+                            :key="member.id"
+                            :value="member.id">
+                        {{member.firstname + " " + member.lastname}}
+                    </option>
+                </select>
+                <MemberCard v-for="member in taskMembers"
+                            :key="member.id"
+                            :firstname="member.firstname"
+                            :lastname="member.lastname"
+                            :id="member.id"
+                            @click="removeMember($event)">
+                </MemberCard>
             </div>
 
             <label class="label-checkbox">
@@ -53,15 +65,19 @@
 <script>
     import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
+    import MemberCard from '../ui/MemberCard'
+    import {dateController} from '../../services/date-transformations'
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
+    import * as groupsApi from '../../services/api/groups'
 
     export default {
         name: "InfoPage",
         components: {
+            Checkbox,
+            MemberCard,
             AlignLeftIcon,
             UsersIcon,
-            Checkbox
         },
         props: {
             info: {
@@ -71,18 +87,35 @@
 
         data() {
             return {
-                members: [],
+                taskMembers: [],
+                groupMembers: [],
                 group: this.loadLastActiveGroup(),
                 task: {},
+                publishTime: {},
+                dueTime: {},
+
             }
         },
         methods: {
-            updateTask() {
+            init: async function () {
+                await this.fetchTask()
+                await this.fetchTaskMembers()
+                await this.fetchGroupMembers()
+            },
+
+            updateTask: async function () {
+                const newTask = {
+                    ...this.task,
+                    dueTime: this.dueTime
+                }
+
 
             },
 
-            loadLastActiveGroup: function () {
-                return global.groupState.loadLastActiveGroup()
+            removeMember: function (member) {
+                this.taskMembers = this.taskMembers.filter(tMember => tMember.id != member.id)
+                // todo: sort by name
+                this.groupMembers.push(member)
             },
 
             fetchTask: async function () {
@@ -93,32 +126,58 @@
 
                 if (!response.errorStatus) {
                     this.task = response
+                    this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
+                    this.dueTime = dateController.toString(new Date(this.task.dueTime))
                 } else {
                     // todo: handle errors
                     alert('Problem with loading single task.')
                 }
             },
 
-            fetchMembers: async function () {
+            fetchTaskMembers: async function () {
                 const id = this.$route.params.taskId
                 const response = await tasksApi.getMembers(id)
 
                 if (!response.errorStatus) {
-                    this.task = response
+                    this.taskMembers = response
                 } else {
-                    alert('Problem with fetching members.')
+                    alert('Problem with fetching task members.')
                 }
+            },
+
+            fetchGroupMembers: async function () {
+                const id = this.$route.params.groupId
+                const response = await groupsApi.getMembers(id)
+
+                if (!response.errorStatus) {
+                    this.groupMembers = this.getDifference(this.taskMembers, response)
+                } else {
+                    alert('Problem with fetching group members.')
+                }
+            },
+
+            getDifference: function (taskMembers, groupMembers) {
+                return groupMembers.map(gMember =>
+                    taskMembers.find(tMember => tMember.id == gMember.id)
+                        ? null
+                        : gMember).filter(member => member)
+            },
+
+            loadLastActiveGroup: function () {
+                return global.groupState.loadLastActiveGroup()
             }
+            ,
         },
         watch: {
-            $route() {
-                this.fetchTask()
+            $route: function () {
+                this.init()
             }
-        },
-        created() {
-            this.fetchTask()
-            this.fetchMembers()
-        },
+        }
+        ,
+        created: function () {
+            this.init()
+        }
+        ,
     }
 </script>
 
@@ -205,14 +264,24 @@
     .members {
         display: flex;
         flex-direction: column;
+        // todo: overflow, maxwidth
+
+        select {
+            width: 40%;
+            margin-bottom: 1em;
+            padding: 1%;
+            border: 1px solid #eee;
+            outline: none;
+        }
     }
 
-    .members > span {
-        /*border: 1px solid black;*/
+    .member-card {
+        width: 50%;
         display: flex;
         align-items: center;
-        font-size: 0.9em;
         margin-bottom: 0.5em;
+        border: 1px solid $lightblue;
+        font-size: 0.9em;
     }
 
     // remove member button

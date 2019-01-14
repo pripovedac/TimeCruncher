@@ -65,7 +65,7 @@
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as groupsApi from '../../services/api/groups'
-    import {dateController} from "../../services/dateTransformations";
+    import {dateController} from "../../services/date-transformations";
 
 
     export default {
@@ -147,7 +147,7 @@
             },
 
             getCurrentDate: function () {
-                return dateController.initDate(new Date())
+                return dateController.toString(new Date())
             },
 
             goBack() {
