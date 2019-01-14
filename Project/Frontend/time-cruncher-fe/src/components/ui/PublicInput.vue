@@ -55,7 +55,7 @@
     }
 
     input {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         width: 100%;
         font-family: inherit;

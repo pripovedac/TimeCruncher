@@ -120,7 +120,7 @@
     // Logout button
     h1 + button {
         @include centerRowData();
-        @include removeDefault(border, background);
+        @include remove(border, background);
 
         padding: 0;
         color: white;
@@ -153,7 +153,7 @@
         }
 
         button {
-            @include removeDefault(background, border, outline);
+            @include remove(background, border, outline);
 
             margin: 0;
             padding: 0;
@@ -175,7 +175,7 @@
     }
 
     a {
-        @include removeDefault(outline, text-decoration);
+        @include remove(outline, text-decoration);
 
         color: white;
     }

@@ -136,7 +136,7 @@
     }
 
     button {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
         @include centerRowData(center);
         background-color: #fff;
         color: black;

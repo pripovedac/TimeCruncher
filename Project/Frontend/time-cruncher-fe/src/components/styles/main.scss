@@ -8,7 +8,7 @@ $darkred: rgb(208, 40, 40);
   align-items: center;
 }
 
-@mixin removeDefault($values...) {
+@mixin remove($values...) {
   @each $var in $values {
     #{$var}: none;
   }

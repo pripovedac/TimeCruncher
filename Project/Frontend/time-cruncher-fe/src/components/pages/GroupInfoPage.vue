@@ -42,11 +42,6 @@
 
             <button type="submit">Submit</button>
         </form>
-        <p>Go to
-            <router-link :to="{path: '/login'}" class="comments">
-                comment section
-            </router-link>
-        </p>
     </div>
 </template>
 
@@ -151,7 +146,7 @@
     }
 
     input, textarea {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         width: 100%;
         font-family: inherit;
@@ -169,7 +164,7 @@
     }
 
     input[type="date"] {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         width: 40%;
         font-family: inherit;
@@ -223,7 +218,7 @@
 
     // remove member button
     button {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         display: flex;
         align-items: center;

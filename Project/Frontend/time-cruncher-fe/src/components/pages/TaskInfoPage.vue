@@ -1,5 +1,5 @@
 <template>
-    <div class="task-info">
+    <div class="task-info" v-if="!$route.query.comments">
         <form @submit.prevent="updateTask($event)">
             <h1>
                 <input aria-label="title" placeholder="Task name"
@@ -55,34 +55,40 @@
             <button type="submit">Submit</button>
         </form>
         <p>Go to
-            <router-link :to="{path: '/login'}" class="comments">
+            <router-link :to="{
+                name: 'TaskInfo',
+                params: {taskId: task.id},
+                query: {comments: true}
+                }" class="comments">
                 comment section
             </router-link>
         </p>
     </div>
+
+    <div v-else class="task-info">
+        <CommentSection :task="task" :comments="comments"/>
+    </div>
+
 </template>
 
 <script>
     import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
     import MemberCard from '../ui/MemberCard'
+    import CommentSection from './CommentSection'
     import {dateController} from '../../services/date-transformations'
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as groupsApi from '../../services/api/groups'
 
     export default {
-        name: "InfoPage",
+        name: 'InfoPage',
         components: {
             Checkbox,
             MemberCard,
+            CommentSection,
             AlignLeftIcon,
             UsersIcon,
-        },
-        props: {
-            info: {
-                type: Object
-            }
         },
 
         data() {
@@ -93,7 +99,7 @@
                 task: {},
                 publishTime: {},
                 dueTime: {},
-
+                comments: [],
             }
         },
         methods: {
@@ -162,6 +168,10 @@
                 }
             },
 
+            fetchComments: async function () {
+
+            },
+
             getDifference: function (taskMembers, groupMembers) {
                 return groupMembers.map(gMember =>
                     taskMembers.find(tMember => tMember.id == gMember.id)
@@ -208,7 +218,7 @@
     }
 
     input, textarea {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         width: 100%;
         font-family: inherit;
@@ -226,7 +236,7 @@
     }
 
     input[type="date"] {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         width: 40%;
         font-family: inherit;
@@ -323,7 +333,7 @@
     }
 
     button[type="submit"] {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         display: block;
         width: 30%;

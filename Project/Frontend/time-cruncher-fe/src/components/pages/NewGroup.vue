@@ -164,7 +164,7 @@
     }
 
     textarea {
-        @include removeDefault(resize, outline);
+        @include remove(resize, outline);
 
         margin-top: 2%;
         border: 1px solid #eee;
@@ -185,7 +185,7 @@
     }
 
     a {
-        @include removeDefault(text-decoration, outline);
+        @include remove(text-decoration, outline);
 
         text-decoration: none;
         color: white;

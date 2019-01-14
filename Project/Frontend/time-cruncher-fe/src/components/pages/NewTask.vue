@@ -209,7 +209,7 @@
     }
 
     textarea {
-        @include removeDefault(resize, outline);
+        @include remove(resize, outline);
 
         margin-top: 2%;
         border: 1px solid #eee;
@@ -259,7 +259,7 @@
     }
 
     input[type="date"] {
-        @include removeDefault(border, outline);
+        @include remove(border, outline);
 
         width: 40%;
         margin-top: 2%;
@@ -284,7 +284,7 @@
     }
 
     a {
-        @include removeDefault(text-decoration, outline);
+        @include remove(text-decoration, outline);
 
         color: white;
     }
