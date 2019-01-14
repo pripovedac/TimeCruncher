@@ -49,7 +49,7 @@
             </div>
 
             <label class="label-checkbox">
-                <Checkbox :value="task.isCompleted"/>
+                <Checkbox @changeState="changeState($event)"/>
                 Is task completed?
             </label>
             <button type="submit">Submit</button>
@@ -109,6 +109,8 @@
                     dueTime: this.dueTime
                 }
 
+                // todo: connect with BE accordingly
+                // todo: connect members too
 
             },
 
@@ -116,6 +118,10 @@
                 this.taskMembers = this.taskMembers.filter(tMember => tMember.id != member.id)
                 // todo: sort by name
                 this.groupMembers.push(member)
+            },
+
+            changeState: function () {
+                this.task.isCompleted = !this.task.isCompleted
             },
 
             fetchTask: async function () {
