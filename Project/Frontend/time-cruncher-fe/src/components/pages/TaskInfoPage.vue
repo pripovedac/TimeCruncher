@@ -22,7 +22,7 @@
             </h2>
             <textarea placeholder="Description"
                       v-model="task.description"
-                      rows="8"
+                      rows="5"
                       spellcheck="false"
             />
 
@@ -39,6 +39,7 @@
                         {{member.firstname + " " + member.lastname}}
                     </option>
                 </select>
+                <div class="selected-members">
                 <MemberCard v-for="member in taskMembers"
                             :key="member.id"
                             :firstname="member.firstname"
@@ -46,6 +47,7 @@
                             :id="member.id"
                             @click="removeMember($event)">
                 </MemberCard>
+                </div>
             </div>
 
             <label class="label-checkbox">
@@ -141,6 +143,13 @@
                 // todo: connect with BE accordingly
                 // todo: connect members too
 
+            },
+
+            selectMember: function (event) {
+                const memberId = event.target.value
+                const newMember = this.groupMembers.find(({id}) => id == memberId)
+                this.taskMembers.push(newMember)
+                this.groupMembers = this.groupMembers.filter(member => member.id != memberId)
             },
 
             removeMember: function (member) {
@@ -334,10 +343,17 @@
         select {
             width: 40%;
             margin-bottom: 1em;
+
             padding: 1%;
             border: 1px solid #eee;
             outline: none;
         }
+    }
+
+    .selected-members {
+        display: flex;
+        flex-wrap: wrap;
+        /*margin-bottom: 0.5em;*/
     }
 
     .member-card {
@@ -345,6 +361,7 @@
         display: flex;
         align-items: center;
         margin-bottom: 0.5em;
+        margin-right: 0.5em;
         border: 1px solid $lightblue;
         font-size: 0.7em;
     }

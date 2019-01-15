@@ -96,11 +96,16 @@
 
     .task-data {
         @extend %flexColumn;
-
         width: 90%;
         padding: 0.5em;
         font-size: inherit;
         font-family: inherit;
+        overflow: hidden;
+
+        p {
+            display: inline-block;
+            @include overflow();
+        }
 
         :not(:last-child) {
             padding-bottom: 1em;
