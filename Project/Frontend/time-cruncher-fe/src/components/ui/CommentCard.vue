@@ -4,7 +4,7 @@
             <span>{{comment.creator.firstname}} {{comment.creator.lastname}}</span>
             <p>{{postTime}}</p>
         </div>
-        <div class="comment-text" disabled>{{comment.text}}</div>
+        <div class="comment-text">{{comment.text}}</div>
     </div>
 </template>
 

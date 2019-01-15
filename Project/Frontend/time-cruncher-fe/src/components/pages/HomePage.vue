@@ -17,6 +17,7 @@
     import {pusher} from '../../services/pusher'
     import * as groupsApi from '../../services/api/groups'
     import * as newTask$ from '../../event-buses/new-task'
+    import * as newComment$ from '../../event-buses/new-comment'
     import * as removeGroup$ from '../../event-buses/remove-group'
 
 
@@ -94,6 +95,12 @@
                             that.groups = that.modifyGroupNotifications(that.groups, newTask.group.id, true)
                         }
                     })
+
+                    if (id == that.groupId) {
+                        channel.bind('comment_added', function (newComment) {
+                            newComment$.publish(newComment)
+                        })
+                    }
                 })
             },
 

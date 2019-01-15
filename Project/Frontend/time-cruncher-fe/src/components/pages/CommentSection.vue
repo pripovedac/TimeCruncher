@@ -10,7 +10,10 @@
         </div>
         <p>Add a comment: </p>
         <form @submit.prevent="postComment($event)">
-            <textarea v-model="newComment" rows="10" spellcheck="false"/>
+            <textarea v-model="newComment"
+                      @keyup.enter="postComment($event)"
+                      rows="10"
+                      spellcheck="false"/>
             <Button type="submit">Post</Button>
         </form>
         <p>Back to
@@ -30,6 +33,7 @@
     import Button from '../ui/Button'
     import {userState} from '../../services/utilites'
     import * as commentsApi from '../../services/api/comments'
+    import * as newComment$ from '../../event-buses/new-comment'
 
     export default {
         name: 'CommentPage',
@@ -64,7 +68,6 @@
                 }
                 const response = await commentsApi.createNew(newComment)
                 if (!response.errorStatus) {
-                    this.comments.push(response)
                     this.newComment = ''
                 } else {
                     // todo: handle errors
@@ -76,6 +79,11 @@
             loadUserId: function () {
                 return userState.loadId()
             }
+        },
+        created() {
+            newComment$.subscribe((comment) => {
+                this.comments.push(comment)
+            })
         }
     }
 </script>
