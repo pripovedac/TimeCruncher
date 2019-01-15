@@ -80,6 +80,7 @@
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as groupsApi from '../../services/api/groups'
+    import * as commentsApi from '../../services/api/comments'
 
     export default {
         name: 'InfoPage',
@@ -107,6 +108,7 @@
                 await this.fetchTask()
                 await this.fetchTaskMembers()
                 await this.fetchGroupMembers()
+                await this.fetchComments()
             },
 
             updateTask: async function () {
@@ -169,7 +171,15 @@
             },
 
             fetchComments: async function () {
-
+                const id = this.$route.params.taskId
+                console.log('id: ', id)
+                const response = await commentsApi.getComments(id)
+                if (!response.errorStatus) {
+                    this.comments = response
+                    console.log('this.coms: ', this.comments)
+                } else {
+                    alert('Problem with fetching comments.')
+                }
             },
 
             getDifference: function (taskMembers, groupMembers) {
@@ -204,6 +214,7 @@
         @extend %flexColumn;
 
         height: 100vh;
+        width: 35%;
         padding-left: 1em;
         padding-right: 1em;
         background-color: #fff;

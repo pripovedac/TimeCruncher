@@ -1,22 +1,35 @@
 <template>
-    <div class="comment-page">
+    <div class="comment-section">
         <h1>{{this.task.name}}</h1>
         <div v-if="comments.length > 0" class="comment-list">
             <CommentCard v-for="comment in comments"
                          :key="comment.id"
                          :comment="comment"
+
             />
         </div>
+        <p>Add a comment: </p>
         <form @submit.prevent="postComment($event)">
-            <textarea v-model="newComment" rows="10"/>
-            <Button>Post</Button>
+            <textarea v-model="newComment" rows="10" spellcheck="false"/>
+            <Button type="submit">Post</Button>
         </form>
+        <p>Back to
+            <router-link :to="{
+                name: 'TaskInfo',
+                params: {taskId: task.id},
+                query: {comments: false}
+                }" class="comments">
+                task
+            </router-link>
+        </p>
     </div>
 </template>
 
 <script>
     import CommentCard from '../ui/CommentCard'
     import Button from '../ui/Button'
+    import {userState} from '../../services/utilites'
+    import * as commentsApi from '../../services/api/comments'
 
     export default {
         name: 'CommentPage',
@@ -43,8 +56,25 @@
         },
 
         methods: {
-            postComment: function () {
+            postComment: async function () {
+                const newComment = {
+                    text: this.newComment,
+                    creatorId: this.loadUserId(),
+                    taskId: this.task.id
+                }
+                const response = await commentsApi.createNew(newComment)
+                if (!response.errorStatus) {
+                    this.comments.push(response)
+                    this.newComment = ''
+                } else {
+                    // todo: handle errors
+                    alert('Problem with posting comment.')
+                }
 
+            },
+
+            loadUserId: function () {
+                return userState.loadId()
             }
         }
     }
@@ -54,12 +84,49 @@
     @import '../styles/main.scss';
 
     .comment-section {
-        @include centerRowData();
+        @include centerRowData(flex-start);
+        align-items: flex-start;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        // todo: scroll is necessary
+        /*overflow-y: scroll;*/
     }
+
+    .comment-list {
+        width: 100%;
+    }
+
+    .comment-card {
+        width: 100%;
+    }
+
+    p {
+        font-family: inherit;
+        font-size: 0.8em;
+    }
+
+    form {
+        width: 100%;
+
+        + p {
+            display: inline-block;
+            margin: 0 auto;
+            margin-top: 1em;
+            font-size: 1em;
+
+            a {
+                color: $darkblue;
+                text-decoration: none;
+            }
+        }
+
+
+    }
+
 
     textarea {
         @include remove(outline, resize);
-
         width: 100%;
         border: 1px solid #eee;
         font-family: inherit;
