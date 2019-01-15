@@ -11,7 +11,7 @@ import MainPage from '../components/pages/MainPage'
 import TaskInfoPage from '../components/pages/TaskInfoPage'
 import GroupInfoPage from '../components/pages/GroupInfoPage'
 
-import {userState} from '../services/utilites'
+import * as global from '../services/utilites'
 
 Vue.use(Router)
 
@@ -87,8 +87,8 @@ const router = new Router({
                         }
                     ],
 
-                 },
-             ],
+                },
+            ],
         },
         {
             path: '/new-group',
@@ -112,9 +112,10 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-    const isLoggedIn = userState.loadAT()
+    const isLoggedIn = global.userState.loadAT()
+    const group = global.groupState.loadLastActiveGroup()
+    console.log('group: ', group)
     const isPagePrivate = to.matched.some(record => record.meta.isPrivate)
-
     if (isLoggedIn && !isPagePrivate) {
         next('/home')
     } else if (!isLoggedIn && isPagePrivate) {

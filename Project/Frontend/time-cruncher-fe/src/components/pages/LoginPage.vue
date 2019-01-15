@@ -28,11 +28,11 @@
     import Paper from '../ui/Paper'
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
-    import {userState} from '../../services/utilites'
+    import * as global from '../../services/utilites'
     import router from '../../routes/routes'
 
     export default {
-        name: "Login",
+        name: 'Login',
         components: {
             Paper,
             PublicInput,
@@ -70,14 +70,17 @@
                         id: userData.id
                     }
                     this.saveData(filteredData)
-                    router.push({path: 'home'})
+                    const group = global.groupState.loadLastActiveGroup()
+                    group
+                        ? router.push({name: 'GroupInfo', params: {groupId: group.id}})
+                        : router.push('/home')
                 } else {
                     alert('Check your credentials, please')
                 }
             },
 
             saveData: function (data) {
-                userState.save(data)
+                global.userState.save(data)
             }
         }
     }
