@@ -125,7 +125,7 @@
             display: inline-block;
             margin: 0 auto;
             margin-top: 1em;
-            font-size: 1em;
+            font-size: 0.9em;
 
             a {
                 color: $darkblue;

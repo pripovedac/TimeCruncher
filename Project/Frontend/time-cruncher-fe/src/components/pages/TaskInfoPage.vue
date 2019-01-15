@@ -52,6 +52,20 @@
                 <Checkbox @changeState="changeState($event)"/>
                 Is task completed?
             </label>
+
+            <div class="danger-zone">
+                <h2>
+                    <Trash2Icon class="icon"/>
+                    Danger zone
+                </h2>
+                <div class="delete-container">
+                    <p>Delete this group</p>
+                    <DeleteButton @click="deleteTask($event)">
+                        Delete
+                    </DeleteButton>
+                </div>
+            </div>
+
             <button type="submit">Submit</button>
         </form>
         <p>Go to
@@ -75,10 +89,12 @@
 </template>
 
 <script>
-    import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
     import MemberCard from '../ui/MemberCard'
     import CommentSection from './CommentSection'
+    import DeleteButton from '../ui/DeleteButton'
+    import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
+    import router from '../../routes/routes'
     import {dateController} from '../../services/date-transformations'
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
@@ -93,6 +109,8 @@
             CommentSection,
             AlignLeftIcon,
             UsersIcon,
+            DeleteButton,
+            Trash2Icon
         },
 
         data() {
@@ -190,6 +208,21 @@
                         : gMember).filter(member => member)
             },
 
+            deleteTask: async function () {
+                const shouldDelete = confirm(`Are you sure you want to delete task ${this.task.name}?`)
+                if (shouldDelete) {
+                    const response = await tasksApi.deleteSingle(this.task.id)
+                    console.log('res: ', response)
+                    if (!response.errorStatus) {
+                        router.push({name: 'GroupInfo', params: {groupId: this.group.id}})
+                        // removeGroup$.publish(this.group.id)
+
+                    } else {
+                        alert('Problem with fetch members.')
+                    }
+                }
+            },
+
             deleteComment: async function (commentId) {
                 const response = await commentsApi.deleteSingle(commentId)
                 if (!response.errorStatus) {
@@ -223,9 +256,7 @@
 
     .task-info {
         @extend %flexColumn;
-
         height: 100vh;
-        width: 35%;
         padding-left: 1em;
         padding-right: 1em;
         background-color: #fff;
@@ -234,14 +265,12 @@
 
     form {
         @extend %flexColumn;
-
         background-color: #fff;
 
     }
 
     input, textarea {
         @include remove(border, outline);
-
         width: 100%;
         font-family: inherit;
     }
@@ -253,13 +282,11 @@
 
     .label-container {
         @include centerRowData();
-
         font-size: 1em;
     }
 
     input[type="date"] {
         @include remove(border, outline);
-
         width: 40%;
         font-family: inherit;
     }
@@ -314,12 +341,12 @@
     }
 
     .member-card {
-        width: 50%;
+        width: 35%;
         display: flex;
         align-items: center;
         margin-bottom: 0.5em;
         border: 1px solid $lightblue;
-        font-size: 0.9em;
+        font-size: 0.7em;
     }
 
     // remove member button
@@ -343,6 +370,7 @@
         margin-top: 1em;
         justify-content: center;
         align-self: flex-start;
+        font-size: 0.8em;
     }
 
     .checkbox {
@@ -354,9 +382,24 @@
         width: 1em;
     }
 
+    .delete-container {
+        @include centerRowData(space-between);
+        margin-bottom: 1em;
+        font-size: 0.9em;
+
+        p {
+            margin-bottom: 0;
+        }
+
+        .delete-button {
+            width: 25%;
+            border: 1px solid $darkred;
+            font-size: 0.8em;
+        }
+    }
+
     button[type="submit"] {
         @include remove(border, outline);
-
         display: block;
         width: 30%;
         margin-top: 1em;
@@ -376,10 +419,10 @@
     }
 
     form + p {
-        /*border: 1px solid blue;*/
         width: 100%;
         margin-top: 2em;
         text-align: center;
+        font-size: 0.9em;
 
         a {
             color: $darkblue;

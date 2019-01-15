@@ -17,3 +17,7 @@ export async function getMembers(id) {
 export async function createNew(data) {
     return await apiFetch ('POST', url(`/tasks`), data)
 }
+
+export async function deleteSingle(id) {
+    return await apiFetch('DELETE', url(`/tasks/${id}`))
+}
