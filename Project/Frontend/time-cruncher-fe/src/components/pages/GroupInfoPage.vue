@@ -288,6 +288,7 @@
     .delete-container {
         @include centerRowData(space-between);
         margin-bottom: 1em;
+        font-size: 0.9em;
 
         p {
             margin-bottom: 0;
