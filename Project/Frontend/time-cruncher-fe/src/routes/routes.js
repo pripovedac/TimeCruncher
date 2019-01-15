@@ -31,7 +31,8 @@ const router = new Router({
             name: 'b page',
             component: bPage,
             meta: {
-                title: 'b page'
+                title: 'b page',
+                isPrivate: true,
             },
         },
         {

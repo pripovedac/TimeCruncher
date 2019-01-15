@@ -9,3 +9,7 @@ export async function getComments(taskId) {
 export async function createNew(data) {
     return await apiFetch ('POST', url(`/comments`), data)
 }
+
+export async function deleteSingle(id) {
+    return await apiFetch('DELETE', url(`/comments/${id}`))
+}

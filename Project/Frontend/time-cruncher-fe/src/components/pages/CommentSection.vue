@@ -5,6 +5,7 @@
             <CommentCard v-for="comment in comments"
                          :key="comment.id"
                          :comment="comment"
+                         @deleteComment="deleteComment($event)"
 
             />
         </div>
@@ -73,7 +74,10 @@
                     // todo: handle errors
                     alert('Problem with posting comment.')
                 }
+            },
 
+            deleteComment: async function (commentId) {
+                this.$emit('deleteComment', commentId)
             },
 
             loadUserId: function () {

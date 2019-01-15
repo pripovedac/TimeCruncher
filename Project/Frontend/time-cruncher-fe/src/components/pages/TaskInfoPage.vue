@@ -66,7 +66,10 @@
     </div>
 
     <div v-else class="task-info">
-        <CommentSection :task="task" :comments="comments"/>
+        <CommentSection :task="task"
+                        :comments="comments"
+                        @deleteComment="deleteComment($event)"
+        />
     </div>
 
 </template>
@@ -172,11 +175,9 @@
 
             fetchComments: async function () {
                 const id = this.$route.params.taskId
-                console.log('id: ', id)
                 const response = await commentsApi.getComments(id)
                 if (!response.errorStatus) {
                     this.comments = response
-                    console.log('this.coms: ', this.comments)
                 } else {
                     alert('Problem with fetching comments.')
                 }
@@ -187,6 +188,16 @@
                     taskMembers.find(tMember => tMember.id == gMember.id)
                         ? null
                         : gMember).filter(member => member)
+            },
+
+            deleteComment: async function (commentId) {
+                const response = await commentsApi.deleteSingle(commentId)
+                if (!response.errorStatus) {
+                    this.comments = this.comments.filter(comment => comment.id != commentId)
+                } else {
+                    // todo: handle errors
+                    alert('Problem with deleting comment.')
+                }
             },
 
             loadLastActiveGroup: function () {
