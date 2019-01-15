@@ -98,6 +98,7 @@
 
                     if (id == that.groupId) {
                         channel.bind('comment_added', function (newComment) {
+                            console.log('new comment')
                             newComment$.publish(newComment)
                         })
                     }

@@ -104,7 +104,7 @@
 
         p {
             display: inline-block;
-            @include overflow();
+            @include handleOverflow();
         }
 
         :not(:last-child) {

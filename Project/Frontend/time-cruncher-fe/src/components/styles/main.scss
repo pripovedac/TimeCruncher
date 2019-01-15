@@ -14,7 +14,7 @@ $darkred: rgb(208, 40, 40);
   }
 }
 
-@mixin overflow() {
+@mixin handleOverflow() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

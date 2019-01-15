@@ -9,6 +9,7 @@
 
             />
         </div>
+        <p v-else>No comments yet. Be the first!</p>
         <p>Add a comment: </p>
         <form @submit.prevent="postComment($event)">
             <textarea v-model="newComment"
