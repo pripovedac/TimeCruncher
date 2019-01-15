@@ -149,7 +149,7 @@
 
     .task-card {
         margin-bottom: 1em;
-        width: 70%;
+        width: 35vw;
     }
 
 

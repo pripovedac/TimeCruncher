@@ -7,8 +7,6 @@
 
 <script>
     import TasksPage from './TasksPage'
-    import * as global from '../../services/utilites'
-    import * as tasksApi from '../../services/api/tasks'
 
     export default {
         name: 'MainPage',
