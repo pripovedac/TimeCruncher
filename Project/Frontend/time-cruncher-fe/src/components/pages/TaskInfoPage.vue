@@ -336,10 +336,8 @@
     }
 
     .members {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
         // todo: overflow, maxwidth
-
         select {
             width: 40%;
             margin-bottom: 1em;
@@ -445,6 +443,10 @@
             color: $darkblue;
             text-decoration: none;
         }
+    }
+
+    textarea {
+        border: 1px solid #eee;
     }
 
 </style>

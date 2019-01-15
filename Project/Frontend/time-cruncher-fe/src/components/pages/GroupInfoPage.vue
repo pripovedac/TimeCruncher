@@ -22,9 +22,23 @@
                     <UsersIcon class="icon"/>
                     Members
                 </h2>
-                <span v-for="member in members" :key="member.id">
-                {{member.firstname}} {{member.lastname}}
-                 </span>
+                <div class="textarea-container">
+                    <textarea v-model="memberEmails"
+                              rows="3"
+                              spellcheck="false"
+                              type="text"
+                    />
+                    <p>Please separate multiple addresses with single space.</p>
+                </div>
+                <div class="member-list">
+                    <MemberCard v-for="member in members"
+                                :key="member.id"
+                                :firstname="member.firstname"
+                                :lastname="member.lastname"
+                                :id="member.id"
+                                @click="removeMember($event)">
+                    </MemberCard>
+                </div>
             </div>
 
             <div class="danger-zone">
@@ -40,13 +54,14 @@
                 </div>
             </div>
 
-            <button type="submit">Submit</button>
+            <button type="submit">Update</button>
         </form>
     </div>
 </template>
 
 <script>
     import DeleteButton from '../ui/DeleteButton'
+    import MemberCard from '../ui/MemberCard'
     import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
@@ -57,6 +72,7 @@
         name: 'GroupInfoPage',
         components: {
             DeleteButton,
+            MemberCard,
             AlignLeftIcon,
             UsersIcon,
             Trash2Icon,
@@ -64,7 +80,8 @@
         data() {
             return {
                 group: this.loadLastActiveGroup(),
-                members: []
+                members: [],
+                memberEmails: '',
             }
         },
         methods: {
@@ -82,7 +99,7 @@
                     alert('Problem with fetch members.')
                 }
             },
-            
+
             deleteGroup: async function () {
                 const shouldDelete = confirm(`Are you sure you want to delete group ${this.group.name}?`)
                 if (shouldDelete) {
@@ -101,15 +118,23 @@
                 }
             },
 
+            separateMails: function (mails) {
+                return mails.split(' ')
+            },
+
+            removeMember: function (member) {
+                this.members = this.members.filter(m => m.id != member.id)
+            },
+
             saveLastActiveGroup: function (group) {
-              global.groupState.saveLastActiveGroup(group)
+                global.groupState.saveLastActiveGroup(group)
             },
 
             loadLastActiveGroup: function () {
                 return global.groupState.loadLastActiveGroup()
             },
 
-            getFirstGroup : function () {
+            getFirstGroup: function () {
                 return global.groupState.getFirst()
             }
         },
@@ -130,7 +155,6 @@
 
     .task-info {
         @extend %flexColumn;
-
         height: 100vh;
         padding-left: 1em;
         padding-right: 1em;
@@ -140,14 +164,12 @@
 
     form {
         @extend %flexColumn;
-
         background-color: #fff;
 
     }
 
     input, textarea {
         @include remove(border, outline);
-
         width: 100%;
         font-family: inherit;
     }
@@ -159,13 +181,11 @@
 
     .label-container {
         @include centerRowData();
-
         font-size: 1em;
     }
 
     input[type="date"] {
         @include remove(border, outline);
-
         width: 40%;
         font-family: inherit;
     }
@@ -209,17 +229,35 @@
         @extend %flexColumn;
     }
 
-    .members > span {
+    .textarea-container {
+        textarea {
+            border: 1px solid #eee;
+        }
+
+        p {
+            color: darkgray;
+            font-size: 0.7em;
+        }
+    }
+
+    .member-list {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .member-card {
+        width: 35%;
         display: flex;
         align-items: center;
-        font-size: 0.9em;
         margin-bottom: 0.5em;
+        margin-right: 0.5em;
+        border: 1px solid $lightblue;
+        font-size: 0.7em;
     }
 
     // remove member button
     button {
         @include remove(border, outline);
-
         display: flex;
         align-items: center;
         background-color: white;
@@ -250,7 +288,7 @@
     .delete-container {
         @include centerRowData(space-between);
         margin-bottom: 1em;
-        
+
         p {
             margin-bottom: 0;
         }
@@ -297,6 +335,10 @@
             color: $darkblue;
             text-decoration: none;
         }
+    }
+
+    textarea {
+        border: 1px solid #eee;
     }
 
 </style>

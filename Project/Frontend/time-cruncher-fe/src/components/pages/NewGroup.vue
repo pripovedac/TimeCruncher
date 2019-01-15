@@ -17,7 +17,7 @@
                 <PublicInput v-model="group.description"
                              label="Description"
                              type="text"/>
-                <label class="label-container">
+                <label class="label-container" v-if="!group.isPrivate">
                     Members
                     <textarea v-model="group.members"
                               rows="8"
