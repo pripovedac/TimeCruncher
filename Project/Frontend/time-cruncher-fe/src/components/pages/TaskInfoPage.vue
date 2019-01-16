@@ -270,6 +270,7 @@
         padding-right: 1em;
         background-color: #fff;
         border-left: 2px solid #eee;
+        overflow-y: auto;
     }
 
     form {

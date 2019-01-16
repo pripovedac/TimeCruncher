@@ -1,5 +1,6 @@
 <template>
     <div class="tasks-page">
+
         <div class="header">
             <h1>
                 {{group.name}}
@@ -109,10 +110,9 @@
 
     .tasks-page {
         @extend %flexColumn;
-
         align-items: center;
         background-color: #fff;
-        height: 100%;
+        /*height: 100%;*/
     }
 
     .header {

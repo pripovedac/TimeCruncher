@@ -95,7 +95,6 @@
 
     .sidebar {
         @extend %flexColumn;
-
         width: 100%;
         height: 100vh;
         margin: 0;
@@ -113,7 +112,6 @@
 
     h1 {
         @include centerRowData();
-
         font-size: 0.8em;
     }
 
@@ -121,7 +119,6 @@
     h1 + button {
         @include centerRowData();
         @include remove(border, background);
-
         padding: 0;
         color: white;
         cursor: pointer;
@@ -154,7 +151,6 @@
 
         button {
             @include remove(background, border, outline);
-
             margin: 0;
             padding: 0;
             margin-left: 0.5em;
@@ -176,7 +172,6 @@
 
     a {
         @include remove(outline, text-decoration);
-
         color: white;
     }
 
