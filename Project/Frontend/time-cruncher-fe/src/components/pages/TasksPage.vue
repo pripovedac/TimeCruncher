@@ -112,18 +112,15 @@
         @extend %flexColumn;
         align-items: center;
         background-color: #fff;
-        /*height: 100%;*/
     }
 
     .header {
         @include centerRowData(space-between);
-
         width: 70%;
     }
 
     .no-tasks {
         @extend %flexColumn;
-
         width: 70%;
         justify-content: center;
         align-items: center;

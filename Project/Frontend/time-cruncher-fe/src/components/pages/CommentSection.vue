@@ -102,8 +102,6 @@
         flex-direction: column;
         width: 100%;
         height: 100%;
-        // todo: scroll is necessary
-        /*overflow-y: scroll;*/
     }
 
     .comment-list {

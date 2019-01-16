@@ -30,11 +30,11 @@
     }
 
     .tasks-page {
-        width: 70%;
+        width: 65%;
     }
 
     .task-info {
-        min-width: 30%;
+        width: 35%;
         position: sticky;
         top: 0;
         right: 0;
