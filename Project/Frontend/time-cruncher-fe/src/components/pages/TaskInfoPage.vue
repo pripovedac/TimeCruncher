@@ -7,13 +7,14 @@
                        spellcheck="false"/>
             </h1>
 
-            <div class="date-container">
+            <div class="top-data">
                 <p>Published on: {{publishTime}}</p>
                 <label class="label-container">
                     Due date:
                     <input type="date"
                            v-model="dueTime"/>
                 </label>
+                <p>Created by:</p>
             </div>
 
             <h2>
@@ -306,7 +307,8 @@
         font-weight: bold;
     }
 
-    .date-container {
+    // dates and creator name
+    .top-data {
         font-size: 0.8em;
     }
 
@@ -317,9 +319,10 @@
 
     // Due date container
     p + label {
+        width: 100%;
         display: flex;
         justify-content: flex-start;
-        width: 100%;
+        margin-bottom: 1em;
         font-size: inherit;
 
         // Due date value
