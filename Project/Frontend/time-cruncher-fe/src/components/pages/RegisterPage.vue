@@ -88,6 +88,7 @@
     .register-page {
         height: 100vh;
         padding-top: 5vh;
+        box-sizing: border-box;
         background: linear-gradient($lightblue, $darkblue);
     }
 

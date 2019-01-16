@@ -1,26 +1,26 @@
 <template>
     <div class="login-page">
-        <Paper>
-            <h1>Time Cruncher</h1>
-            <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
+            <Paper>
+                <h1>Time Cruncher</h1>
+                <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
 
-            <form @submit.prevent="login($event)">
-                <PublicInput v-model="user.email"
-                             label="Email"
-                             type="email">
-                </PublicInput>
-                <PublicInput v-model="user.password"
-                             label="Password"
-                             type="password">
-                </PublicInput>
-                <Button type="submit">Login</Button>
-            </form>
+                <form @submit.prevent="login($event)">
+                    <PublicInput v-model="user.email"
+                                 label="Email"
+                                 type="email">
+                    </PublicInput>
+                    <PublicInput v-model="user.password"
+                                 label="Password"
+                                 type="password">
+                    </PublicInput>
+                    <Button type="submit">Login</Button>
+                </form>
 
-            <p>You don't have an account? You can fix that at our
-                <router-link :to="{name: 'Register'}">Register page</router-link>
-                .
-            </p>
-        </Paper>
+                <p>You don't have an account? You can fix that at our
+                    <router-link :to="{name: 'Register'}">Register page</router-link>
+                    .
+                </p>
+            </Paper>
     </div>
 </template>
 
@@ -47,7 +47,7 @@
             }
         },
         methods: {
-             login: async function() {
+            login: async function () {
                 const newUser = {
                     email: this.user.email,
                     password: this.user.password
@@ -91,7 +91,7 @@
 
     .login-page {
         height: 100vh;
-        padding-top: 5vh;
+        box-sizing: border-box;
         background: linear-gradient($lightblue, $darkblue);
     }
 
@@ -107,7 +107,6 @@
 
     .paper {
         @extend %flexColumn;
-
         align-items: center;
         margin: 0 auto;
         font-family: 'Montserrat', sans-serif;
