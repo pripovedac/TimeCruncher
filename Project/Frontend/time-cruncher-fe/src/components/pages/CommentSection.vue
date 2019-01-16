@@ -15,7 +15,9 @@
             <textarea v-model="newComment"
                       @keyup.enter="postComment($event)"
                       rows="10"
-                      spellcheck="false"/>
+                      spellcheck="false"
+                      autofocus
+            />
             <Button type="submit" :disabled="!newComment.length">Post</Button>
         </form>
         <p>Back to
@@ -132,9 +134,7 @@
             }
         }
 
-
     }
-
 
     textarea {
         @include remove(outline, resize);
@@ -149,7 +149,6 @@
         margin: 0 auto;
         margin-top: 1em;
     }
-
 
 
 </style>
