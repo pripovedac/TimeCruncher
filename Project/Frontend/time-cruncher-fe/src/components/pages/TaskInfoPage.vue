@@ -17,15 +17,17 @@
                 <p>Created by:</p>
             </div>
 
-            <h2>
-                <AlignLeftIcon class="icon"/>
-                Description
-            </h2>
-            <textarea placeholder="Description"
-                      v-model="task.description"
-                      rows="5"
-                      spellcheck="false"
-            />
+            <div class="description-container">
+                <h2>
+                    <AlignLeftIcon class="icon"/>
+                    Description
+                </h2>
+                <textarea placeholder="Description"
+                          v-model="task.description"
+                          rows="5"
+                          spellcheck="false"
+                />
+            </div>
 
             <div class="members">
                 <h2>
@@ -41,13 +43,13 @@
                     </option>
                 </select>
                 <div class="selected-members">
-                <MemberCard v-for="member in taskMembers"
-                            :key="member.id"
-                            :firstname="member.firstname"
-                            :lastname="member.lastname"
-                            :id="member.id"
-                            @click="removeMember($event)">
-                </MemberCard>
+                    <MemberCard v-for="member in taskMembers"
+                                :key="member.id"
+                                :firstname="member.firstname"
+                                :lastname="member.lastname"
+                                :id="member.id"
+                                @click="removeMember($event)">
+                    </MemberCard>
                 </div>
             </div>
 
@@ -276,6 +278,7 @@
 
     form {
         @extend %flexColumn;
+        height: 95vh;
         background-color: #fff;
 
     }
@@ -289,6 +292,11 @@
     h1 {
         font-size: 1.4em;
         font-weight: bold;
+    }
+
+    h2 {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
     }
 
     .label-container {
@@ -335,6 +343,12 @@
         }
     }
 
+    .description-container {
+        h2 {
+            margin-top: 0;
+        }
+    }
+
     textarea {
         resize: none;
     }
@@ -344,8 +358,7 @@
         // todo: overflow, maxwidth
         select {
             width: 40%;
-            margin-bottom: 1em;
-
+            margin-bottom: 0.5em;
             padding: 1%;
             border: 1px solid #eee;
             outline: none;
@@ -355,7 +368,8 @@
     .selected-members {
         display: flex;
         flex-wrap: wrap;
-        /*margin-bottom: 0.5em;*/
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
     }
 
     .member-card {
@@ -364,23 +378,20 @@
         align-items: center;
         margin-bottom: 0.5em;
         margin-right: 0.5em;
-        border: 1px solid $lightblue;
         font-size: 0.7em;
+        border: 1px solid $lightblue;
     }
 
     // remove member button
     button {
+        @include remove(border, outline);
         display: flex;
         align-items: center;
-        background-color: white;
-        border: none;
-        outline: none;
     }
 
     h2 {
         display: flex;
         align-items: center;
-        margin-top: 0.5em;
         font-size: 1.2em;
     }
 
@@ -401,9 +412,14 @@
         width: 1em;
     }
 
+    .danger-zone {
+        margin-top: 1em;
+        box-sizing: border-box;
+    }
+
     .delete-container {
         @include centerRowData(space-between);
-        margin-bottom: 1em;
+        margin-bottom: 0.5em;
         font-size: 0.9em;
 
         p {
@@ -412,7 +428,6 @@
 
         .delete-button {
             width: 25%;
-            border: 1px solid $darkred;
             font-size: 0.8em;
         }
     }
@@ -421,7 +436,7 @@
         @include remove(border, outline);
         display: block;
         width: 30%;
-        margin-top: 1em;
+        margin-top: 0;
         padding: 1em;
         align-self: center;
         font-family: inherit;
@@ -439,11 +454,12 @@
 
     form + p {
         width: 100%;
-        margin-top: 2em;
+        margin-top: 0.5em;
         text-align: center;
         font-size: 0.9em;
 
         a {
+
             color: $darkblue;
             text-decoration: none;
         }
