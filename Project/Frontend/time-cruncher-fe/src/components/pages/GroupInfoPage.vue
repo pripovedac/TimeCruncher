@@ -17,7 +17,7 @@
                       spellcheck="false"
             />
 
-            <div class="members">
+            <div class="members" v-if="!group.isPrivate">
                 <h2>
                     <UsersIcon class="icon"/>
                     Members
