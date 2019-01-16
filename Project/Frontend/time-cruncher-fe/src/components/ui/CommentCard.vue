@@ -60,6 +60,7 @@
         padding-left: 0.4em;
         padding-right: 0.4em;
         padding-bottom: 0.4em;
+        overflow: hidden;
     }
 
     .top-header {

@@ -1,9 +1,10 @@
 <template>
-    <div class="task-card" :class="{done: done, todo: !done}">
-        <router-link :to="{name: 'TaskInfo',  params: {taskId: id} }" >
-            <CheckCircleIcon v-if="done"
+    <div class="task-card" :class="{done: isCompleted, todo: !isCompleted, isLate: isLate}">
+        <router-link :to="{name: 'TaskInfo',  params: {taskId: id} }">
+            <CheckCircleIcon v-if="isCompleted"
                              class="icon"/>
-            <InfoIcon v-else class="icon" />
+            <AlertOctagonIcon v-else-if="isLate" class="icon"/>
+            <InfoIcon v-else class="icon"/>
         </router-link>
         <div class="task-data">
             <h1>{{name}}</h1>
@@ -15,15 +16,18 @@
 </template>
 
 <script>
-    import {CheckCircleIcon, InfoIcon} from 'vue-feather-icons'
+    import {CheckCircleIcon, InfoIcon, AlertOctagonIcon} from 'vue-feather-icons'
     import {dateController} from "../../services/date-transformations";
 
     export default {
         name: 'TaskCard',
+
         components: {
             CheckCircleIcon,
-            InfoIcon
+            InfoIcon,
+            AlertOctagonIcon,
         },
+
         props: {
             id: {
                 type: Number
@@ -37,18 +41,19 @@
             date: {
                 type: String
             },
-            done: {
-                type: Number
+            isCompleted: {
+                //type: Boolean
             }
         },
-        data() {
-            return {
 
-            }
-        },
         computed: {
             displayedDate() {
                 return dateController.toString(new Date(this.date))
+            },
+            isLate() {
+                const yesterday = new Date()
+                yesterday.setDate(yesterday.getDate() - 1)
+                return new Date(this.date) < yesterday
             },
         },
     }
@@ -56,6 +61,7 @@
 
 <style scoped lang="scss">
     @import '../styles/main.scss';
+
     $ochre: #F5C52C;
     $green: #32CD32;
 
@@ -74,20 +80,17 @@
         background-color: #fff;
     }
 
-    .done {
-        border: 1px solid $green;
-
-        a {
-            background-color: $green;
-        }
+    // In this ordering.
+    .todo {
+        @include taskStatus($ochre);
     }
 
-    .todo {
-        border: 1px solid $ochre;
+    .isLate {
+        @include taskStatus($darkred);
+    }
 
-        a {
-            background-color: $ochre;
-        }
+    .done {
+        @include taskStatus($green);
     }
 
     .icon {
@@ -128,7 +131,6 @@
     h1, p {
         margin: 0;
     }
-
 
 
 </style>

@@ -23,7 +23,7 @@
                   :name="task.name"
                   :description="task.description"
                   :date="task.dueTime"
-                  :done="task.isCompleted"
+                  :isCompleted="task.isCompleted"
         />
 
     </div>
