@@ -48,7 +48,7 @@
                            :min="currentDate"
                     />
                 </label>
-                <Button type="submit"> Create task</Button>
+                <Button type="submit" :disabled="!task.name.length"> Create task</Button>
                 <Button @click="goBack($event)">
                     Cancel
                 </Button>

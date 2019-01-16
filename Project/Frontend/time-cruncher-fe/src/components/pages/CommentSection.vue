@@ -16,7 +16,7 @@
                       @keyup.enter="postComment($event)"
                       rows="10"
                       spellcheck="false"/>
-            <Button type="submit">Post</Button>
+            <Button type="submit" :disabled="!newComment.length">Post</Button>
         </form>
         <p>Back to
             <router-link :to="{

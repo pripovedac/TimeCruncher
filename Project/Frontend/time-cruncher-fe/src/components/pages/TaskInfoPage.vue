@@ -344,8 +344,13 @@
     }
 
     .description-container {
+        width: 100%;
         h2 {
             margin-top: 0;
+        }
+
+        textarea {
+            width: 98%;
         }
     }
 

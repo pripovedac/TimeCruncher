@@ -27,7 +27,7 @@
                     />
                     <span>Please separate multiple addresses with single space.</span>
                 </label>
-                <Button type="submit"> Create group</Button>
+                <Button type="submit" :disabled="!group.name.length"> Create group</Button>
                 <Button @click="goBack($event)">
                     Cancel
                 </Button>
