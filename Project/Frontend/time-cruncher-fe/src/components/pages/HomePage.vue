@@ -1,11 +1,13 @@
 <template>
     <div class="home-page">
-        <Sidebar :groups="groups"
-                 :user="user"
-                 :newGroup="newGroups.length > 0"
-                 @mergeGroups="mergeGroups($event)"
-                 @logout="logout($event)"
-        />
+        <div class="sidebar-container">
+            <Sidebar :groups="groups"
+                     :user="user"
+                     :newGroup="newGroups.length > 0"
+                     @mergeGroups="mergeGroups($event)"
+                     @logout="logout($event)"
+            />
+        </div>
         <router-view/>
     </div>
 </template>
@@ -186,8 +188,8 @@
         display: flex;
     }
 
-    .sidebar {
-        width: 15%;
+    .sidebar, .sidebar-container{
+        width: 15vw;
         position: sticky;
         top: 0;
         left: 0;
@@ -196,5 +198,4 @@
     .main-page {
         width: 100%;
     }
-
 </style>

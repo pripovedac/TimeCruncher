@@ -43,7 +43,7 @@
             },
             isCompleted: {
                 //type: Boolean
-            }
+            },
         },
 
         computed: {

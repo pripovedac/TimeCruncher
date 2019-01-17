@@ -10,6 +10,7 @@ import NewTask from '../components/pages/NewTask'
 import MainPage from '../components/pages/MainPage'
 import TaskInfoPage from '../components/pages/TaskInfoPage'
 import GroupInfoPage from '../components/pages/GroupInfoPage'
+import WeeklySchedule from '../components/pages/WeeklySchedule'
 
 import * as global from '../services/utilites'
 
@@ -86,10 +87,19 @@ const router = new Router({
                             },
                         }
                     ],
-
+                },
+                {
+                    path: 'weekly',
+                    name: 'Weekly',
+                    component: WeeklySchedule,
+                    meta: {
+                        title: 'Weekly',
+                        isPrivate: true
+                    },
                 },
             ],
         },
+
         {
             path: '/new-group',
             name: 'NewGroup',
@@ -114,7 +124,6 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
     const isLoggedIn = global.userState.loadAT()
     const group = global.groupState.loadLastActiveGroup()
-    console.log('group: ', group)
     const isPagePrivate = to.matched.some(record => record.meta.isPrivate)
     if (isLoggedIn && !isPagePrivate) {
         next('/home')
