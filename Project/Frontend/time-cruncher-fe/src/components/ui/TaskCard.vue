@@ -51,9 +51,13 @@
                 return dateController.toString(new Date(this.date))
             },
             isLate() {
-                const yesterday = new Date()
-                yesterday.setDate(yesterday.getDate() - 1)
-                return new Date(this.date) < yesterday
+                if (this.date) {
+                    const yesterday = new Date()
+                    yesterday.setDate(yesterday.getDate() - 1)
+                    return new Date(this.date) < yesterday
+                } else {
+                    return false
+                }
             },
         },
     }

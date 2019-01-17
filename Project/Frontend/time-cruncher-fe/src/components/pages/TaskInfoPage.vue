@@ -64,7 +64,7 @@
                     Danger zone
                 </h2>
                 <div class="delete-container">
-                    <p>Delete this group</p>
+                    <p>Delete this task</p>
                     <DeleteButton @click="deleteTask($event)">
                         Delete
                     </DeleteButton>

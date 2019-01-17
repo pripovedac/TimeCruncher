@@ -84,7 +84,7 @@
                     isPrivate: true,
                 },
                 group: this.loadLastActiveGroup(),
-                selectedDate: this.initDate(),
+                selectedDate: '',
                 currentDate: this.initDate(),
                 memberNames: "",
                 selectedMembers: [],
@@ -94,15 +94,17 @@
         methods: {
             createTask: async function () {
                 const selectedMembers = this.selectedMembers.map(member => member.id)
-                const date = new Date(this.selectedDate)
-
+                let date = null
+                if (this.selectedDate) {
+                    date = new Date(this.selectedDate)
+                }
                 const newTask = {
                     name: this.task.name,
                     description: this.task.description,
                     groupId: this.group.id,
                     creatorId: this.userId,
                     assignedUserIds: selectedMembers,
-                    dueTime: date.toISOString()
+                    dueTime: date ? date.toISOString() : null
                 }
 
                 const response = await tasksApi.createNew(newTask)
