@@ -6,6 +6,10 @@ export class StateFactory {
     load(name) {
         return JSON.parse(localStorage.getItem(name))
     }
+
+    remove(name) {
+        localStorage.removeItem(name)
+    }
 }
 
 export class GroupState extends StateFactory {
@@ -25,26 +29,49 @@ export class GroupState extends StateFactory {
             null
     }
 
-    setLastActiveGroup(group) {
-        return localStorage.setItem('lastGroup', JSON.stringify(group))
+    getFirst() {
+        const groups = this.load()
+        return groups.length > 0 ? groups[0] : null
     }
 
-    getLastActiveGroup() {
+    saveLastActiveGroup(group) {
+        super.save('lastGroup', group)
+    }
+
+    loadLastActiveGroup() {
         return super.load('lastGroup')
     }
 }
 
 export class UserState extends StateFactory {
-    save(value) {
-        super.save('userId', value)
+    save(user) {
+        super.save('user', user)
     }
 
     load() {
-        return super.load('userId')
+        return super.load('user')
+    }
+
+    saveId(id) {
+        super.save('userId', id)
+    }
+
+    loadId() {
+        const user = super.load('user')
+        return user ? user.id : null
+    }
+
+    saveAT(token) {
+        super.save('accessToken', token)
     }
 
     loadAT() {
-        return super.load('accessToken')
+        const user = super.load('user')
+        return user ? user.accessToken : null
+    }
+
+    removeUser() {
+        super.remove('user')
     }
 }
 

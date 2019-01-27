@@ -1,0 +1,35 @@
+$lightblue: #80d0c7;
+$darkblue: #13547a;
+$darkred: rgb(208, 40, 40);
+
+@mixin centerRowData($alignment: flex-start) {
+  display: flex;
+  justify-content: $alignment;
+  align-items: center;
+}
+
+@mixin remove($values...) {
+  @each $var in $values {
+    #{$var}: none;
+  }
+}
+
+@mixin handleOverflow() {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin taskStatus($color) {
+  border: 1px solid $color;
+
+  a {
+    background-color: $color;
+  }
+}
+
+%flexColumn {
+  display: flex;
+  flex-direction: column;
+}
+

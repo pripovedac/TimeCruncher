@@ -1,26 +1,26 @@
 <template>
     <div class="login-page">
-        <Paper>
-            <h1>Time Cruncher</h1>
-            <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
+            <Paper>
+                <h1>Time Cruncher</h1>
+                <p>It's nice to see you again. Login and let's checkout tasks for today!</p>
 
-            <form @submit.prevent="register($event)">
-                <PublicInput v-model="user.email"
-                             label="Email"
-                             type="email">
-                </PublicInput>
-                <PublicInput v-model="user.password"
-                             label="Password"
-                             type="password">
-                </PublicInput>
-                <Button type="submit">Login</Button>
-            </form>
+                <form @submit.prevent="login($event)">
+                    <PublicInput v-model="user.email"
+                                 label="Email"
+                                 type="email">
+                    </PublicInput>
+                    <PublicInput v-model="user.password"
+                                 label="Password"
+                                 type="password">
+                    </PublicInput>
+                    <Button type="submit">Login</Button>
+                </form>
 
-            <p>You don't have an account? You can fix that at our
-                <router-link :to="{name: 'Register'}">Register page</router-link>
-                .
-            </p>
-        </Paper>
+                <p>You don't have an account? You can fix that at our
+                    <router-link :to="{name: 'Register'}">Register page</router-link>
+                    .
+                </p>
+            </Paper>
     </div>
 </template>
 
@@ -28,9 +28,11 @@
     import Paper from '../ui/Paper'
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
+    import * as global from '../../services/utilites'
+    import router from '../../routes/routes'
 
     export default {
-        name: "Login",
+        name: 'Login',
         components: {
             Paper,
             PublicInput,
@@ -39,26 +41,58 @@
         data() {
             return {
                 user: {
-                    email: "",
-                    password: ""
+                    email: 'thefirstpresenter@gmail.com',
+                    password: 'daretovasifra'
                 },
             }
         },
         methods: {
-            register() {
-                console.log('user: ', this.user)
+            login: async function () {
+                const newUser = {
+                    email: this.user.email,
+                    password: this.user.password
+                }
+
+                const response = await fetch(process.env.VUE_APP_BE_URL + `/login`, {
+                    method: 'POST',
+                    body: JSON.stringify(newUser),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (response.ok) {
+                    const userData = await response.json()
+                    const filteredData = {
+                        firstname: userData.firstname,
+                        lastname: userData.lastname,
+                        accessToken: userData.accessToken.token,
+                        id: userData.id
+                    }
+                    this.saveData(filteredData)
+                    const group = global.groupState.loadLastActiveGroup()
+                    group
+                        ? router.push({name: 'GroupInfo', params: {groupId: group.id}})
+                        : router.push('/home')
+                } else {
+                    alert('Check your credentials, please')
+                }
+            },
+
+            saveData: function (data) {
+                global.userState.save(data)
             }
         }
     }
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .login-page {
         height: 100vh;
         padding-top: 5vh;
+        box-sizing: border-box;
         background: linear-gradient($lightblue, $darkblue);
     }
 
@@ -73,9 +107,8 @@
     }
 
     .paper {
-        display: flex;
+        @extend %flexColumn;
         align-items: center;
-        flex-direction: column;
         margin: 0 auto;
         font-family: 'Montserrat', sans-serif;
         max-width: 26rem;
@@ -92,7 +125,7 @@
 
     .public-input {
         margin-bottom: 1em;
-        font-size: 1.2em;
+        font-size: 1em;
         color: #13547a;
     }
 

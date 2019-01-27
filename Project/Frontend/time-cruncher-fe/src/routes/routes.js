@@ -10,7 +10,9 @@ import NewTask from '../components/pages/NewTask'
 import MainPage from '../components/pages/MainPage'
 import TaskInfoPage from '../components/pages/TaskInfoPage'
 import GroupInfoPage from '../components/pages/GroupInfoPage'
+import WeeklySchedule from '../components/pages/WeeklySchedule'
 
+import * as global from '../services/utilites'
 
 Vue.use(Router)
 
@@ -30,7 +32,8 @@ const router = new Router({
             name: 'b page',
             component: bPage,
             meta: {
-                title: 'b page'
+                title: 'b page',
+                isPrivate: true,
             },
         },
         {
@@ -69,17 +72,34 @@ const router = new Router({
                             path: 'tasks/:taskId',
                             name: 'TaskInfo',
                             component: TaskInfoPage,
+                            meta: {
+                                title: 'Home',
+                                isPrivate: true
+                            },
                         },
                         {
                             path: 'details',
                             name: 'GroupInfo',
                             component: GroupInfoPage,
+                            meta: {
+                                title: 'Home',
+                                isPrivate: true
+                            },
                         }
                     ],
-
-                 },
-             ],
+                },
+                {
+                    path: 'weekly',
+                    name: 'Weekly',
+                    component: WeeklySchedule,
+                    meta: {
+                        title: 'Weekly',
+                        isPrivate: true
+                    },
+                },
+            ],
         },
+
         {
             path: '/new-group',
             name: 'NewGroup',
@@ -99,6 +119,19 @@ const router = new Router({
             }
         },
     ]
+})
+
+router.beforeEach((to, from, next) => {
+    const isLoggedIn = global.userState.loadAT()
+    const group = global.groupState.loadLastActiveGroup()
+    const isPagePrivate = to.matched.some(record => record.meta.isPrivate)
+    if (isLoggedIn && !isPagePrivate) {
+        next('/home')
+    } else if (!isLoggedIn && isPagePrivate) {
+        next('/login')
+    } else {
+        next()
+    }
 })
 
 router.afterEach((to) => {

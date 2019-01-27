@@ -17,7 +17,7 @@
                 <PublicInput v-model="group.description"
                              label="Description"
                              type="text"/>
-                <label class="label-container">
+                <label class="label-container" v-if="!group.isPrivate">
                     Members
                     <textarea v-model="group.members"
                               rows="8"
@@ -27,7 +27,7 @@
                     />
                     <span>Please separate multiple addresses with single space.</span>
                 </label>
-                <Button type="submit"> Create group</Button>
+                <Button type="submit" :disabled="!group.name.length"> Create group</Button>
                 <Button @click="goBack($event)">
                     Cancel
                 </Button>
@@ -42,9 +42,10 @@
     import Button from '../ui/Button'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
+    import * as groupsApi from '../../services/api/groups'
 
     export default {
-        name: "NewGroup",
+        name: 'NewGroup',
         components: {
             Checkbox,
             PublicInput,
@@ -68,26 +69,18 @@
                     name: this.group.name,
                     description: this.group.description,
                     creatorId: this.userId,
-                    memberEmails: memberMails,
+                    memberEmails: memberMails[0].length ? memberMails : [],
                     isPrivate: this.group.isPrivate
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups`, {
-                    method: 'POST',
-                    body: JSON.stringify(newGroup),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                const response = await groupsApi.createNew(newGroup)
 
-                if (response.ok) {
-                    // todo: redirect to new group without alert
+                if (!response.errorStatus) {
                     alert('Successfully created group!')
                     this.goBack()
                 } else {
-                    alert('The group was not created. Check your entries.')
+                    alert('Problem with creating group.')
                 }
-
             },
 
             updatePrivacy: function (checkboxValue) {
@@ -104,30 +97,28 @@
             },
 
             getUserId: function () {
-                return global.userState.load()
+                return global.userState.loadId()
             }
         },
     }
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/main.scss';
 
     .new-group {
-        /*border: 3px solid green;*/
         display: block;
-        /*width: 100%;*/
         height: 100vh;
         background-color: #fff;
         font-family: 'Montserrat', sans-serif;
     }
 
     .content-container {
+        @extend %flexColumn;
+
         width: 50%;
-        display: flex;
-        flex-direction: column;
         margin: 0 auto;
         padding: 1%;
-        /*border: 1px solid black;*/
     }
 
     h1 {
@@ -146,10 +137,7 @@
     }
 
     .label-checkbox {
-        display: flex;
-        /*border: 1px solid blue;*/
-        justify-content: center;
-        align-self: center;
+        @include centerRowData();
     }
 
     .checkbox {
@@ -161,8 +149,8 @@
     }
 
     .label-container {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+
         justify-content: center;
         align-self: center;
         font-size: 1em;
@@ -176,10 +164,10 @@
     }
 
     textarea {
+        @include remove(resize, outline);
+
         margin-top: 2%;
-        resize: none;
         border: 1px solid #eee;
-        outline: none;
         font-family: inherit;
     }
 
@@ -197,6 +185,8 @@
     }
 
     a {
+        @include remove(text-decoration, outline);
+
         text-decoration: none;
         color: white;
         outline: none;

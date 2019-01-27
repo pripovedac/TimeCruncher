@@ -1,5 +1,6 @@
 <template>
     <div class="tasks-page">
+
         <div class="header">
             <h1>
                 {{group.name}}
@@ -8,6 +9,8 @@
                 <PlusCircleIcon class="icon"/>
             </router-link>
         </div>
+
+        <NoTasksCard v-if="tasks.length == 0"/>
 
         <LoadButton v-if="newTasks.length > 0"
                     @click="mergeTasks($event)">
@@ -20,21 +23,25 @@
                   :name="task.name"
                   :description="task.description"
                   :date="task.dueTime"
-                  :done="task.isCompleted"
+                  :isCompleted="task.isCompleted"
         />
+
     </div>
 </template>
 
 <script>
+    import NoTasksCard from '../ui/NoTasksCard'
     import TaskCard from '../ui/TaskCard'
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
     import * as global from '../../services/utilites'
-    import * as newTask$ from '../../event-buses/newTask'
+    import * as tasksApi from '../../services/api/tasks'
+    import * as newTask$ from '../../event-buses/new-task'
 
     export default {
-        name: "TasksPage",
+        name: 'TasksPage',
         components: {
+            NoTasksCard,
             TaskCard,
             LoadButton,
             PlusCircleIcon,
@@ -44,20 +51,21 @@
                 channel: {},
                 tasks: [],
                 newTasks: [],
-                group: this.loadGroup()
+                group: {},
             }
         },
         methods: {
             initTasks: async function () {
+                console.log('Fetching tasks...')
                 const groupId = this.$route.params.groupId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${groupId}/tasks`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                const tasks = await response.json()
-                this.tasks = tasks.reverse()
+                const response = await tasksApi.getTasks(groupId)
+
+                if (!response.errorStatus) {
+                    this.tasks = response.reverse()
+                } else {
+                    alert('Problem with tasks loading.')
+                }
+
             },
 
             mergeTasks: function () {
@@ -65,19 +73,28 @@
                 this.newTasks = []
             },
 
+            saveGroup: function () {
+                const groupId = this.$route.params.groupId
+                const group =  global.groupState.loadSingle(groupId)
+                global.groupState.saveLastActiveGroup(group)
+            },
+
             loadGroup: function () {
-              return global.groupState.getLastActiveGroup()
+                return global.groupState.loadLastActiveGroup()
             }
         },
 
         watch: {
             $route() {
                 this.initTasks()
+                this.saveGroup()
                 this.group = this.loadGroup()
             }
         },
         created() {
             this.initTasks()
+            this.saveGroup()
+            this.group = this.loadGroup()
 
             newTask$.subscribe((newTask) => {
                 this.newTasks.push(newTask)
@@ -87,24 +104,27 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/main.scss';
+
     $green: #32CD32;
 
     .tasks-page {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
         align-items: center;
-        /*border-right: 1px solid black;*/
         background-color: #fff;
-        height: 100%;
     }
 
     .header {
+        @include centerRowData(space-between);
         width: 70%;
-        display: flex;
-        justify-content: space-between;
+    }
+
+    .no-tasks {
+        @extend %flexColumn;
+        width: 70%;
+        justify-content: center;
         align-items: center;
-        /*margin-bottom: 1em;*/
-        /*border: 1px solid black;*/
+        font-size: 0.9em;
     }
 
     .load-button {
@@ -113,30 +133,20 @@
     }
 
     button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: none;
-        outline: none;
+        @include remove(border, outline);
+        @include centerRowData(center);
         background-color: #fff;
         color: black;
-        /*border: 1px solid black;*/
     }
 
     .icon {
         font-size: 2em;
         color: black;
-
-    }
-
-    h1 {
-        /*border: 1px solid black;*/
     }
 
     .task-card {
         margin-bottom: 1em;
-        width: 70%;
-        /*height: 20vh;*/
+        width: 35vw;
     }
 
 

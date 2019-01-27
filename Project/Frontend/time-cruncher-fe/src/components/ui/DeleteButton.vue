@@ -1,5 +1,5 @@
 <template>
-    <button class="load-button"
+    <button class="delete-button"
             type="button"
             @click="onClick($event)">
         <slot></slot>
@@ -8,7 +8,7 @@
 
 <script>
     export default {
-        name: 'LoadButton',
+        name: 'DeleteButton',
         methods: {
             onClick(event) {
                 this.$emit('click', event)
@@ -20,19 +20,25 @@
 <style scoped lang="scss">
     @import '../styles/main.scss';
 
-    button {
+    .delete-button {
         width: 100%;
+        display: flex;
+        justify-content: center;
         padding: 0.5em;
         background: white;
-        border: 1px solid $lightblue;
+
         border-radius: 4px;
-        letter-spacing: 1px;
         text-transform: uppercase;
         font-weight: bold;
         font-family: inherit;
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
         cursor: pointer;
         outline: none;
+    }
+
+    .delete-button:hover {
+        color: white;
+        background-color: $darkred;
     }
 
 </style>

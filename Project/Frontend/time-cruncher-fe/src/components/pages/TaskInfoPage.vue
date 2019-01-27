@@ -1,5 +1,5 @@
 <template>
-    <div class="task-info">
+    <div class="task-info" v-if="!$route.query.comments">
         <form @submit.prevent="updateTask($event)">
             <h1>
                 <input aria-label="title" placeholder="Task name"
@@ -7,149 +7,286 @@
                        spellcheck="false"/>
             </h1>
 
-            <div class="date-container">
-                <p>Published on: {{task.publishTime}}</p>
+            <div class="top-data">
+                <p>Published on: {{publishTime}}</p>
                 <label class="label-container">
                     Due date:
                     <input type="date"
-                           :value="1996-10-10"/>
+                           v-model="dueTime"/>
                 </label>
+                <p>Created by:</p>
             </div>
 
-            <h2>
-                <AlignLeftIcon class="icon"/>
-                Description
-            </h2>
-            <textarea placeholder="Description"
-                      v-model="task.description"
-                      rows="8"
-                      spellcheck="false"
-            />
+            <div class="description-container">
+                <h2>
+                    <AlignLeftIcon class="icon"/>
+                    Description
+                </h2>
+                <textarea placeholder="Description"
+                          v-model="task.description"
+                          rows="5"
+                          spellcheck="false"
+                />
+            </div>
 
             <div class="members">
                 <h2>
                     <UsersIcon class="icon"/>
                     Members
                 </h2>
-                <span v-for="member in members" :key="member.id">
-                {{member.firstname}} {{member.lastname}}
-            </span>
+                <select @change="selectMember($event)">
+                    <option value="">Member list</option>
+                    <option v-for="member in groupMembers"
+                            :key="member.id"
+                            :value="member.id">
+                        {{member.firstname + " " + member.lastname}}
+                    </option>
+                </select>
+                <div class="selected-members">
+                    <MemberCard v-for="member in taskMembers"
+                                :key="member.id"
+                                :firstname="member.firstname"
+                                :lastname="member.lastname"
+                                :id="member.id"
+                                @click="removeMember($event)">
+                    </MemberCard>
+                </div>
             </div>
 
             <label class="label-checkbox">
-                <Checkbox :value="task.isCompleted"/>
+                <Checkbox @changeState="changeState($event)"/>
                 Is task completed?
             </label>
+
+            <div class="danger-zone">
+                <h2>
+                    <Trash2Icon class="icon"/>
+                    Danger zone
+                </h2>
+                <div class="delete-container">
+                    <p>Delete this task</p>
+                    <DeleteButton @click="deleteTask($event)">
+                        Delete
+                    </DeleteButton>
+                </div>
+            </div>
+
             <button type="submit">Submit</button>
         </form>
         <p>Go to
-            <router-link :to="{path: '/login'}" class="comments">
+            <router-link :to="{
+                name: 'TaskInfo',
+                params: {taskId: task.id},
+                query: {comments: true}
+                }" class="comments">
                 comment section
             </router-link>
         </p>
     </div>
+
+    <div v-else class="task-info">
+        <CommentSection :task="task"
+                        :comments="comments"
+                        @deleteComment="deleteComment($event)"
+        />
+    </div>
+
 </template>
 
 <script>
-    import {AlignLeftIcon, UsersIcon} from 'vue-feather-icons'
     import Checkbox from '../ui/Checkbox'
-    import * as global from "../../services/utilites";
+    import MemberCard from '../ui/MemberCard'
+    import CommentSection from './CommentSection'
+    import DeleteButton from '../ui/DeleteButton'
+    import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
+    import router from '../../routes/routes'
+    import {dateController} from '../../services/date-transformations'
+    import * as global from '../../services/utilites'
+    import * as tasksApi from '../../services/api/tasks'
+    import * as groupsApi from '../../services/api/groups'
+    import * as commentsApi from '../../services/api/comments'
 
     export default {
-        name: "InfoPage",
+        name: 'InfoPage',
         components: {
+            Checkbox,
+            MemberCard,
+            CommentSection,
             AlignLeftIcon,
             UsersIcon,
-            Checkbox
-        },
-        props: {
-            info: {
-                type: Object
-            }
+            DeleteButton,
+            Trash2Icon
         },
 
         data() {
             return {
-                members: [],
+                taskMembers: [],
+                groupMembers: [],
                 group: this.loadLastActiveGroup(),
                 task: {},
+                publishTime: {},
+                dueTime: {},
+                comments: [],
             }
         },
         methods: {
-            updateTask() {
+            init: async function () {
+                await this.fetchTask()
+                await this.fetchTaskMembers()
+                await this.fetchGroupMembers()
+                await this.fetchComments()
+            },
+
+            updateTask: async function () {
+                const newTask = {
+                    ...this.task,
+                    dueTime: this.dueTime
+                }
+
+                // todo: connect with BE accordingly
+                // todo: connect members too
 
             },
 
-            loadLastActiveGroup: function () {
-                return global.groupState.getLastActiveGroup()
+            selectMember: function (event) {
+                const memberId = event.target.value
+                const newMember = this.groupMembers.find(({id}) => id == memberId)
+                this.taskMembers.push(newMember)
+                this.groupMembers = this.groupMembers.filter(member => member.id != memberId)
+            },
+
+            removeMember: function (member) {
+                this.taskMembers = this.taskMembers.filter(tMember => tMember.id != member.id)
+                // todo: sort by name
+                this.groupMembers.push(member)
+            },
+
+            changeState: function () {
+                this.task.isCompleted = !this.task.isCompleted
             },
 
             fetchTask: async function () {
+                // todo: this shouldn't be BE connected
                 console.log('Fetching task...')
                 const taskId = this.$route.params.taskId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/tasks/${taskId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                if (response.ok) {
-                    this.task = await response.json()
+                const response = await tasksApi.getSingleTask(taskId)
+
+                if (!response.errorStatus) {
+                    this.task = response
+                    this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
+                    this.dueTime = dateController.toString(new Date(this.task.dueTime))
+                } else {
+                    // todo: handle errors
+                    alert('Problem with loading single task.')
                 }
             },
 
-            fetchMembers: async function () {
-                const taskId = this.$route.params.taskId
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/tasks/${taskId}/users`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+            fetchTaskMembers: async function () {
+                const id = this.$route.params.taskId
+                const response = await tasksApi.getMembers(id)
 
-                if (response.ok) {
-                    this.members = await response.json()
+                if (!response.errorStatus) {
+                    this.taskMembers = response
+                } else {
+                    alert('Problem with fetching task members.')
                 }
+            },
+
+            fetchGroupMembers: async function () {
+                const id = this.$route.params.groupId
+                const response = await groupsApi.getMembers(id)
+
+                if (!response.errorStatus) {
+                    this.groupMembers = this.getDifference(this.taskMembers, response)
+                } else {
+                    alert('Problem with fetching group members.')
+                }
+            },
+
+            fetchComments: async function () {
+                const id = this.$route.params.taskId
+                const response = await commentsApi.getComments(id)
+                if (!response.errorStatus) {
+                    this.comments = response
+                } else {
+                    alert('Problem with fetching comments.')
+                }
+            },
+
+            getDifference: function (taskMembers, groupMembers) {
+                return groupMembers.map(gMember =>
+                    taskMembers.find(tMember => tMember.id == gMember.id)
+                        ? null
+                        : gMember).filter(member => member)
+            },
+
+            deleteTask: async function () {
+                const shouldDelete = confirm(`Are you sure you want to delete task ${this.task.name}?`)
+                if (shouldDelete) {
+                    const response = await tasksApi.deleteSingle(this.task.id)
+                    console.log('res: ', response)
+                    if (!response.errorStatus) {
+                        router.push({name: 'GroupInfo', params: {groupId: this.group.id}})
+                        // removeGroup$.publish(this.group.id)
+
+                    } else {
+                        alert('Problem with fetch members.')
+                    }
+                }
+            },
+
+            deleteComment: async function (commentId) {
+                const response = await commentsApi.deleteSingle(commentId)
+                if (!response.errorStatus) {
+                    this.comments = this.comments.filter(comment => comment.id != commentId)
+                } else {
+                    // todo: handle errors
+                    alert('Problem with deleting comment.')
+                }
+            },
+
+            loadLastActiveGroup: function () {
+                return global.groupState.loadLastActiveGroup()
             }
+            ,
         },
         watch: {
-            $route() {
-                this.fetchTask()
+            $route: function () {
+                this.init()
             }
-        },
-        created() {
-            this.fetchTask()
-            this.fetchMembers()
-        },
+        }
+        ,
+        created: function () {
+            this.init()
+        }
+        ,
     }
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .task-info {
+        @extend %flexColumn;
         height: 100vh;
         padding-left: 1em;
         padding-right: 1em;
-        display: flex;
-        flex-direction: column;
         background-color: #fff;
         border-left: 2px solid #eee;
+        overflow-y: auto;
     }
 
     form {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+        height: 95vh;
         background-color: #fff;
 
     }
 
     input, textarea {
+        @include remove(border, outline);
         width: 100%;
         font-family: inherit;
-        border: none;
-        outline: none;
     }
 
     h1 {
@@ -157,18 +294,20 @@
         font-weight: bold;
     }
 
+    h2 {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+    }
+
     .label-container {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
         font-size: 1em;
     }
 
     input[type="date"] {
+        @include remove(border, outline);
         width: 40%;
         font-family: inherit;
-        outline: none;
-        border: none;
     }
 
     input {
@@ -176,7 +315,8 @@
         font-weight: bold;
     }
 
-    .date-container {
+    // dates and creator name
+    .top-data {
         font-size: 0.8em;
     }
 
@@ -187,9 +327,10 @@
 
     // Due date container
     p + label {
+        width: 100%;
         display: flex;
         justify-content: flex-start;
-        width: 100%;
+        margin-bottom: 1em;
         font-size: inherit;
 
         // Due date value
@@ -202,36 +343,60 @@
         }
     }
 
+    .description-container {
+        width: 100%;
+        h2 {
+            margin-top: 0;
+        }
+
+        textarea {
+            width: 98%;
+        }
+    }
+
     textarea {
         resize: none;
     }
 
     .members {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
+        // todo: overflow, maxwidth
+        select {
+            width: 40%;
+            margin-bottom: 0.5em;
+            padding: 1%;
+            border: 1px solid #eee;
+            outline: none;
+        }
     }
 
-    .members > span {
-        /*border: 1px solid black;*/
+    .selected-members {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+    }
+
+    .member-card {
+        width: 35%;
         display: flex;
         align-items: center;
-        font-size: 0.9em;
         margin-bottom: 0.5em;
+        margin-right: 0.5em;
+        font-size: 0.7em;
+        border: 1px solid $lightblue;
     }
 
     // remove member button
     button {
+        @include remove(border, outline);
         display: flex;
         align-items: center;
-        background-color: white;
-        border: none;
-        outline: none;
     }
 
     h2 {
         display: flex;
         align-items: center;
-        margin-top: 0.5em;
         font-size: 1.2em;
     }
 
@@ -240,6 +405,7 @@
         margin-top: 1em;
         justify-content: center;
         align-self: flex-start;
+        font-size: 0.8em;
     }
 
     .checkbox {
@@ -251,10 +417,31 @@
         width: 1em;
     }
 
+    .danger-zone {
+        margin-top: 1em;
+        box-sizing: border-box;
+    }
+
+    .delete-container {
+        @include centerRowData(space-between);
+        margin-bottom: 0.5em;
+        font-size: 0.9em;
+
+        p {
+            margin-bottom: 0;
+        }
+
+        .delete-button {
+            width: 25%;
+            font-size: 0.8em;
+        }
+    }
+
     button[type="submit"] {
+        @include remove(border, outline);
         display: block;
         width: 30%;
-        margin-top: 1em;
+        margin-top: 0;
         padding: 1em;
         align-self: center;
         font-family: inherit;
@@ -264,8 +451,6 @@
         text-align: center;
         text-transform: uppercase;
         color: white;
-        border: none;
-        outline: none;
         background: linear-gradient($lightblue, $darkblue);
         border-radius: 4px;
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
@@ -273,15 +458,20 @@
     }
 
     form + p {
-        /*border: 1px solid blue;*/
         width: 100%;
-        margin-top: 2em;
+        margin-top: 0.5em;
         text-align: center;
+        font-size: 0.9em;
 
         a {
+
             color: $darkblue;
             text-decoration: none;
         }
+    }
+
+    textarea {
+        border: 1px solid #eee;
     }
 
 </style>

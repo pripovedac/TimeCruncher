@@ -48,7 +48,7 @@
                            :min="currentDate"
                     />
                 </label>
-                <Button type="submit"> Create task</Button>
+                <Button type="submit" :disabled="!task.name.length"> Create task</Button>
                 <Button @click="goBack($event)">
                     Cancel
                 </Button>
@@ -63,7 +63,9 @@
     import MemberCard from '../ui/MemberCard'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
-    import {dateController} from "../../services/dateTransformations";
+    import * as tasksApi from '../../services/api/tasks'
+    import * as groupsApi from '../../services/api/groups'
+    import {dateController} from "../../services/date-transformations";
 
 
     export default {
@@ -82,7 +84,7 @@
                     isPrivate: true,
                 },
                 group: this.loadLastActiveGroup(),
-                selectedDate: this.initDate(),
+                selectedDate: '',
                 currentDate: this.initDate(),
                 memberNames: "",
                 selectedMembers: [],
@@ -91,34 +93,27 @@
         },
         methods: {
             createTask: async function () {
-                // todo: add publishTime, creatorId  or name, groupId
-                // and task assignments
                 const selectedMembers = this.selectedMembers.map(member => member.id)
-                const date = new Date(this.selectedDate)
-
+                let date = null
+                if (this.selectedDate) {
+                    date = new Date(this.selectedDate)
+                }
                 const newTask = {
                     name: this.task.name,
                     description: this.task.description,
                     groupId: this.group.id,
                     creatorId: this.userId,
                     assignedUserIds: selectedMembers,
-                    dueTime: date.toISOString()
+                    dueTime: date ? date.toISOString() : null
                 }
 
-                const response = await fetch(process.env.VUE_APP_BE_URL + '/tasks', {
-                    method: 'POST',
-                    body: JSON.stringify(newTask),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                const response = await tasksApi.createNew(newTask)
 
-                if (response.ok) {
-                    // todo: redirect to new group without alert
+                if (!response.errorStatus) {
                     alert('Successfully created task!')
                     this.goBack()
                 } else {
-                    alert('The task was not created. Check your entries.')
+                    alert('Problem with creating task.')
                 }
             },
 
@@ -140,23 +135,21 @@
             },
 
             initMembers: async function () {
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/groups/${this.group.id}/users`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                if (response.ok) {
-                    this.task.members = await response.json()
+                const response = await groupsApi.getMembers(this.group.id)
+
+                if (!response.errorStatus) {
+                    this.task.members = response
+                } else {
+                    alert('Problem with fetching members.')
                 }
             },
 
             loadLastActiveGroup: function () {
-                return global.groupState.getLastActiveGroup()
+                return global.groupState.loadLastActiveGroup()
             },
 
             getCurrentDate: function () {
-                return dateController.initDate(new Date())
+                return dateController.toString(new Date())
             },
 
             goBack() {
@@ -165,7 +158,7 @@
             },
 
             getUserId: function () {
-                return global.userState.load()
+                return global.userState.loadId()
             }
         },
 
@@ -177,27 +170,21 @@
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .new-task {
-        /*border: 3px solid green;*/
         display: block;
-        /*width: 100%;*/
         height: 100vh;
         background-color: #fff;
         font-family: 'Montserrat', sans-serif;
     }
 
     .content-container {
-        /*border: 1px solid black;*/
+        @extend %flexColumn;
+
         width: 50%;
-        /*height: 80vh;*/
-        display: flex;
-        flex-direction: column;
         margin: 0 auto;
         padding: 3%;
-        /*border: 1px solid black;*/
     }
 
     h1 {
@@ -217,26 +204,22 @@
     }
 
     .label-container {
-        display: flex;
-        flex-direction: column;
-        /*border: 1px solid blue;*/
+        @extend %flexColumn;
         justify-content: center;
         align-self: center;
         font-size: 1em;
     }
 
     textarea {
+        @include remove(resize, outline);
+
         margin-top: 2%;
-        resize: none;
         border: 1px solid #eee;
-        outline: none;
         font-family: inherit;
     }
 
     .label-select {
-        /*border: 1px solid green;*/
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
         width: 100%;
 
         select {
@@ -255,12 +238,10 @@
     }
 
     .selected-members {
+        @include centerRowData();
+
         width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
         flex-wrap: wrap;
-        /*border: 2px solid blue;*/
         margin-top: 0.3em;
         display: flex;
         color: black;
@@ -280,12 +261,11 @@
     }
 
     input[type="date"] {
+        @include remove(border, outline);
+
         width: 40%;
-        /*border: 1px solid green;*/
         margin-top: 2%;
         font-family: inherit;
-        outline: none;
-        border: none;
     }
 
     .checkbox {
@@ -306,8 +286,8 @@
     }
 
     a {
-        text-decoration: none;
+        @include remove(text-decoration, outline);
+
         color: white;
-        outline: none;
     }
 </style>

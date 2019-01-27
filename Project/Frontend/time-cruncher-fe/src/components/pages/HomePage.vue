@@ -1,19 +1,27 @@
 <template>
     <div class="home-page">
-        <Sidebar :groups="groups"
-                 :user="user"
-                 :newGroup="newGroups.length > 0"
-                 @mergeGroups="mergeGroups($event)"
-        />
+        <div class="sidebar-container">
+            <Sidebar :groups="groups"
+                     :user="user"
+                     :newGroup="newGroups.length > 0"
+                     @mergeGroups="mergeGroups($event)"
+                     @logout="logout($event)"
+            />
+        </div>
         <router-view/>
     </div>
 </template>
 
 <script>
     import Sidebar from '../ui/Sidebar'
+    import router from '../../routes/routes'
     import * as global from '../../services/utilites'
     import {pusher} from '../../services/pusher'
-    import * as newTask$ from '../../event-buses/newTask'
+    import * as groupsApi from '../../services/api/groups'
+    import * as newTask$ from '../../event-buses/new-task'
+    import * as newComment$ from '../../event-buses/new-comment'
+    import * as removeGroup$ from '../../event-buses/remove-group'
+
 
     export default {
         name: 'HomePage',
@@ -32,7 +40,6 @@
         },
         methods: {
             initGroups: async function () {
-                // todo: check LS
                 const groups = await this.fetchGroups()
                 this.groups = groups.map(group => {
                     return {
@@ -43,31 +50,24 @@
             },
 
             initUser: async function () {
-                console.log('Fetching user data...')
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                if (response.ok) {
-                    this.user = await response.json()
-                }
+                this.user = global.userState.load()
+            },
+
+            initPusher: function () {
+                pusher.config.auth.headers = {'access_token': this.loadAT()}
             },
 
             fetchGroups: async function () {
-                console.log('Fetching groups...')
-                const response = await fetch(process.env.VUE_APP_BE_URL + `/users/${this.userId}/groups`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                let groups = {}
-                if (response.ok) {
-                    groups = await response.json()
+                const response = await groupsApi.getGroups()
+
+                // todo: do not fetch everytime, use LS
+                if (!response.errorStatus) {
+                    const groups = response
                     global.groupState.save(groups)
                     return groups
+                } else {
+                    // todo: handle errors
+                    alert('Problem with groups loading.')
                 }
             },
 
@@ -91,18 +91,23 @@
                 ids.forEach(id => {
                     const channel = pusher.subscribe(`private-channel_for_group-${id}`)
                     channel.bind('task_added', function (newTask) {
-                        alert('ojsa!')
                         if (newTask.group.id == that.groupId) {
                             newTask$.publish(newTask)
                         } else {
                             that.groups = that.modifyGroupNotifications(that.groups, newTask.group.id, true)
                         }
                     })
+
+                    if (id == that.groupId) {
+                        channel.bind('comment_added', function (newComment) {
+                            console.log('new comment')
+                            newComment$.publish(newComment)
+                        })
+                    }
                 })
             },
 
             unsubscribeFromGroupUpdates: function () {
-                console.log('woho')
                 pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
             },
 
@@ -122,8 +127,13 @@
             },
 
             mergeGroups: function () {
-              this.groups = [...this.groups, ...this.newGroups]
-              this.newGroups = []
+                this.groups = [...this.groups, ...this.newGroups]
+                this.newGroups = []
+            },
+
+            logout: function () {
+                this.clearStorage()
+                router.push({path: '/login'})
             },
 
             loadGroups: function () {
@@ -131,15 +141,23 @@
             },
 
             getUserId: function () {
-                return global.userState.load()
+                return global.userState.loadId()
+            },
+
+            loadAT: function () {
+                return global.userState.loadAT()
+            },
+
+            loadLastActiveGroup: function () {
+                return global.groupState.loadLastActiveGroup()
+            },
+
+            clearStorage: function () {
+                global.userState.removeUser()
             },
 
             getGroupId: function () {
                 return this.$route.params.groupId
-            },
-
-            loadLastActiveGroup: function () {
-                return global.groupState.getLastActiveGroup()
             },
         },
 
@@ -147,26 +165,31 @@
             $route() {
                 this.groupId = this.$route.params.groupId
                 this.groups = this.modifyGroupNotifications(this.groups, this.groupId, false)
+                this.initPusher()
                 this.subscribeToChannels()
             }
         },
 
         async created() {
+            this.initPusher()
             await this.initGroups()
             await this.initUser()
             this.subscribeToChannels()
+
+            removeGroup$.subscribe((groupId) => {
+                this.groups = this.groups.filter(({id}) => id != groupId)
+            })
         },
     }
 </script>
 
 <style scoped>
-
     .home-page {
         display: flex;
     }
 
-    .sidebar {
-        width: 15%;
+    .sidebar, .sidebar-container{
+        width: 15vw;
         position: sticky;
         top: 0;
         left: 0;
@@ -175,5 +198,4 @@
     .main-page {
         width: 100%;
     }
-
 </style>

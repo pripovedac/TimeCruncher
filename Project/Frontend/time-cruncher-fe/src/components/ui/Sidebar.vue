@@ -1,10 +1,16 @@
 <template>
     <div class="sidebar">
         <!--todo: everything here should be a router-link-->
-        <h1>
-            <UserIcon class="icon"/>
-            <span>{{user.firstname}} {{user.lastname}}</span>
-        </h1>
+        <div class="top-container">
+            <h1>
+                <UserIcon class="icon"/>
+                <span>{{user.firstname}} {{user.lastname}}</span>
+            </h1>
+            <button @click="logout($event)">
+                <LogOutIcon class="icon"/>
+            </button>
+        </div>
+
         <div class="group-header">
             <div>
                 <h2>Groups</h2>
@@ -32,14 +38,21 @@
         <div class="filter-container">
             <h3>Filters</h3>
             <router-link :to="{path: '/login'}">Daily</router-link>
-            <router-link :to="{path: '/login'}">Weekly</router-link>
+            <router-link :to="{name: 'Weekly'}">Weekly</router-link>
             <router-link :to="{path: '/login'}">Uncategorized</router-link>
         </div>
     </div>
 </template>
 
 <script>
-    import {UserIcon, HashIcon, LockIcon, PlusCircleIcon, BellIcon} from 'vue-feather-icons'
+    import {
+        UserIcon,
+        HashIcon,
+        LockIcon,
+        PlusCircleIcon,
+        BellIcon,
+        LogOutIcon
+    } from 'vue-feather-icons'
 
     export default {
         name: "Sidebar",
@@ -48,14 +61,15 @@
             HashIcon,
             LockIcon,
             PlusCircleIcon,
-            BellIcon
+            BellIcon,
+            LogOutIcon
         },
         props: {
             groups: {
                 type: Array,
             },
             newGroup: {
-              type: Boolean,
+                type: Boolean,
             },
             user: {
                 type: Object
@@ -67,18 +81,20 @@
         methods: {
             mergeGroups: function () {
                 this.$emit('mergeGroups')
+            },
+
+            logout: function () {
+                this.$emit('logout')
             }
         }
     }
 </script>
 
 <style scoped lang="scss">
-    $lightblue: #80d0c7;
-    $darkblue: #13547a;
+    @import '../styles/main.scss';
 
     .sidebar {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
         width: 100%;
         height: 100vh;
         margin: 0;
@@ -89,12 +105,28 @@
         border-right: 1px solid black;
     }
 
+    .top-container {
+        @include centerRowData(space-between);
+        width: 100%;
+    }
+
     h1 {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
         font-size: 0.8em;
-        /*border: 1px solid black;*/
+    }
+
+    // Logout button
+    h1 + button {
+        @include centerRowData();
+        @include remove(border, background);
+        padding: 0;
+        color: white;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    h1 > .icon {
+        width: 1.3em;
     }
 
     h2, h3 {
@@ -104,9 +136,7 @@
     }
 
     .group-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        @include centerRowData(space-between);
 
         div {
             display: flex;
@@ -118,15 +148,13 @@
             // todo: complete disaster - change this
             margin-top: 0.1em;
         }
-        
+
         button {
+            @include remove(background, border, outline);
             margin: 0;
             padding: 0;
             margin-left: 0.5em;
-            background: none;
             color: white;
-            border: none;
-            outline: none;
             align-items: center;
             cursor: pointer;
         }
@@ -140,18 +168,15 @@
             padding-right: 0;
         }
 
-
     }
 
     a {
+        @include remove(outline, text-decoration);
         color: white;
-        outline: none;
-        text-decoration: none;
     }
 
     .filter-container, .group-container {
-        display: flex;
-        flex-direction: column;
+        @extend %flexColumn;
 
         a {
             padding-left: 0.5em;
@@ -163,15 +188,11 @@
     // single group name container
     // e.g. <lock-icon> nabavka [<bell-icon>]
     .group-container > a {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
+        @include centerRowData();
 
         div {
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            @include centerRowData(space-between);
         }
     }
 
