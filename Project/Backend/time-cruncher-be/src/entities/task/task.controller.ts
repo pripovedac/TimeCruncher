@@ -10,6 +10,7 @@ import {
   Param,
   Post,
   Put,
+  Headers, UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task } from './task.entity';
@@ -24,8 +25,9 @@ import { TaskInfoDto } from './DTOs/task-info.dto';
 import { EditTaskDto } from './DTOs/edit-task.dto';
 import { TaskNotFoundException } from '../../custom-exceptions/task-not-found.exception';
 import { pusher } from '../../pusher';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('tasks')
+@UseGuards(AuthGuard('bearer'))
 export class TaskController {
   constructor(
     private readonly taskService: TaskService,
@@ -54,7 +56,9 @@ export class TaskController {
     newTask.isCompleted = false;
     const res: Task = await this.taskService.addTask(newTask);
     pusher.trigger('private-channel_for_group-' + group.id, 'task_added', JSON.stringify(res));
-    return new TaskInfoDto(res);
+    const retTask: TaskInfoDto = new TaskInfoDto(res);
+    retTask.creatorName = res.creator.firstname + ' ' + res.creator.lastname;
+    return retTask;
   }
 
   @Get()
@@ -65,22 +69,45 @@ export class TaskController {
 
   @Get(':id')
   async findTaskById(@Param() params): Promise<TaskInfoDto>{
-    const res: Task = await this.taskService.findById(params.id);
+    const res: Task = await this.taskService.findByIdWithCreator(params.id);
     if (!res)
       throw new TaskNotFoundException(params.id);
-    return new TaskInfoDto(res);
+    const retTask: TaskInfoDto = new TaskInfoDto(res);
+    retTask.creatorName = res.creator.firstname + ' ' + res.creator.lastname;
+    return retTask;
   }
   @Delete(':id')
   async removeTaskById(@Param() params){
-    if (!this.taskService.existsWithId(params.id))
+    const task = await this.taskService.findByIdWithGroup(params.id);
+    if (!task)
       throw new TaskNotFoundException(params.id);
     const res = await this.taskService.removeById(params.id);
+    pusher.trigger('private-channel_for_group-' + task.group.id, 'task_removed', JSON.stringify({id: params.id}));
     return {messsage: `Task with id = ${params.id} successfully removed.`};
   }
 
   @Put(':id')
-  async editTask(@Param() params, @Body() editTaskDto: EditTaskDto) {
-    const retTask: Task = await this.taskService.edit(params.id, editTaskDto);
-    return new TaskInfoDto(retTask);
+  async editTask(@Param() params, @Headers() headers, @Body() editTaskDto: EditTaskDto): Promise<Task> {
+    const taskForEdit: Task = await this.taskService.findByIdWithGroup(params.id);
+    taskForEdit.name = editTaskDto.name;
+    taskForEdit.description = editTaskDto.description;
+    taskForEdit.dueTime = editTaskDto.dueTime;
+    // const retTask: Task = await this.taskService.edit(params.id, editTaskDto);
+    taskForEdit.assignedUsers = await this.userService.findUsersFromIdList(editTaskDto.assignedUserIds);
+    if (!editTaskDto.isCompleted){
+      taskForEdit.isCompleted = false;
+      taskForEdit.completionTime = null;
+      taskForEdit.executor = null;
+    } else if (!taskForEdit.isCompleted) {
+      taskForEdit.isCompleted = true;
+      taskForEdit.completionTime = (new Date()).toISOString();
+      taskForEdit.executor = await this.userService.findByAccessToken(headers.authorization.split(' ')[1]);
+      delete taskForEdit.executor.password;
+    }
+    const res = await this.taskService.edit(taskForEdit);
+    if (res){
+      pusher.trigger('private-channel_for_group-' + taskForEdit.group.id, 'task_edited', JSON.stringify(taskForEdit));
+    }
+    return res;
   }
 }

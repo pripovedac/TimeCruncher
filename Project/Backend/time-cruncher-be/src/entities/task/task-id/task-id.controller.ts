@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { TaskService } from '../task.service';
 import { Task } from '../task.entity';
 import { TaskInfoDto } from '../DTOs/task-info.dto';
@@ -7,8 +7,9 @@ import { UserIdArrayDto } from '../../group/DTOs/user-id-array.dto';
 import { TaskNotFoundException } from '../../../custom-exceptions/task-not-found.exception';
 import {Comment} from '../../comment/comment.entity';
 import { User } from '../../user/user.entity';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('tasks/:id')
+@UseGuards(AuthGuard('bearer'))
 export class TaskIdController {
   constructor(private readonly taskService: TaskService){}
 

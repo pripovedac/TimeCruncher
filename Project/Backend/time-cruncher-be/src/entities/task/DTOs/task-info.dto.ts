@@ -24,6 +24,7 @@ export class TaskInfoDto{
 
   isCompleted: boolean;
 
+  creatorName: string;
   @Exclude()
   creator: number;
   @Exclude()

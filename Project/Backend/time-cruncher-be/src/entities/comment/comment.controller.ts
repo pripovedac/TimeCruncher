@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { Comment } from './comment.entity';
 import { CreateCommentDto } from './DTOs/create-comment.dto';
@@ -7,7 +7,9 @@ import { TaskService } from '../task/task.service';
 import { EditCommentDto } from './DTOs/edit-comment.dto';
 import { CommentNotFoundException } from '../../custom-exceptions/comment-not-found.exception';
 import { pusher } from '../../pusher';
+import { AuthGuard } from '@nestjs/passport';
 @Controller('comments')
+@UseGuards(AuthGuard('bearer'))
 export class CommentController {
   constructor(
     private readonly commentService: CommentService,

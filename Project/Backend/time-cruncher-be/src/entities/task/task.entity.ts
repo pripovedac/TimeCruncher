@@ -36,7 +36,6 @@ export class Task{
   completionTime: string;
 
   @Column({
-    type: 'tinyint',
     nullable: false,
   })
   isCompleted: boolean;
@@ -52,6 +51,9 @@ export class Task{
   @ManyToMany(type => User, user => user.assignedTasks)
   assignedUsers: User[];
 
-  @OneToMany(type => Comment, comment => comment.creator)
+  @OneToMany(type => Comment, comment => comment.task)
   comments: Comment[];
+
+  @ManyToOne(type => User, user => user.executedTasks)
+  executor: User;
 }

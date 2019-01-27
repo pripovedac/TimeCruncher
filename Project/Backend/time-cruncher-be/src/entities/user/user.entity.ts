@@ -56,4 +56,7 @@ export class User{
 
   @OneToOne(type => AccessToken, accessToken => accessToken.user )
   accessToken: AccessToken;
+
+  @OneToMany(type => Task, task => task.executor)
+  executedTasks: Task[];
 }

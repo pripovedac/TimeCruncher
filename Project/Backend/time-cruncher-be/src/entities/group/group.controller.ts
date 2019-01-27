@@ -3,13 +3,13 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, Headers,
   HttpCode, HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
-  Put,
+  Put, UseGuards,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { Group } from './group.entity';
@@ -21,14 +21,16 @@ import { EditGroupDto } from './DTOs/edit-group.dto';
 import { GroupNotFoundException } from '../../custom-exceptions/group-not-found.exception';
 import { pusher } from '../../pusher';
 import { create } from 'domain';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('groups')
+@UseGuards(AuthGuard('bearer'))
 export class GroupController {
   constructor(private readonly groupService: GroupService, private readonly userService: UserService){}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addGroup(@Body() body: CreateGroupDto): Promise<GroupInfoDto> {
+  async addGroup(@Headers() header, @Body() body: CreateGroupDto): Promise<GroupInfoDto> {
     const creatorUser: User = await this.userService.findById(body.creatorId);
     const that = this;
     delete body.creatorId;
@@ -42,6 +44,7 @@ export class GroupController {
         const acc = await prevAcc;
         const user = await that.userService.findByEmail(email);
         if (user && user.id !== creatorUser.id){
+          delete user.password;
           acc.push(user);
         }
         return acc;
@@ -71,18 +74,31 @@ export class GroupController {
 
   @Delete(':id')
   async removeGroupById(@Param() params) {
-    if (!await this.groupService.existsWithId(params.id)){
+
+    const group = await this.groupService.findByIdWithUsers(params.id);
+    if (!group) {
       throw new GroupNotFoundException(params.id);
     }
     const res = await this.groupService.removeById(params.id);
+    if (!group.isPrivate) {
+      pusher.trigger('private-channel_for_group-' + group.id, 'group_removed', JSON.stringify({ id: group.id }));
+    }
     return {
       message: `Group with id = ${params.id} successfully removed.`,
     };
   }
 
   @Put(':id')
-  async editGroup(@Param() params, @Body() editGroupDto: EditGroupDto) {
-    const res: Group = await this.groupService.edit(params.id, editGroupDto);
-    return new GroupInfoDto(res);
+  async editGroup(@Param() params, @Headers() headers, @Body() editGroupDto: EditGroupDto) {
+
+    const userReq: User = await this.userService.findByAccessToken(headers.authorization.split(' ')[1]);
+    if (editGroupDto.memberEmails.find( x => x == userReq.email) == undefined)
+      editGroupDto.memberEmails.push(userReq.email);
+    const members: User[] = await this.userService.findUsersFromEmailList(editGroupDto.memberEmails);
+    const res: Group = await this.groupService.edit(params.id, editGroupDto, members);
+    if (!res.isPrivate){
+      pusher.trigger('private-channel_for_group-' + res.id, 'group_edited', JSON.stringify({id: res.id}));
+    }
+    return res;
   }
 }

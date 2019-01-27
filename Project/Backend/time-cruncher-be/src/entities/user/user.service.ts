@@ -11,6 +11,8 @@ import { GroupService } from '../group/group.service';
 import { EditUserDto } from './DTOs/edit-user.dto';
 import { Task } from '../task/task.entity';
 import { UserNotFoundException } from '../../custom-exceptions/user-not-found.exception';
+import { async } from 'rxjs/internal/scheduler/async';
+import {AccessToken} from '../access-token/access-token.entity';
 
 @Injectable()
 export class UserService {
@@ -29,15 +31,34 @@ export class UserService {
   }
   async findById(id: number): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { id } });
+    delete res.password;
     if (!res)
       throw new UserNotFoundException(id);
     return res;
   }
+  async findByAccessToken(accessToken: string): Promise<User>{
+    const res: AccessToken = await getRepository(AccessToken).findOne({ where: { token: accessToken }, relations: ['user']});
+    if (!res)
+      throw new NotFoundException();
+    return res.user;
+  }
   async findByEmail(email: string): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { email } });
     if (!res)
-      throw new NotFoundException();
+      throw new HttpException({message: "User with email: '" + email + "' not found."}, 404);
     return res;
+  }
+  async findUsersFromEmailList(emailList: string[]){
+    const users: User[] = await Promise.all(emailList.map(async email => {
+      return await this.findByEmail(email);
+    }))
+    return users;
+  }
+  async findUsersFromIdList(idList: number[]){
+    const users: User[] = await Promise.all(idList.map(async id => {
+      return await this.findById(id);
+    }))
+    return users;
   }
   async findByEmailWithAccessToken(email: string): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { email }, relations: ['accessToken'] });
@@ -66,12 +87,49 @@ export class UserService {
   async findDailyTasksByUserId(id: number, dateString: string): Promise<Task[]> {
     const dateLow = new Date(new Date(dateString).setHours(0, 0, 0, 0));
     const dateHigh = new Date(new Date(dateString).setHours(23, 59, 59, 0));
+    console.log(dateLow);
+    console.log(dateHigh);
+    console.log(dateString);
     const res: User = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.assignedTasks', 'task', 'task.dueTime >= :dateLow and task.dueTime <= :dateHigh', { dateLow, dateHigh })
       .where('user.id = :id', { id })
       .getOne();
     if (!res) return [];
     return res.assignedTasks;
+  }
+  async findWeeklyTasksByUserId(id: number, dateString: string): Promise<any>{
+    const daysArray = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const currentDate = new Date(dateString);
+    if (isNaN(currentDate.getDate())){
+      throw new BadRequestException();
+    }
+    let targetDayStart: Date = new Date();
+    let targetDayEnd: Date = new Date();
+    if (currentDate.getDay() === 0){
+      targetDayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 6, 0, 0, 0);
+      targetDayEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 6, 23, 59, 59);
+    }
+    else {
+      targetDayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() + 1, 0, 0, 0);
+      targetDayEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() + 1, 23, 59, 59);
+    }
+    const retArray = [];
+    for  (let i = 0; i < 7; i++){
+      const res: User = await this.userRepository.createQueryBuilder('user')
+        .innerJoinAndSelect('user.assignedTasks', 'task', 'task.dueTime >= :targetDayStart and task.dueTime <= :targetDayEnd', { targetDayStart, targetDayEnd })
+        .where('user.id = :id', { id })
+        .getOne();
+      let foundTasks = [];
+      if (res !== undefined)
+        foundTasks = res.assignedTasks;
+      retArray.push({
+        name: daysArray[i],
+        tasks: foundTasks,
+      })
+      targetDayStart.setDate(targetDayStart.getDate() + 1);
+      targetDayEnd.setDate(targetDayEnd.getDate() + 1);
+    }
+    return retArray;
   }
   async findMonthlyTasksByUserId(id: number, dateString: string): Promise<Task[]> {
     const targetDate = new Date(dateString);
@@ -97,7 +155,6 @@ export class UserService {
         groupIdList.push(group.id);
       return {};
     }));
-    // await getRepository('Group').delete(groupIdList);
     await groupIdList.forEach( x => this.groupService.removeById(x));
     return await this.userRepository.delete(id);
   }

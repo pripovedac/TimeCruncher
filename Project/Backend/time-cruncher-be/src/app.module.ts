@@ -16,12 +16,13 @@ import { PusherAuthController } from './pusher-auth/pusher-auth.controller';
 import { AccessTokenController } from './entities/access-token/access-token.controller';
 import { AccessTokenService } from './entities/access-token/access-token.service';
 import { AccessToken } from './entities/access-token/access-token.entity';
-import { AuthModule } from './authentication/auth.module';
 import { AuthService } from './authentication/auth.service';
-
+import { PassportModule } from '@nestjs/passport';
+import { HttpStrategy } from './authentication/http.strategy';
 @Module({
-  imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature([AccessToken]), UserModule, GroupModule, TaskModule, CommentModule],
+  imports: [PassportModule.register({ defaultStrategy: 'bearer'}), TypeOrmModule.forRoot(),
+    TypeOrmModule.forFeature([AccessToken]), UserModule, GroupModule, TaskModule, CommentModule],
   controllers: [AppController, UserController, GroupController, TaskController, UserIdController, PusherAuthController, AccessTokenController],
-  providers: [AppService, AccessTokenService],
+  providers: [AppService, AccessTokenService, HttpStrategy, AuthService],
 })
 export class AppModule {}
