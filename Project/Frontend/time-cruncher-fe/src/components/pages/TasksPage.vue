@@ -17,9 +17,9 @@
             Load new tasks
         </LoadButton>
 
-        <LoadButton v-if="deletedTasks.length > 0"
+        <LoadButton v-if="haveDeleted"
                     @click="mergeDeletedTasks($event)">
-            Some tasks are deleted
+            Remove deleted tasks
         </LoadButton>
 
         <LoadButton v-if="haveUpdates"
@@ -34,6 +34,7 @@
                   :description="task.description"
                   :date="task.dueTime"
                   :isCompleted="task.isCompleted"
+                  :isDeleted="task.isDeleted"
         />
 
     </div>
@@ -69,7 +70,8 @@
                 deletedTasks: [],
                 group: {},
                 userId: global.userState.loadId(),
-                haveUpdates: false
+                haveUpdates: false,
+                haveDeleted: false,
             }
         },
         methods: {
@@ -92,18 +94,15 @@
             },
 
             mergeDeletedTasks: function () {
-                const that = this
+                this.tasks = this.tasks.filter(task => !task.isDeleted)
+                this.redirect()
+                this.haveDeleted = false
+            },
 
-                this.tasks = this.tasks.map(task =>
-                    that.deletedTasks.find(deleted => deleted.id == task.id)
-                        ? null
-                        : task).filter(task => task)
-
-                if (this.deletedTasks.find(deleted => deleted.id == this.$route.params.taskId)) {
+            redirect: function () {
+                if (this.tasks.find(task => task.isDeleted && task.id == this.$route.params.taskId)) {
                     router.push({name: 'GroupInfo'})
                 }
-
-                this.deletedTasks = []
             },
 
             removeDeleted(id) {
@@ -114,6 +113,10 @@
                 this.initTasks()
                 this.haveUpdates = false
                 router.push({name: 'GroupInfo'})
+            },
+
+            markAsDeleted(id) {
+                this.tasks = this.tasks.map(task => task.id == id ? {...task, isDeleted: true} : task)
             },
 
             // todo: rename to be more abstract, for any two arrays
@@ -137,7 +140,8 @@
 
         watch: {
             $route() {
-                this.initTasks()
+                // todo might be a problem here, will see
+                // this.initTasks()
                 this.saveGroup()
                 this.group = this.loadGroup()
             }
@@ -155,12 +159,13 @@
                 if (this.userId == deletedTask.destructorId) {
                     this.removeDeleted(deletedTask.id)
                 } else {
-                    this.deletedTasks.push(deletedTask)
+                    this.markAsDeleted(deletedTask.id)
+                    this.redirect()
+                    this.haveDeleted = true
                 }
             })
 
             updateTask$.subscribe((task) => {
-                console.log('za apdejt: ', task)
                 if (task.modifierId != this.userId) {
                     this.haveUpdates = true
                 }

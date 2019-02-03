@@ -1,5 +1,10 @@
 <template>
-    <div class="task-card" :class="{done: isCompleted, todo: !isCompleted, isLate: isLate}">
+    <div class="task-card" :class="{
+                done: isCompleted,
+                todo: !isCompleted,
+                isLate: isLate,
+                isDeleted: isDeleted
+     }">
         <router-link :to="{name: 'TaskInfo',  params: {taskId: id} }">
             <CheckCircleIcon v-if="isCompleted"
                              class="icon"/>
@@ -44,6 +49,9 @@
             isCompleted: {
                 //type: Boolean
             },
+            isDeleted: {
+
+            }
         },
 
         computed: {
@@ -68,6 +76,7 @@
 
     $ochre: #F5C52C;
     $green: #32CD32;
+    $gray: #eee;
 
     .task-card {
         display: flex;
@@ -85,6 +94,12 @@
     }
 
     // In this ordering.
+    .isDeleted {
+        @include taskStatus($gray);
+        pointer-events: none;
+        border: 2px solid orange;
+    }
+
     .todo {
         @include taskStatus($ochre);
     }
@@ -95,6 +110,11 @@
 
     .done {
         @include taskStatus($green);
+    }
+
+    .isDeleted {
+        pointer-events: none;
+        opacity: 0.4;
     }
 
     .icon {
