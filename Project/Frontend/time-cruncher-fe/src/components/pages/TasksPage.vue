@@ -37,6 +37,7 @@
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as newTask$ from '../../event-buses/new-task'
+    import * as refresh$ from '../../event-buses/refresh-tasks'
 
     export default {
         name: 'TasksPage',
@@ -98,6 +99,10 @@
 
             newTask$.subscribe((newTask) => {
                 this.newTasks.push(newTask)
+            })
+
+            refresh$.subscribe(() => {
+                this.initTasks()
             })
         },
     }

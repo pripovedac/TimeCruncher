@@ -16,7 +16,7 @@ function apiFetchFactory({getCredentials, fetch}) {
             method,
             body: JSON.stringify(body),
             headers: {
-                ...(hasAuthHeader ? {'authorization':  + accessToken} : {}),
+                ...(hasAuthHeader ? {'authorization':  'Bearer ' + accessToken} : {}),
                 'content-type': contentType,
             },
         })

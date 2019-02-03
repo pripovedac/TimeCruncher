@@ -105,6 +105,7 @@
     import * as tasksApi from '../../services/api/tasks'
     import * as groupsApi from '../../services/api/groups'
     import * as commentsApi from '../../services/api/comments'
+    import * as refresh$ from '../../event-buses/refresh-tasks'
 
     export default {
         name: 'InfoPage',
@@ -138,14 +139,17 @@
             },
 
             updateTask: async function () {
+                const selectedMembers = this.taskMembers.map(member => member.id)
+
                 const newTask = {
-                    ...this.task,
-                    dueTime: this.dueTime
+                    name: this.task.name,
+                    description: this.task.description,
+                    isCompleted: this.task.isCompleted,
+                    dueTime: this.dueTime,
+                    assignedUserIds: selectedMembers,
                 }
-
-                // todo: connect with BE accordingly
-                // todo: connect members too
-
+                await tasksApi.updateSingle(this.task.id, newTask)
+                refresh$.publish()
             },
 
             selectMember: function (event) {
@@ -224,11 +228,9 @@
                 const shouldDelete = confirm(`Are you sure you want to delete task ${this.task.name}?`)
                 if (shouldDelete) {
                     const response = await tasksApi.deleteSingle(this.task.id)
-                    console.log('res: ', response)
                     if (!response.errorStatus) {
                         router.push({name: 'GroupInfo', params: {groupId: this.group.id}})
                         // removeGroup$.publish(this.group.id)
-
                     } else {
                         alert('Problem with fetch members.')
                     }

@@ -11,7 +11,7 @@ export async function getSingleTask(id) {
 }
 
 export async function getMembers(id) {
-    return await apiFetch('GET', url(`/tasks/${id}/users`))
+    return await apiFetch('GET', url(`/tasks/${id}/assignedUsers`))
 }
 
 export async function createNew(data) {
@@ -20,4 +20,8 @@ export async function createNew(data) {
 
 export async function deleteSingle(id) {
     return await apiFetch('DELETE', url(`/tasks/${id}`))
+}
+
+export async function updateSingle(id, data) {
+    return await apiFetch('PUT', url(`/tasks/${id}`), data)
 }
