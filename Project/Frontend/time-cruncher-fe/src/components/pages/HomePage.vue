@@ -21,6 +21,7 @@
     import * as newTask$ from '../../event-buses/new-task'
     import * as newComment$ from '../../event-buses/new-comment'
     import * as removeGroup$ from '../../event-buses/remove-group'
+    import * as deleteTask$ from '../../event-buses/delete-task'
 
 
     export default {
@@ -98,9 +99,12 @@
                         }
                     })
 
+                    channel.bind('task_removed', function (deletedTask) {
+                        deleteTask$.publish(deletedTask)
+                    })
+
                     if (id == that.groupId) {
                         channel.bind('comment_added', function (newComment) {
-                            console.log('new comment')
                             newComment$.publish(newComment)
                         })
                     }

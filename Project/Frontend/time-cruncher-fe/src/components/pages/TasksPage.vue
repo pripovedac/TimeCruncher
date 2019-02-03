@@ -13,8 +13,13 @@
         <NoTasksCard v-if="tasks.length == 0"/>
 
         <LoadButton v-if="newTasks.length > 0"
-                    @click="mergeTasks($event)">
+                    @click="mergeNewTasks($event)">
             Load new tasks
+        </LoadButton>
+
+        <LoadButton v-if="deletedTasks.length > 0"
+                    @click="mergeDeletedTasks($event)">
+            Some tasks are deleted
         </LoadButton>
 
         <TaskCard v-for="task in tasks"
@@ -34,10 +39,13 @@
     import TaskCard from '../ui/TaskCard'
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
+    import router from '../../routes/routes'
+
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as newTask$ from '../../event-buses/new-task'
     import * as refresh$ from '../../event-buses/refresh-tasks'
+    import * as deleteTask$ from '../../event-buses/delete-task'
 
     export default {
         name: 'TasksPage',
@@ -52,7 +60,9 @@
                 channel: {},
                 tasks: [],
                 newTasks: [],
+                deletedTasks: [],
                 group: {},
+                userId: global.userState.loadId()
             }
         },
         methods: {
@@ -69,9 +79,36 @@
 
             },
 
-            mergeTasks: function () {
+            mergeNewTasks: function () {
                 this.tasks = [...this.newTasks.reverse(), ...this.tasks]
                 this.newTasks = []
+            },
+
+            mergeDeletedTasks: function () {
+                const that = this
+
+                this.tasks = this.tasks.map(task =>
+                    that.deletedTasks.find(deleted => deleted.id == task.id)
+                        ? null
+                        : task).filter(task => task)
+
+                if (this.deletedTasks.find(deleted => deleted.id == this.$route.params.taskId)) {
+                    router.push({name: 'GroupInfo'})
+                }
+
+                this.deletedTasks = []
+            },
+
+            removeDeleted(id) {
+                this.tasks = this.tasks.filter(task => task.id != id)
+            },
+
+            // todo: rename to be more abstract, for any two arrays
+            getDifference: function (taskMembers, groupMembers) {
+                return groupMembers.map(gMember =>
+                    taskMembers.find(tMember => tMember.id == gMember.id)
+                        ? null
+                        : gMember).filter(member => member)
             },
 
             saveGroup: function () {
@@ -99,6 +136,15 @@
 
             newTask$.subscribe((newTask) => {
                 this.newTasks.push(newTask)
+            })
+
+            deleteTask$.subscribe((deletedTask) => {
+                console.log('deletedTask ', deletedTask)
+                if (this.userId == deletedTask.destructorId) {
+                    this.removeDeleted(deletedTask.id)
+                } else {
+                    this.deletedTasks.push(deletedTask)
+                }
             })
 
             refresh$.subscribe(() => {
