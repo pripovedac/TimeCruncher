@@ -22,7 +22,7 @@
     import * as newComment$ from '../../event-buses/new-comment'
     import * as removeGroup$ from '../../event-buses/remove-group'
     import * as deleteTask$ from '../../event-buses/delete-task'
-
+    import * as updateTask$ from '../../event-buses/updated-task'
 
     export default {
         name: 'HomePage',
@@ -101,6 +101,10 @@
 
                     channel.bind('task_removed', function (deletedTask) {
                         deleteTask$.publish(deletedTask)
+                    })
+
+                    channel.bind('task_edited', function (updatedTask) {
+                        updateTask$.publish(updatedTask)
                     })
 
                     if (id == that.groupId) {

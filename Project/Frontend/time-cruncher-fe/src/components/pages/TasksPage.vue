@@ -22,6 +22,11 @@
             Some tasks are deleted
         </LoadButton>
 
+        <LoadButton v-if="haveUpdates"
+                    @click="updateTasks($event)">
+            You have updates
+        </LoadButton>
+
         <TaskCard v-for="task in tasks"
                   :key="task.id"
                   :id="task.id"
@@ -46,6 +51,7 @@
     import * as newTask$ from '../../event-buses/new-task'
     import * as refresh$ from '../../event-buses/refresh-tasks'
     import * as deleteTask$ from '../../event-buses/delete-task'
+    import * as updateTask$ from '../../event-buses/updated-task'
 
     export default {
         name: 'TasksPage',
@@ -62,7 +68,8 @@
                 newTasks: [],
                 deletedTasks: [],
                 group: {},
-                userId: global.userState.loadId()
+                userId: global.userState.loadId(),
+                haveUpdates: false
             }
         },
         methods: {
@@ -103,6 +110,12 @@
                 this.tasks = this.tasks.filter(task => task.id != id)
             },
 
+            updateTasks() {
+                this.initTasks()
+                this.haveUpdates = false
+                router.push({name: 'GroupInfo'})
+            },
+
             // todo: rename to be more abstract, for any two arrays
             getDifference: function (taskMembers, groupMembers) {
                 return groupMembers.map(gMember =>
@@ -139,11 +152,17 @@
             })
 
             deleteTask$.subscribe((deletedTask) => {
-                console.log('deletedTask ', deletedTask)
                 if (this.userId == deletedTask.destructorId) {
                     this.removeDeleted(deletedTask.id)
                 } else {
                     this.deletedTasks.push(deletedTask)
+                }
+            })
+
+            updateTask$.subscribe((task) => {
+                console.log('za apdejt: ', task)
+                if (task.modifierId != this.userId) {
+                    this.haveUpdates = true
                 }
             })
 
