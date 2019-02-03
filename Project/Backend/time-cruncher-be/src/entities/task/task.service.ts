@@ -27,6 +27,12 @@ export class TaskService {
       throw new TaskNotFoundException(id);
     return res;
   }
+  async findByIdWithCreator(id: number): Promise<Task>{
+    const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['creator']});
+    if (!res)
+      throw new TaskNotFoundException(id);
+    return res;
+  }
   async findByIdWithGroup(id: number): Promise<Task>{
     const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['group']});
     if (!res)
@@ -48,11 +54,13 @@ export class TaskService {
   async removeById(id: number){
     return await this.taskRepository.delete(id);
   }
-  async edit(id: number, editTaskDto: EditTaskDto) {
-    const task: Task = await this.findById(id);
-    task.description = editTaskDto.description;
-    task.dueTime = editTaskDto.dueTime;
-    return await this.taskRepository.save(task);
+  async edit(editedTask: Task): Promise<Task> {
+    // const task: Task = await this.findById(id);
+    // task.group.id = editTaskDto.groupId;
+    // task.name = editTaskDto.name;
+    // task.description = editTaskDto.description;
+    // task.dueTime = editTaskDto.dueTime;
+    return await this.taskRepository.save(editedTask);
   }
   async existsWithId(id: number){
     return await this.taskRepository

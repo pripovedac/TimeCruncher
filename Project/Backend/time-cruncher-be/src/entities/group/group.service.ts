@@ -64,8 +64,9 @@ export class GroupService {
   async removeById(id: number){
     return await this.groupRepository.delete(id);
   }
-  async edit(id: number, editGroupDto: EditGroupDto): Promise<GroupInfoDto> {
+  async edit(id: number, editGroupDto: EditGroupDto, members: User[]): Promise<GroupInfoDto> {
     const group: Group = await this.findById(id);
+    group.users = members;
     group.description = editGroupDto.description;
     group.name = editGroupDto.name;
     const res = await this.groupRepository.save(group as Group);

@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, NotFoundException, Param, Query, UseGuards } from '@nestjs/common';
 import { UserService } from '../user.service';
 import { TaskService } from '../../task/task.service';
 import { GroupService } from '../../group/group.service';
@@ -9,8 +9,9 @@ import { TaskInfoDto } from '../../task/DTOs/task-info.dto';
 import { UserTasksTimePropertiesDto } from '../DTOs/user-tasks-time-properties.dto';
 import { User } from '../user.entity';
 import { UserNotFoundException } from '../../../custom-exceptions/user-not-found.exception';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('users/:userId')
+@UseGuards(AuthGuard('bearer'))
 export class UserIdController {
   constructor(
     private readonly userService: UserService,
@@ -32,18 +33,28 @@ export class UserIdController {
     const user: User = await this.userService.findByIdWithCreatedTasks(params.userId);
     return user.createdTasks.map( x => new TaskInfoDto(x));
   }
-  @Get('daily/:dateString')
-  async getDailyAssignedTasksForUser(@Param() params: UserTasksTimePropertiesDto): Promise<Task[]> {
+  @Get('daily')
+  async getDailyAssignedTasksForUser(@Query() query, @Param() params): Promise<Task[]> {
+    const refDateString = query.dateString === '' || query.dateString === undefined ? new Date().toISOString() : query.dateString;
     if (!await this.userService.existsWithId(params.userId))
       throw new UserNotFoundException(params.userId)
-    const res: Task[] = await this.userService.findDailyTasksByUserId(params.userId, params.dateString);
+    const res: Task[] = await this.userService.findDailyTasksByUserId(params.userId, refDateString);
     return res;
   }
-  @Get('monthly/:dateString')
-  async getMonthlyAssignedTasksForUser(@Param() params): Promise<Task[]> {
+  @Get('monthly')
+  async getMonthlyAssignedTasksForUser(@Param() params, @Query() query): Promise<Task[]> {
+    const refDateString = query.dateString === '' || query.dateString === undefined ? new Date().toISOString() : query.dateString;
     if (!await this.userService.existsWithId(params.userId))
       throw new UserNotFoundException(params.userId);
-    const res: Task[] = await this.userService.findMonthlyTasksByUserId(params.userId, params.dateString);
+    const res: Task[] = await this.userService.findMonthlyTasksByUserId(params.userId, refDateString);
+    return res;
+  }
+  @Get('weekly')
+  async getWeeklyAssignedTasksForUser(@Query() query, @Param() params): Promise<any>{
+    const refDateString = query.dateString === '' || query.dateString === undefined ? new Date().toISOString() : query.dateString;
+    if (!await this.userService.existsWithId(params.userId))
+      throw new UserNotFoundException(params.userId);
+    const res: Task[] = await this.userService.findWeeklyTasksByUserId(params.userId, refDateString);
     return res;
   }
 }

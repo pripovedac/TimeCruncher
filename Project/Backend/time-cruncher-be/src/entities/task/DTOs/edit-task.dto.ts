@@ -1,6 +1,6 @@
 import { Task } from '../task.entity';
 import { classToPlain, plainToClass } from 'class-transformer';
-import { Allow, IsArray, IsDateString, IsNumber, IsString } from 'class-validator';
+import { Allow, IsArray, IsBoolean, IsDateString, IsNumber, IsString } from 'class-validator';
 
 export class EditTaskDto{
 
@@ -12,4 +12,10 @@ export class EditTaskDto{
 
   @Allow()
   dueTime: string;
+
+  @IsBoolean()
+  isCompleted: boolean;
+
+  @IsArray()
+  assignedUserIds: number[];
 }

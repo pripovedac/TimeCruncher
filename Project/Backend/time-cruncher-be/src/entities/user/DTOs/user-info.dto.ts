@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsString } from 'class-validator';
+import {IsNumber, IsString } from 'class-validator';
 import { classToClass, classToPlain, Exclude, plainToClass } from 'class-transformer';
 import { Group } from '../../group/group.entity';
 import { JoinTable, ManyToMany, OneToMany } from 'typeorm';

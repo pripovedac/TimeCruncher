@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Put, UseGuards } from '@nestjs/common';
 import { TaskService } from '../../task/task.service';
 import { GroupService } from '../group.service';
 import { UserService } from '../../user/user.service';
@@ -7,8 +7,9 @@ import { Group } from '../group.entity';
 import { TaskInfoDto } from '../../task/DTOs/task-info.dto';
 import { GroupWithUsersDto } from '../DTOs/group-with-users.dto';
 import { UserInfoDto } from '../../user/DTOs/user-info.dto';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('groups/:groupId')
+@UseGuards(AuthGuard('bearer'))
 export class GroupIdController {
   constructor(
               private readonly taskService: TaskService,

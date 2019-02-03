@@ -18,6 +18,7 @@ import { SqlException } from '../../custom-exceptions/sql.exception';
 import { EditUserDto } from './DTOs/edit-user.dto';
 import {AuthGuard} from '@nestjs/passport';
 @Controller('users')
+@UseGuards(AuthGuard('bearer'))
 export class UserController {
   constructor(
     private readonly userService: UserService,

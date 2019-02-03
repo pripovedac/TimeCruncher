@@ -9,7 +9,7 @@ export class Comment{
 
   @Column({
     type: 'varchar',
-    length: '300',
+    length: '1000',
     nullable: false,
   })
   text: string;
