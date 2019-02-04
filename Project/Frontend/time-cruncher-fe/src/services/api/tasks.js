@@ -2,9 +2,19 @@ import {apiFetch} from '../auth-fetch'
 
 const url = path => `${process.env.VUE_APP_BE_URL}${path}`
 
-export async function getTasks(groupId) {
+// redundant
+export async function getGroupTasks(groupId) {
     return await apiFetch('GET', url(`/groups/${groupId}/tasks`))
 }
+
+export async function getDailyTasks(userId) {
+    return await apiFetch('GET', url(`/users/${userId}/daily`))
+}
+
+export async function getUcategorizedTasks(userId) {
+    return await apiFetch('GET', url(`/users/${userId}/uncategorizedTasks`))
+}
+// until here
 
 export async function getSingleTask(id) {
     return await apiFetch('GET', url(`/tasks/${id}`))

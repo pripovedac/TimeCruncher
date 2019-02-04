@@ -1,13 +1,6 @@
 <template>
     <div>
-        <DayColumn name="Monday" :tasks="tasks1"/>
-        <DayColumn name="Tuesday" :tasks="tasks2"/>
-        <DayColumn name="Wednesday" :tasks="tasks2"/>
-        <DayColumn name="Thursday" :tasks="tasks2"/>
-        <DayColumn name="Friday" :tasks="tasks2"/>
-        <DayColumn name="Saturday" :tasks="tasks2"/>
-        <DayColumn name="Sunday" :tasks="tasks2"/>
-        <p>Dare</p>
+        <PlaceholderInfoPage />
     </div>
 </template>
 
@@ -17,10 +10,11 @@
     import NoTasksCard from "../ui/NoTasksCard";
     import CommentCard from "../ui/CommentCard";
     import DayColumn from "../ui/DayColumn";
+    import PlaceholderInfoPage from "./PlaceholderInfoPage";
 
     export default {
         name: "b",
-        components: {DayColumn, CommentCard, NoTasksCard, LoadButton, MemberCard},
+        components: {PlaceholderInfoPage, DayColumn, CommentCard, NoTasksCard, LoadButton, MemberCard},
         data() {
             return {
                 comment: {

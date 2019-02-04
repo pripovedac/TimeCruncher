@@ -13,14 +13,6 @@
         components: {
             TasksPage,
         },
-
-        data() {
-            return {
-                tasks: [],
-                group: {},
-                info: {},
-            }
-        },
     }
 </script>
 

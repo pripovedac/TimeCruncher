@@ -5,12 +5,12 @@
                 isLate: isLate,
                 isDeleted: isDeleted
      }">
-        <router-link :to="{name: 'TaskInfo',  params: {taskId: id} }">
+        <button @click="changeRoute($event)">
             <CheckCircleIcon v-if="isCompleted"
                              class="icon"/>
             <AlertOctagonIcon v-else-if="isLate" class="icon"/>
             <InfoIcon v-else class="icon"/>
-        </router-link>
+        </button>
         <div class="task-data">
             <h1>{{name}}</h1>
             <p>{{description}}</p>
@@ -53,6 +53,12 @@
 
             }
         },
+        methods: {
+            changeRoute(event) {
+                /*:to="{name: 'TaskInfo',  params: {taskId: id} }"*/
+                this.$emit('changeRoute', this.id)
+            }
+        },
 
         computed: {
             displayedDate() {
@@ -86,11 +92,13 @@
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
     }
 
-    a {
+    button {
         @include centerRowData(center);
-        width: 10%;
+        width: 20%;
         padding: 1.5em;
-        background-color: #fff;
+        border: none;
+        outline: none;
+        cursor: pointer;
     }
 
     // In this ordering.

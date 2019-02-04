@@ -23,7 +23,7 @@ $darkred: rgb(208, 40, 40);
 @mixin taskStatus($color) {
   border: 1px solid $color;
 
-  a {
+  button {
     background-color: $color;
   }
 }

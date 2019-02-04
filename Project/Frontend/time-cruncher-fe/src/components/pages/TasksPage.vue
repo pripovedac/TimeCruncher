@@ -2,8 +2,14 @@
     <div class="tasks-page">
 
         <div class="header">
-            <h1>
+            <h1 v-if="mode == 'Groups'">
                 {{group.name}}
+            </h1>
+            <h1 v-else-if="mode == 'Daily'">
+                Daily tasks
+            </h1>
+            <h1 v-else-if="mode == 'Uncategorized'">
+                Uncategorized tasks
             </h1>
             <router-link :to="{path: '/new-task'}">
                 <PlusCircleIcon class="icon"/>
@@ -35,6 +41,7 @@
                   :date="task.dueTime"
                   :isCompleted="task.isCompleted"
                   :isDeleted="task.isDeleted"
+                  @changeRoute="changeRoute($event)"
         />
 
     </div>
@@ -49,6 +56,7 @@
 
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
+    import {Context, Group, Day, Uncategorized} from '../../services/strategy'
     import * as newTask$ from '../../event-buses/new-task'
     import * as refresh$ from '../../event-buses/refresh-tasks'
     import * as deleteTask$ from '../../event-buses/delete-task'
@@ -72,20 +80,38 @@
                 userId: global.userState.loadId(),
                 haveUpdates: false,
                 haveDeleted: false,
+                context: {},
+                mode: '', // Groups, Daily, Uncategorized
             }
         },
         methods: {
-            initTasks: async function () {
-                console.log('Fetching tasks...')
-                const groupId = this.$route.params.groupId
-                const response = await tasksApi.getTasks(groupId)
+            setMode: function () {
+                this.mode = this.$route.meta.title
+            },
 
+            chooseStrategy: function () {
+                const routeName = this.$route.meta.title
+                const groupId = this.$route.params.groupId
+
+                const strategies = new Map([
+                    ['Groups', new Group(groupId)],
+                    ['Daily', new Day(this.userId)],
+                    ['Uncategorized', new Uncategorized(this.userId)]
+                ])
+
+                this.context = new Context(strategies.get(routeName))
+            },
+
+            initTasks: async function () {
+                this.setMode()
+                this.chooseStrategy()
+                console.log('Fetching tasks...')
+                const response = await this.context.getTasks()
                 if (!response.errorStatus) {
                     this.tasks = response.reverse()
                 } else {
                     alert('Problem with tasks loading.')
                 }
-
             },
 
             mergeNewTasks: function () {
@@ -127,29 +153,43 @@
                         : gMember).filter(member => member)
             },
 
+            changeRoute: function (taskid) {
+                console.log('taskid: ' ,taskid)
+                const path = this.$route.path
+                const newPath = path.includes('tasks')
+                    ? this.context.switchTask(path, taskid)
+                    : this.context.changePath(path, taskid)
+                // router.push({path: this.context.changePath(path, taskid)})
+                router.push({path: newPath})
+            },
+
             saveGroup: function () {
                 const groupId = this.$route.params.groupId
-                const group =  global.groupState.loadSingle(groupId)
-                global.groupState.saveLastActiveGroup(group)
+                const group = global.groupState.loadSingle(groupId)
+                if (group) {
+                    global.groupState.saveLastActiveGroup(group)
+                }
             },
 
             loadGroup: function () {
                 return global.groupState.loadLastActiveGroup()
-            }
+            },
+
+
         },
 
         watch: {
             $route() {
                 // todo might be a problem here, will see
-                // this.initTasks()
+                this.initTasks()
                 this.saveGroup()
                 this.group = this.loadGroup()
             }
         },
         created() {
+            this.group = this.loadGroup()
             this.initTasks()
             this.saveGroup()
-            this.group = this.loadGroup()
 
             newTask$.subscribe((newTask) => {
                 this.newTasks.push(newTask)

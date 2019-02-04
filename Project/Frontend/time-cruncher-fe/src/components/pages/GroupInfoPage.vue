@@ -79,7 +79,7 @@
         },
         data() {
             return {
-                group: this.loadLastActiveGroup(),
+                group: {},
                 members: [],
                 memberEmails: '',
             }
@@ -145,6 +145,8 @@
             }
         },
         created() {
+            this.group = this.loadLastActiveGroup()
+            console.log('group in groupinfo: ', this.group)
             this.initMembers()
         }
     }

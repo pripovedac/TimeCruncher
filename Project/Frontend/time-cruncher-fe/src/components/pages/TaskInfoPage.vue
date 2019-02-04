@@ -197,9 +197,8 @@
             },
 
             fetchGroupMembers: async function () {
-                const id = this.$route.params.groupId
+                const id = this.task.groupId
                 const response = await groupsApi.getMembers(id)
-
                 if (!response.errorStatus) {
                     this.groupMembers = this.getDifference(this.taskMembers, response)
                 } else {

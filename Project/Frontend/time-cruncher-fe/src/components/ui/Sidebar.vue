@@ -37,7 +37,7 @@
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
-            <router-link :to="{path: '/login'}">Daily</router-link>
+            <router-link :to="{name: 'DailyInfo'}">Daily</router-link>
             <router-link :to="{name: 'Weekly'}">Weekly</router-link>
             <router-link :to="{path: '/login'}">Uncategorized</router-link>
         </div>

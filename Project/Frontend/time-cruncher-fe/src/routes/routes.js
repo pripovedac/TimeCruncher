@@ -11,6 +11,7 @@ import MainPage from '../components/pages/MainPage'
 import TaskInfoPage from '../components/pages/TaskInfoPage'
 import GroupInfoPage from '../components/pages/GroupInfoPage'
 import WeeklySchedule from '../components/pages/WeeklySchedule'
+import PlaceholderInfoPage from '../components/pages/PlaceholderInfoPage'
 
 import * as global from '../services/utilites'
 
@@ -73,7 +74,7 @@ const router = new Router({
                             name: 'TaskInfo',
                             component: TaskInfoPage,
                             meta: {
-                                title: 'Home',
+                                title: 'Groups',
                                 isPrivate: true
                             },
                         },
@@ -82,10 +83,38 @@ const router = new Router({
                             name: 'GroupInfo',
                             component: GroupInfoPage,
                             meta: {
-                                title: 'Home',
+                                title: 'Groups',
                                 isPrivate: true
                             },
-                        }
+                        },
+
+                    ],
+                },
+                {
+                    path: 'daily',
+                    name: 'MainPage',
+                    component: MainPage,
+                    title: 'Daily',
+                    children: [
+                        {
+                            path: 'tasks/:taskId',
+                            name: 'TaskInfo',
+                            component: TaskInfoPage,
+                            meta: {
+                                title: 'Daily',
+                                isPrivate: true
+                            },
+                        },
+                        {
+                            path: 'none-selected',
+                            name: 'DailyInfo',
+                            component: PlaceholderInfoPage,
+                            meta: {
+                                title: 'Daily',
+                                isPrivate: true
+                            },
+                        },
+
                     ],
                 },
                 {
