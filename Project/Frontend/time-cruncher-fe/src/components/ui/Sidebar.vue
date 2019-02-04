@@ -37,9 +37,9 @@
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
-            <router-link :to="{name: 'DailyInfo'}">Daily</router-link>
-            <router-link :to="{name: 'Weekly'}">Weekly</router-link>
-            <router-link :to="{path: '/login'}">Uncategorized</router-link>
+            <router-link :to="{name: 'DailyInfo'}"><CalendarIcon class="icon"/>Daily</router-link>
+            <router-link :to="{name: 'Weekly'}"><CalendarIcon class="icon"/>Weekly</router-link>
+            <router-link :to="{name: 'UncategorizedInfo'}"><CalendarIcon class="icon"/>Uncategorized</router-link>
         </div>
     </div>
 </template>
@@ -51,7 +51,8 @@
         LockIcon,
         PlusCircleIcon,
         BellIcon,
-        LogOutIcon
+        LogOutIcon,
+        CalendarIcon
     } from 'vue-feather-icons'
 
     export default {
@@ -62,7 +63,8 @@
             LockIcon,
             PlusCircleIcon,
             BellIcon,
-            LogOutIcon
+            LogOutIcon,
+            CalendarIcon
         },
         props: {
             groups: {
@@ -172,6 +174,7 @@
 
     a {
         @include remove(outline, text-decoration);
+        @include centerRowData('center');
         color: white;
     }
 

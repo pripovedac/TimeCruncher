@@ -114,7 +114,32 @@ const router = new Router({
                                 isPrivate: true
                             },
                         },
-
+                    ],
+                },
+                {
+                    path: 'uncategorized',
+                    name: 'Uncategorized',
+                    component: MainPage,
+                    title: 'Uncategorized',
+                    children: [
+                        {
+                            path: 'tasks/:taskId',
+                            name: 'TaskInfo',
+                            component: TaskInfoPage,
+                            meta: {
+                                title: 'Uncategorized',
+                                isPrivate: true
+                            },
+                        },
+                        {
+                            path: 'none-selected',
+                            name: 'UncategorizedInfo',
+                            component: PlaceholderInfoPage,
+                            meta: {
+                                title: 'Uncategorized',
+                                isPrivate: true
+                            },
+                        },
                     ],
                 },
                 {
