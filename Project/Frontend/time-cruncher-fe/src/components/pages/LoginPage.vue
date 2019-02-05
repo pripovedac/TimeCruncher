@@ -73,7 +73,7 @@
                     const group = global.groupState.loadLastActiveGroup()
                     group
                         ? router.push({name: 'GroupInfo', params: {groupId: group.id}})
-                        : router.push('/home')
+                        : router.push('/home/daily/none-selected')
                 } else {
                     alert('Check your credentials, please')
                 }

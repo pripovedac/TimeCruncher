@@ -16,11 +16,15 @@
     .blank-page {
         @include centerRowData('center');
         height: 100vh;
-        /*width: 100%;*/
-        /*align-items: center;*/
+        margin: 0 auto;
         padding-left: 1em;
         padding-right: 1em;
         background-color: #fff;
         border-left: 2px solid #eee;
+
+        p {
+            display: block;
+            margin: 0 auto;
+        }
     }
 </style>

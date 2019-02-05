@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PlaceholderInfoPage />
+        <WelcomePage />
     </div>
 </template>
 
@@ -11,10 +11,11 @@
     import CommentCard from "../ui/CommentCard";
     import DayColumn from "../ui/DayColumn";
     import PlaceholderInfoPage from "./PlaceholderInfoPage";
+    import WelcomePage from "./WelcomePage";
 
     export default {
         name: "b",
-        components: {PlaceholderInfoPage, DayColumn, CommentCard, NoTasksCard, LoadButton, MemberCard},
+        components: {WelcomePage, PlaceholderInfoPage, DayColumn, CommentCard, NoTasksCard, LoadButton, MemberCard},
         data() {
             return {
                 comment: {

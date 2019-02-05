@@ -25,7 +25,7 @@
         width: 65%;
     }
 
-    .task-info {
+    .task-info, .blank-page {
         width: 35%;
         position: sticky;
         top: 0;

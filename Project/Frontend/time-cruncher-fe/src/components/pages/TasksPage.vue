@@ -11,7 +11,7 @@
             <h1 v-else-if="mode == 'Uncategorized'">
                 Uncategorized tasks
             </h1>
-            <router-link :to="{path: '/new-task'}">
+            <router-link :to="{path: '/new-task'}" v-if="mode == 'Groups'">
                 <PlusCircleIcon class="icon"/>
             </router-link>
         </div>

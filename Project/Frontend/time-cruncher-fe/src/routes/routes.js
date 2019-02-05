@@ -12,6 +12,7 @@ import TaskInfoPage from '../components/pages/TaskInfoPage'
 import GroupInfoPage from '../components/pages/GroupInfoPage'
 import WeeklySchedule from '../components/pages/WeeklySchedule'
 import PlaceholderInfoPage from '../components/pages/PlaceholderInfoPage'
+import WelcomePage from '../components/pages/WelcomePage'
 
 import * as global from '../services/utilites'
 
@@ -64,6 +65,12 @@ const router = new Router({
                 isPrivate: true
             },
             children: [
+                {
+                  path: 'welcome',
+                  name: 'WelcomePage',
+                  component: WelcomePage,
+                  title: 'Welcome'
+                },
                 {
                     path: 'groups/:groupId',
                     name: 'MainPage',
@@ -180,7 +187,7 @@ router.beforeEach((to, from, next) => {
     const group = global.groupState.loadLastActiveGroup()
     const isPagePrivate = to.matched.some(record => record.meta.isPrivate)
     if (isLoggedIn && !isPagePrivate) {
-        next('/home')
+        next('/home/daily/none-selected')
     } else if (!isLoggedIn && isPagePrivate) {
         next('/login')
     } else {
