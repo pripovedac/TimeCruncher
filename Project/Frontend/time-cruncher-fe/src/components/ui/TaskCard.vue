@@ -6,10 +6,12 @@
                 isDeleted: isDeleted
      }">
         <button @click="changeRoute($event)">
-            <CheckCircleIcon v-if="isCompleted"
-                             class="icon"/>
-            <AlertOctagonIcon v-else-if="isLate" class="icon"/>
-            <InfoIcon v-else class="icon"/>
+            <span>
+                <CheckCircleIcon v-if="isCompleted"
+                                 class="icon"/>
+                <AlertOctagonIcon v-else-if="isLate" class="icon"/>
+                <InfoIcon v-else class="icon"/>
+            </span>
         </button>
         <div class="task-data">
             <h1>{{name}}</h1>
@@ -49,9 +51,7 @@
             isCompleted: {
                 //type: Boolean
             },
-            isDeleted: {
-
-            }
+            isDeleted: {}
         },
         methods: {
             changeRoute(event) {
@@ -127,6 +127,7 @@
 
     .icon {
         color: #fff;
+        width: 1.3em;
     }
 
     .task-data {

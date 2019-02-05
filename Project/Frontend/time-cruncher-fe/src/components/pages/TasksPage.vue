@@ -154,12 +154,10 @@
             },
 
             changeRoute: function (taskid) {
-                console.log('taskid: ' ,taskid)
                 const path = this.$route.path
                 const newPath = path.includes('tasks')
                     ? this.context.switchTask(path, taskid)
                     : this.context.changePath(path, taskid)
-                // router.push({path: this.context.changePath(path, taskid)})
                 router.push({path: newPath})
             },
 

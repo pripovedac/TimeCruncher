@@ -8,13 +8,15 @@
             </h1>
 
             <div class="top-data">
-                <p>Published on: {{publishTime}}</p>
                 <label class="label-container">
                     Due date:
                     <input type="date"
                            v-model="dueTime"/>
                 </label>
-                <p>Created by:</p>
+                <label class="label-container">
+                    <p>Is task completed?</p>
+                    <Checkbox @changeState="changeState($event)" :checked="task.isCompleted"/>
+                </label>
             </div>
 
             <div class="description-container">
@@ -53,11 +55,11 @@
                 </div>
             </div>
 
-            <label class="label-checkbox">
-                <Checkbox @changeState="changeState($event)"/>
-                Is task completed?
-            </label>
-
+            <div class="task-info-section">
+                <p>Published on: {{publishTime}}</p>
+                <p>Created by: {{task.creatorName}}</p>
+                <p v-if="task.completionTime">Closed on: {{completionTime}}</p>
+            </div>
             <div class="danger-zone">
                 <h2>
                     <Trash2Icon class="icon"/>
@@ -98,7 +100,7 @@
     import MemberCard from '../ui/MemberCard'
     import CommentSection from './CommentSection'
     import DeleteButton from '../ui/DeleteButton'
-    import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
+    import {AlignLeftIcon, UsersIcon, Trash2Icon, Edit2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import {dateController} from '../../services/date-transformations'
     import * as global from '../../services/utilites'
@@ -116,7 +118,8 @@
             AlignLeftIcon,
             UsersIcon,
             DeleteButton,
-            Trash2Icon
+            Trash2Icon,
+            Edit2Icon,
         },
 
         data() {
@@ -126,6 +129,7 @@
                 group: this.loadLastActiveGroup(),
                 task: {},
                 publishTime: {},
+                completionTime: {},
                 dueTime: {},
                 comments: [],
             }
@@ -178,6 +182,7 @@
                 if (!response.errorStatus) {
                     this.task = response
                     this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
+                    this.completionTime = dateController.toInputFormat(new Date(this.task.completionTime))
                     this.dueTime = dateController.toString(new Date(this.task.dueTime))
                 } else {
                     // todo: handle errors
@@ -293,6 +298,12 @@
     h1 {
         font-size: 1.4em;
         font-weight: bold;
+
+        input {
+            text-overflow: ellipsis;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
     }
 
     h2 {
@@ -302,18 +313,17 @@
 
     .label-container {
         @include centerRowData();
+        margin-bottom: 0.5em;
         font-size: 1em;
+        align-items: center;
     }
 
     input[type="date"] {
         @include remove(border, outline);
         width: 40%;
         font-family: inherit;
-    }
-
-    input {
-        font-size: 1.5em;
-        font-weight: bold;
+        font-weight: normal;
+        font-size: 1em;
     }
 
     // dates and creator name
@@ -323,6 +333,7 @@
 
     p {
         margin-top: 0;
+        margin-bottom: 0;
         font-size: inherit;
     }
 
@@ -401,16 +412,9 @@
         font-size: 1.2em;
     }
 
-    .label-checkbox {
-        display: flex;
-        margin-top: 1em;
-        justify-content: center;
-        align-self: flex-start;
-        font-size: 0.8em;
-    }
-
     .checkbox {
-        margin-right: 0.8em;
+        margin-left: 0.8em;
+        /*margin-bottom: 1em;*/
     }
 
     .icon {
@@ -418,8 +422,18 @@
         width: 1em;
     }
 
+    .task-info-section {
+        height: 10vh;
+        p {
+            font-size: 0.8em;
+            /*border: 1px solid red;*/
+            margin-top: 0;
+            margin-bottom: 0.4em;
+        }
+    }
+
+
     .danger-zone {
-        margin-top: 1em;
         box-sizing: border-box;
     }
 

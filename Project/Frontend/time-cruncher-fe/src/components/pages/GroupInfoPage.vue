@@ -131,7 +131,14 @@
             },
 
             loadLastActiveGroup: function () {
-                return global.groupState.loadLastActiveGroup()
+                const group = global.groupState.loadLastActiveGroup()
+                const groupId = this.$route.params.groupId
+                if (!group && groupId) {
+                    const result = global.groupState.loadSingle(groupId)
+                    this.saveLastActiveGroup(result)
+                    return result
+                }
+                return group
             },
 
             getFirstGroup: function () {
