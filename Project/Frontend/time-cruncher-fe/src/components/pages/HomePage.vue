@@ -16,7 +16,7 @@
     import Sidebar from '../ui/Sidebar'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
-    import {pusher} from '../../services/pusher'
+    import {SingletonPusher} from '../../services/pusher'
     import * as groupsApi from '../../services/api/groups'
     import * as newTask$ from '../../event-buses/new-task'
     import * as newComment$ from '../../event-buses/new-comment'
@@ -36,7 +36,8 @@
                 tasks: [],
                 user: {},
                 groupId: this.getGroupId(),
-                userId: this.getUserId()
+                userId: this.getUserId(),
+                pusher: {},
             }
         },
         methods: {
@@ -55,7 +56,8 @@
             },
 
             initPusher: function () {
-                pusher.config.auth.headers = {'access_token': this.loadAT()}
+                this.pusher = SingletonPusher.Instance()
+                this.pusher.config.auth.headers = {'access_token': this.loadAT()}
             },
 
             fetchGroups: async function () {
@@ -83,14 +85,15 @@
             },
 
             unsubscribeFromAll: function (ids) {
-                ids.forEach(id => pusher.unsubscribe(`private-channel_for_group-${id}`))
+                const that = this
+                ids.forEach(id => that.pusher.unsubscribe(`private-channel_for_group-${id}`))
             },
 
             subscribeToAll: function (ids) {
                 const that = this
 
                 ids.forEach(id => {
-                    const channel = pusher.subscribe(`private-channel_for_group-${id}`)
+                    const channel = that.pusher.subscribe(`private-channel_for_group-${id}`)
                     channel.bind('task_added', function (newTask) {
                         if (newTask.group.id == that.groupId) {
                             newTask$.publish(newTask)
@@ -116,12 +119,12 @@
             },
 
             unsubscribeFromGroupUpdates: function () {
-                pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
+                this.pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
             },
 
             subscribeToGroupUpdates: function () {
                 const that = this
-                const channel = pusher.subscribe(`private-channel_for_user-${this.userId}`)
+                const channel = this.pusher.subscribe(`private-channel_for_user-${this.userId}`)
                 channel.bind('added_to_group', function (newGroup) {
                     alert('New group!')
                     that.newGroups.push(newGroup)
