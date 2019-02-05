@@ -5,6 +5,10 @@ const url = path => `${process.env.VUE_APP_BE_URL}${path}`
 export async function getWeeklyTasks(taskId) {
     return await apiFetch('GET', url(`/users/${taskId}/weekly`))
 }
+
+export async function getSpecificWeekTasks(taskId, dateString) {
+    return await apiFetch('GET', url(`/users/${taskId}/weekly?dateString=${dateString}`))
+}
 //
 // export async function getSingleTask(id) {
 //     return await apiFetch('GET', url(`/tasks/${id}`))

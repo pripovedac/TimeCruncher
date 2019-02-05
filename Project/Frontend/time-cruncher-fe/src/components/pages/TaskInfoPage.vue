@@ -100,7 +100,7 @@
     import MemberCard from '../ui/MemberCard'
     import CommentSection from './CommentSection'
     import DeleteButton from '../ui/DeleteButton'
-    import {AlignLeftIcon, UsersIcon, Trash2Icon, Edit2Icon} from 'vue-feather-icons'
+    import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import {dateController} from '../../services/date-transformations'
     import * as global from '../../services/utilites'
@@ -119,7 +119,6 @@
             UsersIcon,
             DeleteButton,
             Trash2Icon,
-            Edit2Icon,
         },
 
         data() {

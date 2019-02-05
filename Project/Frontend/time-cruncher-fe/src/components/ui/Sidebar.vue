@@ -38,7 +38,7 @@
         <div class="filter-container">
             <h3>Filters</h3>
             <router-link :to="{name: 'DailyInfo'}"><CalendarIcon class="icon"/>Daily</router-link>
-            <router-link :to="{name: 'Weekly'}"><CalendarIcon class="icon"/>Weekly</router-link>
+            <router-link :to="{name: 'Weekly', query: {offset: 0}}"><CalendarIcon class="icon"/>Weekly</router-link>
             <router-link :to="{name: 'UncategorizedInfo'}"><CalendarIcon class="icon"/>Uncategorized</router-link>
         </div>
     </div>
