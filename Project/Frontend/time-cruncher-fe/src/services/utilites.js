@@ -10,6 +10,10 @@ export class StateFactory {
     remove(name) {
         localStorage.removeItem(name)
     }
+
+    clear() {
+        localStorage.clear()
+    }
 }
 
 export class GroupState extends StateFactory {
@@ -75,6 +79,6 @@ export class UserState extends StateFactory {
     }
 }
 
-
+export const storageHandler = new StateFactory()
 export const groupState = new GroupState()
 export const userState = new UserState()

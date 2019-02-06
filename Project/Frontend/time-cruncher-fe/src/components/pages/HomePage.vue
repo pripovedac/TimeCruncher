@@ -164,7 +164,7 @@
             },
 
             clearStorage: function () {
-                global.userState.removeUser()
+                global.storageHandler.clear()
             },
 
             getGroupId: function () {
