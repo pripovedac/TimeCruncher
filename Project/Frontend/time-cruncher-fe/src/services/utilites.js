@@ -27,10 +27,13 @@ export class GroupState extends StateFactory {
 
     loadSingle(groupId) {
         const groups = this.load()
-        const res = groups.filter(({id}) => id == groupId)
-        return res.length > 0 ?
-            res[0] :
-            null
+        if (groups) {
+            const res = groups.filter(({id}) => id == groupId)
+            return res.length > 0 ?
+                res[0] :
+                null
+        }
+        return null
     }
 
     getFirst() {

@@ -172,8 +172,6 @@
             loadGroup: function () {
                 return global.groupState.loadLastActiveGroup()
             },
-
-
         },
 
         watch: {
