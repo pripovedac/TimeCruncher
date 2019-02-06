@@ -172,20 +172,23 @@
             loadGroup: function () {
                 return global.groupState.loadLastActiveGroup()
             },
+
+            bootstrap() {
+                this.initTasks()
+                this.saveGroup()
+            },
         },
 
         watch: {
             $route() {
                 // todo might be a problem here, will see
-                this.initTasks()
-                this.saveGroup()
+                this.bootstrap()
                 this.group = this.loadGroup()
             }
         },
         created() {
             this.group = this.loadGroup()
-            this.initTasks()
-            this.saveGroup()
+            this.bootstrap()
 
             newTask$.subscribe((newTask) => {
                 this.newTasks.push(newTask)
@@ -259,6 +262,5 @@
         margin-bottom: 1em;
         width: 35vw;
     }
-
 
 </style>
