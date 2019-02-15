@@ -48,6 +48,12 @@ export class GroupState extends StateFactory {
     loadLastActiveGroup() {
         return super.load('lastGroup')
     }
+
+    addGroup(group) {
+        let groups = this.load()
+        groups.push(group)
+        this.save(groups)
+    }
 }
 
 export class UserState extends StateFactory {

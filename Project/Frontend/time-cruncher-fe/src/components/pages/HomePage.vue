@@ -116,6 +116,11 @@
                         // this.groups.map(existingGroup => existingGroup.id == group.id ? group : existingGroup)})
                     })
 
+                    channel.bind('group_removed', function (groupId) {
+                        console.log('delete group pusher: ', groupId)
+                        this.groups = this.groups.filter(({id}) => id != groupId)
+                    })
+
                     if (id == that.groupId) {
                         channel.bind('comment_added', function (newComment) {
                             newComment$.publish(newComment)
@@ -134,6 +139,8 @@
                 channel.bind('added_to_group', function (newGroup) {
                     alert('New group!')
                     that.newGroups.push(newGroup)
+                    that.saveNewGroup(newGroup)
+                    console.log('done')
                 })
             },
 
@@ -169,6 +176,10 @@
                 return global.groupState.loadLastActiveGroup()
             },
 
+            saveNewGroup: function (group) {
+                global.groupState.addGroup(group)
+            },
+
             clearStorage: function () {
                 global.storageHandler.clear()
             },
@@ -192,10 +203,10 @@
             await this.initGroups()
             await this.initUser()
             this.subscribeToChannels()
-
-            removeGroup$.subscribe((groupId) => {
-                this.groups = this.groups.filter(({id}) => id != groupId)
-            })
+            //
+            // removeGroup$.subscribe((groupId) => {
+            //     this.groups = this.groups.filter(({id}) => id != groupId)
+            // })
 
             // updateGroup$.subscribe((this.group.id) => {})
         },
@@ -207,7 +218,7 @@
         display: flex;
     }
 
-    .sidebar, .sidebar-container{
+    .sidebar, .sidebar-container {
         width: 15vw;
         position: sticky;
         top: 0;
