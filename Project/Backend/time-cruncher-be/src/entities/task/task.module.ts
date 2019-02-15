@@ -8,11 +8,13 @@ import { Group } from '../group/group.entity';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
 import { TaskIdController } from './task-id/task-id.controller';
+import { AccessTokenService } from '../access-token/access-token.service';
+import { AccessToken } from '../access-token/access-token.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, Group, User])],
+  imports: [TypeOrmModule.forFeature([Task, Group, User, AccessToken])],
   controllers: [TaskController, TaskIdController],
-  providers: [TaskService, GroupService, UserService],
+  providers: [TaskService, GroupService, UserService, AccessTokenService],
   exports: [TaskService],
 })
 export class TaskModule {}

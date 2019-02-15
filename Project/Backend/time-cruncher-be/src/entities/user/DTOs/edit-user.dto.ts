@@ -1,9 +1,6 @@
 import { Allow, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class EditUserDto{
-  @IsNumber()
-  id: number;
-
   @IsString()
   firstname: string;
 
@@ -12,8 +9,4 @@ export class EditUserDto{
 
   @Allow()
   email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  password: string;
 }

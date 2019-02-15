@@ -17,6 +17,7 @@ import { UserInfoDto } from './DTOs/user-info.dto';
 import { SqlException } from '../../custom-exceptions/sql.exception';
 import { EditUserDto } from './DTOs/edit-user.dto';
 import {AuthGuard} from '@nestjs/passport';
+import { UserNotFoundException } from '../../custom-exceptions/user-not-found.exception';
 @Controller('users')
 @UseGuards(AuthGuard('bearer'))
 export class UserController {
@@ -45,12 +46,14 @@ export class UserController {
   }
 
   @Put(':id')
-  async editUser(@Param() params, @Body() createUserDto: CreateUserDto): Promise<UserInfoDto>{
-    const exists = await this.userService.existsWithId(params.id);
-    if (!exists)
-      throw new HttpException({message: `User with id = ${params.id} not found.`}, HttpStatus.NOT_FOUND);
-    const editUserDto: EditUserDto = { id: parseInt(params.id, 10), ...createUserDto};
-    const res = await this.userService.edit(editUserDto);
+  async editUser(@Param() params, @Body() editUserDto: EditUserDto): Promise<UserInfoDto>{
+    const user = await this.userService.findById(params.id);
+    if (!user)
+      throw new UserNotFoundException(params.id);
+    user.firstname = editUserDto.firstname;
+    user.lastname = editUserDto.lastname;
+    user.email = editUserDto.email;
+    const res = await this.userService.edit(user);
     return new UserInfoDto(res);
   }
 }

@@ -35,7 +35,7 @@ export class TaskIdController {
     const res: Task = await this.taskService.assignUsers(params.id, assignedUserIds.userIds);
     return new TaskWithAssignedUsersDto(res);
   }
-  @Get('users')
+  @Get('assignedUsers')
   async findTaskByIdWithAssignedUsers(@Param() params): Promise<User[]>{
     const res: Task = await this.taskService.findByIdWithAssignedUsers(params.id);
     return res.assignedUsers;

@@ -57,4 +57,9 @@ export class UserIdController {
     const res: Task[] = await this.userService.findWeeklyTasksByUserId(params.userId, refDateString);
     return res;
   }
+  @Get('uncategorizedTasks')
+  async getUncategorizedTasksFroUser(@Param() params){
+    const res: Task[] = await this.userService.findUncategorizedTasks(params.userId);
+    return res;
+  }
 }

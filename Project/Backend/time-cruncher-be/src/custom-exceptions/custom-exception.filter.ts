@@ -1,6 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
 import { ValidationMessage } from './validation-message.class';
-import { isArray } from 'util';
 @Catch(HttpException)
 export class CustomExceptionFilter implements ExceptionFilter{
   catch(exception: HttpException, host: ArgumentsHost) {

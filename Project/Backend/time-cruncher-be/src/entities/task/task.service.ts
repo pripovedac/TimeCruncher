@@ -33,6 +33,12 @@ export class TaskService {
       throw new TaskNotFoundException(id);
     return res;
   }
+  async findByIdWithCreatorAndGroup(id: number): Promise<Task>{
+    const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['creator', 'group']});
+    if (!res)
+      throw new TaskNotFoundException(id);
+    return res;
+  }
   async findByIdWithGroup(id: number): Promise<Task>{
     const res: Task = await this.taskRepository.findOne({ where: {id}, relations: ['group']});
     if (!res)

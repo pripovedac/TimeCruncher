@@ -55,6 +55,10 @@ export class GroupService {
       throw new GroupNotFoundException(id);
     return res;
   }
+  async findByIdWithUsersNoThrow(id: number): Promise<Group>{
+    const res: Group = await this.groupRepository.findOne({ where: {id}, relations: ['users']});
+    return res;
+  }
   async findByIdWithTasks(id: number): Promise<Group>{
     const res: Group = await this.groupRepository.findOne({ where: {id}, relations: ['tasks']});
     if (!res)

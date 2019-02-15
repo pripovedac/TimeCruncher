@@ -22,7 +22,6 @@ import { GroupNotFoundException } from '../../custom-exceptions/group-not-found.
 import { pusher } from '../../pusher';
 import { create } from 'domain';
 import { AuthGuard } from '@nestjs/passport';
-
 @Controller('groups')
 @UseGuards(AuthGuard('bearer'))
 export class GroupController {
@@ -90,14 +89,13 @@ export class GroupController {
 
   @Put(':id')
   async editGroup(@Param() params, @Headers() headers, @Body() editGroupDto: EditGroupDto) {
-
     const userReq: User = await this.userService.findByAccessToken(headers.authorization.split(' ')[1]);
     if (editGroupDto.memberEmails.find( x => x == userReq.email) == undefined)
       editGroupDto.memberEmails.push(userReq.email);
     const members: User[] = await this.userService.findUsersFromEmailList(editGroupDto.memberEmails);
     const res: Group = await this.groupService.edit(params.id, editGroupDto, members);
     if (!res.isPrivate){
-      pusher.trigger('private-channel_for_group-' + res.id, 'group_edited', JSON.stringify({id: res.id}));
+      pusher.trigger('private-channel_for_group-' + res.id, 'group_edited', JSON.stringify(res));
     }
     return res;
   }

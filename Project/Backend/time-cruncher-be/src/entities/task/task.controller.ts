@@ -26,6 +26,8 @@ import { EditTaskDto } from './DTOs/edit-task.dto';
 import { TaskNotFoundException } from '../../custom-exceptions/task-not-found.exception';
 import { pusher } from '../../pusher';
 import { AuthGuard } from '@nestjs/passport';
+import { UserNotFoundException } from '../../custom-exceptions/user-not-found.exception';
+import { AccessTokenService } from '../access-token/access-token.service';
 @Controller('tasks')
 @UseGuards(AuthGuard('bearer'))
 export class TaskController {
@@ -33,6 +35,7 @@ export class TaskController {
     private readonly taskService: TaskService,
     private readonly groupService: GroupService,
     private readonly userService: UserService,
+    private readonly accessTokenService: AccessTokenService,
   ) {}
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -68,21 +71,22 @@ export class TaskController {
   }
 
   @Get(':id')
-  async findTaskById(@Param() params): Promise<TaskInfoDto>{
-    const res: Task = await this.taskService.findByIdWithCreator(params.id);
+  async findTaskById(@Param() params): Promise<any>{
+    const res: Task = await this.taskService.findByIdWithCreatorAndGroup(params.id);
     if (!res)
       throw new TaskNotFoundException(params.id);
     const retTask: TaskInfoDto = new TaskInfoDto(res);
     retTask.creatorName = res.creator.firstname + ' ' + res.creator.lastname;
-    return retTask;
+    return {...retTask, groupId: res.group.id};
   }
   @Delete(':id')
-  async removeTaskById(@Param() params){
+  async removeTaskById(@Param() params, @Headers() headers){
+    const destructorId = await this.accessTokenService.findUserId(headers.authorization.split(' ')[1]);
     const task = await this.taskService.findByIdWithGroup(params.id);
     if (!task)
       throw new TaskNotFoundException(params.id);
     const res = await this.taskService.removeById(params.id);
-    pusher.trigger('private-channel_for_group-' + task.group.id, 'task_removed', JSON.stringify({id: params.id}));
+    pusher.trigger('private-channel_for_group-' + task.group.id, 'task_removed', JSON.stringify({id: params.id, destructorId}));
     return {messsage: `Task with id = ${params.id} successfully removed.`};
   }
 
@@ -105,8 +109,9 @@ export class TaskController {
       delete taskForEdit.executor.password;
     }
     const res = await this.taskService.edit(taskForEdit);
+    const modifierId = await this.accessTokenService.findUserId(headers.authorization.split(' ')[1])
     if (res){
-      pusher.trigger('private-channel_for_group-' + taskForEdit.group.id, 'task_edited', JSON.stringify(taskForEdit));
+      pusher.trigger('private-channel_for_group-' + taskForEdit.group.id, 'task_edited', JSON.stringify({...taskForEdit, modifierId}));
     }
     return res;
   }
