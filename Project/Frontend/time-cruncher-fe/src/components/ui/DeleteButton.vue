@@ -26,7 +26,7 @@
         justify-content: center;
         padding: 0.5em;
         background: white;
-
+        border: none;
         border-radius: 4px;
         text-transform: uppercase;
         font-weight: bold;

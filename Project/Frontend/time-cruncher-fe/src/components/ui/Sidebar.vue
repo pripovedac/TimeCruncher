@@ -6,9 +6,16 @@
                 <UserIcon class="icon"/>
                 <span>{{user.firstname}} {{user.lastname}}</span>
             </h1>
+        </div>
+        <div class="user-actions">
             <button @click="logout($event)">
                 <LogOutIcon class="icon"/>
+                Logout
             </button>
+            <router-link :to="{name: 'ModifyUser'}">
+                <BookOpenIcon class="icon"/>
+                User details
+            </router-link>
         </div>
 
         <div class="group-header">
@@ -18,7 +25,7 @@
                     <BellIcon class="icon"/>
                 </button>
             </div>
-            <router-link :to="{path:'/new-group'}">
+            <router-link :to="{name:'/new-group'}">
                 <PlusCircleIcon class="plus-icon"/>
             </router-link>
         </div>
@@ -37,9 +44,18 @@
         </div>
         <div class="filter-container">
             <h3>Filters</h3>
-            <router-link :to="{name: 'DailyInfo'}"><CalendarIcon class="icon"/>Daily</router-link>
-            <router-link :to="{name: 'Weekly', query: {offset: 0}}"><CalendarIcon class="icon"/>Weekly</router-link>
-            <router-link :to="{name: 'UncategorizedInfo'}"><CalendarIcon class="icon"/>Uncategorized</router-link>
+            <router-link :to="{name: 'DailyInfo'}">
+                <CalendarIcon class="icon"/>
+                Daily
+            </router-link>
+            <router-link :to="{name: 'Weekly', query: {offset: 0}}">
+                <CalendarIcon class="icon"/>
+                Weekly
+            </router-link>
+            <router-link :to="{name: 'UncategorizedInfo'}">
+                <CalendarIcon class="icon"/>
+                Uncategorized
+            </router-link>
         </div>
     </div>
 </template>
@@ -52,7 +68,8 @@
         PlusCircleIcon,
         BellIcon,
         LogOutIcon,
-        CalendarIcon
+        CalendarIcon,
+        BookOpenIcon,
     } from 'vue-feather-icons'
 
     export default {
@@ -64,7 +81,8 @@
             PlusCircleIcon,
             BellIcon,
             LogOutIcon,
-            CalendarIcon
+            CalendarIcon,
+            BookOpenIcon,
         },
         props: {
             groups: {
@@ -115,16 +133,21 @@
     h1 {
         @include centerRowData();
         font-size: 0.8em;
+        margin-bottom: 0em;
     }
 
-    // Logout button
-    h1 + button {
-        @include centerRowData();
-        @include remove(border, background);
-        padding: 0;
-        color: white;
-        cursor: pointer;
-        font-family: inherit;
+    // Logout and user details
+    .user-actions {
+        button, a {
+            @include centerRowData();
+            @include remove(border, background);
+            padding: 0;
+            padding-left: 0.5em;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8em;
+        }
     }
 
     h1 > .icon {

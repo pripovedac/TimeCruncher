@@ -2,6 +2,14 @@ import {apiFetch} from '../auth-fetch'
 
 const url = path => `${process.env.VUE_APP_BE_URL}${path}`
 
+export async function getUser(id) {
+    return await apiFetch('GET', url(`/users/${id}`))
+}
+
+export async function updateUser(id, data) {
+    return await apiFetch('PUT', url(`/users/${id}`), data)
+}
+
 export async function getWeeklyTasks(taskId) {
     return await apiFetch('GET', url(`/users/${taskId}/weekly`))
 }

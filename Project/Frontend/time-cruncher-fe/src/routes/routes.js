@@ -13,6 +13,7 @@ import GroupInfoPage from '../components/pages/GroupInfoPage'
 import WeeklySchedule from '../components/pages/WeeklySchedule'
 import PlaceholderInfoPage from '../components/pages/PlaceholderInfoPage'
 import WelcomePage from '../components/pages/WelcomePage'
+import ModifyUserPage from '../components/pages/ModifyUserPage'
 
 import * as global from '../services/utilites'
 
@@ -179,6 +180,16 @@ const router = new Router({
                 isPrivate: true
             }
         },
+        {
+            path: '/modify-user',
+            name: 'ModifyUser',
+            component: ModifyUserPage,
+            meta: {
+                title: 'Modify user',
+                isPrivate: true
+            }
+        },
+
     ]
 })
 
