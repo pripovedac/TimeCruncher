@@ -8,6 +8,10 @@ export async function getGroups() {
     return await apiFetch('GET', process.env.VUE_APP_BE_URL + `/users/${userId}/groups`)
 }
 
+export async function updateSingle(id, data) {
+    return await apiFetch('PUT', process.env.VUE_APP_BE_URL + `/groups/${id}`, data)
+}
+
 export async function getMembers(id) {
     return await apiFetch('GET', url(`/groups/${id}/users`))
 }

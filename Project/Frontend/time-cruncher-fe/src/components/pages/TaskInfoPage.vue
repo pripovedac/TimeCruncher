@@ -134,7 +134,7 @@
             }
         },
         methods: {
-            init: async function () {
+            bootstrap: async function () {
                 await this.fetchTask()
                 await this.fetchTaskMembers()
                 await this.fetchGroupMembers()
@@ -257,12 +257,12 @@
         },
         watch: {
             $route: function () {
-                this.init()
+                this.bootstrap()
             }
         }
         ,
         created: function () {
-            this.init()
+            this.bootstrap()
         }
         ,
     }

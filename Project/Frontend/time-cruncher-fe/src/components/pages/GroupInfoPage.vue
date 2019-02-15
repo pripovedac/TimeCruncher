@@ -1,6 +1,6 @@
 <template>
-    <div class="task-info">
-        <form @submit.prevent="updateTask($event)">
+    <div class="task-info" :class="{loading: isLoading}">
+        <form @submit.prevent="updateGroup($event)">
             <h1>
                 <input aria-label="title" placeholder="Task name"
                        v-model="group.name"
@@ -35,6 +35,7 @@
                                 :key="member.id"
                                 :firstname="member.firstname"
                                 :lastname="member.lastname"
+                                :email="member.email"
                                 :id="member.id"
                                 @click="removeMember($event)">
                     </MemberCard>
@@ -77,22 +78,44 @@
             UsersIcon,
             Trash2Icon,
         },
+        props: {
+        },
+
         data() {
             return {
                 group: {},
                 members: [],
                 memberEmails: '',
+                isLoading: false,
             }
         },
         methods: {
-            updateTask() {
+            updateGroup: async function() {
+                const currentMails = this.members.map(member => member.email)
+                const memberMails = [...currentMails, ...this.separateMails(this.memberEmails)]
 
+                const updatedGroup = {
+                    name: this.group.name,
+                    description: this.group.description,
+                    memberEmails: memberMails,
+                }
+
+                this.isLoading = true
+                const response = await groupsApi.updateSingle(this.$route.params.groupId, updatedGroup)
+                if (!response.errorStatus) {
+                    this.name = response.name
+                    this.description = response.description
+                    this.members = response.users
+                    this.isLoading = false
+                } else {
+                    alert('Problem with group update.')
+                }
             },
 
             initMembers: async function () {
                 const groupId = this.$route.params.groupId
                 const response = await groupsApi.getMembers(groupId)
-
+                console.log('group members: ', response)
                 if (!response.errorStatus) {
                     this.members = response
                 } else {
@@ -101,7 +124,8 @@
             },
 
             deleteGroup: async function () {
-                const shouldDelete = confirm(`Are you sure you want to delete group ${this.group.name}?`)
+                const groupName = this.group.name ? this.group.name : 'without name'
+                const shouldDelete = confirm(`Are you sure you want to delete group ${groupName}?`)
                 if (shouldDelete) {
                     const response = await groupsApi.deleteSingle(this.group.id)
 
@@ -113,16 +137,17 @@
                             removeGroup$.publish(this.group.id)
                         }
                     } else {
-                        alert('Problem with fetch members.')
+                        alert('Problem with group deletion.')
                     }
                 }
             },
 
             separateMails: function (mails) {
-                return mails.split(' ')
+                return mails ? mails.split(' ') : []
             },
 
             removeMember: function (member) {
+                console.log('member: ', member)
                 this.members = this.members.filter(m => m.id != member.id)
             },
 
@@ -169,6 +194,10 @@
         padding-right: 1em;
         background-color: #fff;
         border-left: 2px solid #eee;
+    }
+
+    .loading {
+        opacity: 0.4;
     }
 
     form {

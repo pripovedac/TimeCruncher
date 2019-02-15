@@ -24,6 +24,9 @@
             },
             id: {
                 type: Number,
+            },
+            email: {
+                type: String,
             }
         },
         methods: {
@@ -31,6 +34,7 @@
                 const member = {
                     firstname: this.firstname,
                     lastname: this.lastname,
+                    email: this.email,
                     id: this.id
                 }
                 this.$emit('click', member)

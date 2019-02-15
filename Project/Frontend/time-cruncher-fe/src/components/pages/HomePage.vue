@@ -19,10 +19,11 @@
     import {SingletonPusher} from '../../services/pusher'
     import * as groupsApi from '../../services/api/groups'
     import * as newTask$ from '../../event-buses/new-task'
-    import * as newComment$ from '../../event-buses/new-comment'
-    import * as removeGroup$ from '../../event-buses/remove-group'
     import * as deleteTask$ from '../../event-buses/delete-task'
     import * as updateTask$ from '../../event-buses/updated-task'
+    import * as newComment$ from '../../event-buses/new-comment'
+    import * as removeGroup$ from '../../event-buses/remove-group'
+    import * as updateGroup$ from '../../event-buses/remove-group'
 
     export default {
         name: 'HomePage',
@@ -110,6 +111,11 @@
                         updateTask$.publish(updatedTask)
                     })
 
+                    channel.bind('group_edited', function (group) {
+                        console.log('update group pusher: ', group)
+                        // this.groups.map(existingGroup => existingGroup.id == group.id ? group : existingGroup)})
+                    })
+
                     if (id == that.groupId) {
                         channel.bind('comment_added', function (newComment) {
                             newComment$.publish(newComment)
@@ -190,6 +196,8 @@
             removeGroup$.subscribe((groupId) => {
                 this.groups = this.groups.filter(({id}) => id != groupId)
             })
+
+            // updateGroup$.subscribe((this.group.id) => {})
         },
     }
 </script>
