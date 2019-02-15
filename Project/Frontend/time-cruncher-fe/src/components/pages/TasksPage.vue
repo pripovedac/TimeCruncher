@@ -16,6 +16,8 @@
             </router-link>
         </div>
 
+        <LoadingState v-if="isLoading"/>
+
         <LoadButton v-if="newTasks.length > 0"
                     @click="mergeNewTasks($event)">
             Load new tasks
@@ -55,17 +57,18 @@
     import router from '../../routes/routes'
 
     import * as global from '../../services/utilites'
-    import * as tasksApi from '../../services/api/tasks'
     import {Context, Group, Day, Uncategorized} from '../../services/strategy'
     import * as newTask$ from '../../event-buses/new-task'
     import * as refresh$ from '../../event-buses/refresh-tasks'
     import * as deleteTask$ from '../../event-buses/delete-task'
     import * as updateGroup$ from '../../event-buses/update-group'
     import * as updateTask$ from '../../event-buses/updated-task'
+    import LoadingState from "../ui/LoadingState";
 
     export default {
         name: 'TasksPage',
         components: {
+            LoadingState,
             NoTasksCard,
             TaskCard,
             LoadButton,
@@ -83,6 +86,7 @@
                 haveDeleted: false,
                 context: {},
                 mode: '', // Groups, Daily, Uncategorized
+                isLoading: true
             }
         },
         methods: {
@@ -175,7 +179,9 @@
             },
 
             bootstrap() {
+                this.isLoading = true
                 this.initTasks()
+                this.isLoading = false
                 this.saveGroup()
             },
         },

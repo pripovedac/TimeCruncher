@@ -51,19 +51,15 @@
                     }
                 })
             },
-
             initUser: async function () {
                 this.user = global.userState.load()
             },
-
             initPusher: function () {
                 this.pusher = SingletonPusher.Instance()
                 this.pusher.config.auth.headers = {'access_token': this.loadAT()}
             },
-
             fetchGroups: async function () {
                 const response = await groupsApi.getGroups()
-
                 // todo: do not fetch everytime, use LS
                 if (!response.errorStatus) {
                     const groups = response
@@ -74,25 +70,20 @@
                     alert('Problem with groups loading.')
                 }
             },
-
             subscribeToChannels: function () {
                 const groupIds = this.groups.filter(group => !group.isPrivate).map(({id}) => id)
                 console.log('Subscription ids: ', groupIds)
-
                 this.unsubscribeFromAll(groupIds)
                 this.subscribeToAll(groupIds)
                 this.unsubscribeFromGroupUpdates()
                 this.subscribeToGroupUpdates()
             },
-
             unsubscribeFromAll: function (ids) {
                 const that = this
                 ids.forEach(id => that.pusher.unsubscribe(`private-channel_for_group-${id}`))
             },
-
             subscribeToAll: function (ids) {
                 const that = this
-
                 ids.forEach(id => {
                     const channel = that.pusher.subscribe(`private-channel_for_group-${id}`)
                     channel.bind('task_added', function (newTask) {
@@ -104,16 +95,20 @@
                     })
 
                     channel.bind('task_removed', function (deletedTask) {
-                        console.log('deleted task: ', deletedTask)
                         if (deletedTask.groupId == that.groupId) {
                             deleteTask$.publish(deletedTask)
                         }
                     })
 
                     channel.bind('task_edited', function (updatedTask) {
-                        if(updatedTask.group.id == that.groupId) {
+                        if (updatedTask.group.id == that.groupId) {
                             updateTask$.publish(updatedTask)
                         }
+                    })
+
+                    channel.bind('group_edited', function (group) {
+                        that.updateGroups(group)
+                        updateGroup$.publish(group)
                     })
 
                     channel.bind('group_removed', function (group) {
@@ -125,11 +120,6 @@
                         }
                     })
 
-                    channel.bind('group_edited', function (group) {
-                        that.updateGroups(group)
-                        updateGroup$.publish(group)
-                    })
-
                     if (id == that.groupId) {
                         channel.bind('comment_added', function (newComment) {
                             newComment$.publish(newComment)
@@ -137,11 +127,9 @@
                     }
                 })
             },
-
             unsubscribeFromGroupUpdates: function () {
                 this.pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
             },
-
             subscribeToGroupUpdates: function () {
                 const that = this
                 const channel = this.pusher.subscribe(`private-channel_for_user-${this.userId}`)
@@ -150,77 +138,60 @@
                     that.saveNewGroup(newGroup)
                 })
             },
-
             modifyGroupNotifications: function (groups, id, value) {
                 return groups.map(group => group.id == id
                     ? {...group, shouldReload: value}
                     : group)
             },
-
             filterGroups: function (groupId) {
                 this.groups = this.groups.filter(({id}) => id != groupId)
             },
-
             updateGroups: function (group) {
                 this.groups = this.groups.map(existingGroup => existingGroup.id == group.id ? group : existingGroup)
                 this.saveGroups(this.groups)
             },
-
             mergeGroups: function () {
                 this.groups = [...this.groups, ...this.newGroups]
                 this.newGroups = []
             },
-
             logout: function () {
                 this.clearStorage()
                 router.push({path: '/login'})
             },
-
             getRouteGroupId: function () {
                 return this.$route.params.groupId
             },
-
             loadGroups: function () {
                 return global.groupState.load()
             },
-
             getUserId: function () {
                 return global.userState.loadId()
             },
-
             loadAT: function () {
                 return global.userState.loadAT()
             },
-
             loadLastActiveGroup: function () {
                 return global.groupState.loadLastActiveGroup()
             },
-
             saveLastActiveGroup: function (group) {
                 global.groupState.saveLastActiveGroup(group)
             },
-
             saveNewGroup: function (group) {
                 global.groupState.addGroup(group)
             },
-
             saveGroups: function (groups) {
                 global.groupState.save(groups)
             },
-
             removeGroup: function (id) {
                 global.groupState.removeGroup(id)
             },
-
             clearStorage: function () {
                 global.storageHandler.clear()
             },
-
             getFirstGroup: function () {
                 return global.groupState.getFirst()
             }
         },
-
         watch: {
             $route() {
                 this.groupId = this.$route.params.groupId
@@ -229,16 +200,15 @@
                 this.subscribeToChannels()
             }
         },
-
         async created() {
             this.initPusher()
             await this.initGroups()
             await this.initUser()
             this.subscribeToChannels()
-
             removeGroup$.subscribe((groupId) => {
                 this.groups = this.groups.filter(({id}) => id != groupId)
             })
+            // updateGroup$.subscribe((this.group.id) => {})
         },
     }
 </script>
@@ -247,14 +217,12 @@
     .home-page {
         display: flex;
     }
-
     .sidebar, .sidebar-container {
         width: 15vw;
         position: sticky;
         top: 0;
         left: 0;
     }
-
     .main-page {
         width: 100%;
     }
