@@ -36,7 +36,7 @@
                 newGroups: [],
                 tasks: [],
                 user: {},
-                groupId: this.getGroupId(),
+                groupId: this.getRouteGroupId(),
                 userId: this.getUserId(),
                 pusher: {},
             }
@@ -113,14 +113,16 @@
 
                     channel.bind('group_edited', function (group) {
                         console.log('update group pusher: ', group)
-                        // this.groups.map(existingGroup => existingGroup.id == group.id ? group : existingGroup)})
+                        that.updateGroups(group)
                     })
 
-                    channel.bind('group_removed', function (groupId) {
-                        console.log('delete group pusher: ', groupId)
-                        //todo:remove unnecessary buses
-                        that.groups = that.groups.filter(({id}) => id != groupId)
-                        that.removeGroup(id)
+                    channel.bind('group_removed', function (group) {
+                        that.removeGroup(group.id)
+                        that.filterGroups(group.id)
+                        that.saveLastActiveGroup(that.getFirstGroup())
+                        if (that.getRouteGroupId() == group.id) {
+                            router.push({name: 'GroupInfo', params: {groupId: that.loadLastActiveGroup().id}})
+                        }
                     })
 
                     if (id == that.groupId) {
@@ -139,7 +141,6 @@
                 const that = this
                 const channel = this.pusher.subscribe(`private-channel_for_user-${this.userId}`)
                 channel.bind('added_to_group', function (newGroup) {
-                    alert('New group!')
                     that.newGroups.push(newGroup)
                     that.saveNewGroup(newGroup)
                 })
@@ -151,6 +152,15 @@
                     : group)
             },
 
+            filterGroups: function (groupId) {
+                this.groups = this.groups.filter(({id}) => id != groupId)
+            },
+
+            updateGroups: function (group) {
+                this.groups = this.groups.map(existingGroup => existingGroup.id == group.id ? group : existingGroup)
+                this.saveGroups(this.groups)
+            },
+
             mergeGroups: function () {
                 this.groups = [...this.groups, ...this.newGroups]
                 this.newGroups = []
@@ -159,6 +169,10 @@
             logout: function () {
                 this.clearStorage()
                 router.push({path: '/login'})
+            },
+
+            getRouteGroupId: function () {
+                return this.$route.params.groupId
             },
 
             loadGroups: function () {
@@ -177,8 +191,16 @@
                 return global.groupState.loadLastActiveGroup()
             },
 
+            saveLastActiveGroup: function (group) {
+                global.groupState.saveLastActiveGroup(group)
+            },
+
             saveNewGroup: function (group) {
                 global.groupState.addGroup(group)
+            },
+
+            saveGroups: function (groups) {
+                global.groupState.save(groups)
             },
 
             removeGroup: function (id) {
@@ -189,9 +211,9 @@
                 global.storageHandler.clear()
             },
 
-            getGroupId: function () {
-                return this.$route.params.groupId
-            },
+            getFirstGroup: function () {
+                return global.groupState.getFirst()
+            }
         },
 
         watch: {
@@ -208,10 +230,10 @@
             await this.initGroups()
             await this.initUser()
             this.subscribeToChannels()
-            //
-            // removeGroup$.subscribe((groupId) => {
-            //     this.groups = this.groups.filter(({id}) => id != groupId)
-            // })
+
+            removeGroup$.subscribe((groupId) => {
+                this.groups = this.groups.filter(({id}) => id != groupId)
+            })
 
             // updateGroup$.subscribe((this.group.id) => {})
         },

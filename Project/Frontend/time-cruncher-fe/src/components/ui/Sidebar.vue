@@ -25,7 +25,7 @@
                     <BellIcon class="icon"/>
                 </button>
             </div>
-            <router-link :to="{name:'/new-group'}">
+            <router-link :to="{path:'/new-group'}">
                 <PlusCircleIcon class="plus-icon"/>
             </router-link>
         </div>

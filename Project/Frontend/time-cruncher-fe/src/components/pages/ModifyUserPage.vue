@@ -15,9 +15,6 @@
                 <PublicInput v-model="user.email"
                              label="Email"
                              type="text"/>
-                <PublicInput v-model="user.password"
-                             label="New password"
-                             type="text"/>
                 <Button type="submit">Update info</Button>
                 <Button @click="goBack($event)">
                     Cancel
@@ -30,7 +27,9 @@
                 </h2>
                 <div class="delete-container">
                     <p>Delete your account</p>
-                    <DeleteButton>Delete</DeleteButton>
+                    <DeleteButton @click="deleteAccount($event)">
+                        Delete
+                    </DeleteButton>
                 </div>
             </div>
         </div>
@@ -57,6 +56,7 @@
         data() {
             return {
                 user: {},
+                userId: this.getUserId()
             }
         },
         methods: {
@@ -65,7 +65,7 @@
             },
 
             fetchUser: async function () {
-                return await userApi.getUser(this.getUserId())
+                return await userApi.getUser(this.userId)
             },
 
             updateUser: async function () {
@@ -74,13 +74,7 @@
                     lastname: this.user.lastname,
                     email: this.user.email
                 }
-
-                updatedUser = this.user.password
-                ? {...updatedUser, password: this.user.password}
-                : updatedUser
-
-
-                const response = await userApi.updateUser(this.getUserId(), updatedUser)
+                const response = await userApi.updateUser(this.userId, updatedUser)
 
                 if (!response.errorStatus) {
                     alert('Successfully updated infos!')
@@ -96,7 +90,19 @@
 
             getUserId: function () {
                 return global.userState.loadId()
-            }
+            },
+
+            deleteAccount: async function() {
+                const response = await userApi.deleteUser(this.userId)
+
+                if (!response.errorStatus) {
+                    this.goBack()
+                    global.storageHandler.clear()
+                    router.push({name: '/login'})
+                } else {
+                    alert('Problem with update.')
+                }
+            },
         },
         created() {
             this.bootstrap()

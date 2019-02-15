@@ -10,6 +10,10 @@ export async function updateUser(id, data) {
     return await apiFetch('PUT', url(`/users/${id}`), data)
 }
 
+export async function deleteUser(id) {
+    return await apiFetch('DELETE', url(`/users/${id}`))
+}
+
 export async function getWeeklyTasks(taskId) {
     return await apiFetch('GET', url(`/users/${taskId}/weekly`))
 }

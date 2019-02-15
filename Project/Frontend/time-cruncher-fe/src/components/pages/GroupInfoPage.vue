@@ -115,7 +115,6 @@
             initMembers: async function () {
                 const groupId = this.$route.params.groupId
                 const response = await groupsApi.getMembers(groupId)
-                console.log('group members: ', response)
                 if (!response.errorStatus) {
                     this.members = response
                 } else {
@@ -132,9 +131,9 @@
                     if (!response.errorStatus) {
                         const group = this.getFirstGroup()
                         if (group) {
+                            removeGroup$.publish(this.group.id)
                             this.saveLastActiveGroup(group)
                             router.push({name: 'GroupInfo', params: {groupId: group.id}})
-                            removeGroup$.publish(this.group.id)
                         }
                     } else {
                         alert('Problem with group deletion.')
@@ -147,7 +146,6 @@
             },
 
             removeMember: function (member) {
-                console.log('member: ', member)
                 this.members = this.members.filter(m => m.id != member.id)
             },
 
