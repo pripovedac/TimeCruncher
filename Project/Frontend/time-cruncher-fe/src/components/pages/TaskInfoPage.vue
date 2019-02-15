@@ -182,7 +182,9 @@
                     this.task = response
                     this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
                     this.completionTime = dateController.toInputFormat(new Date(this.task.completionTime))
-                    this.dueTime = dateController.toString(new Date(this.task.dueTime))
+                    this.dueTime = this.task.dueTime
+                        ? dateController.toString(new Date(this.task.dueTime))
+                        : null
                 } else {
                     // todo: handle errors
                     alert('Problem with loading single task.')

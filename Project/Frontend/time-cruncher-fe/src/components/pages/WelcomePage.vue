@@ -19,7 +19,4 @@
         margin: 0 auto;
     }
 
-    p {
-        border: 1px solid black;
-    }
 </style>
