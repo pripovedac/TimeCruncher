@@ -118,7 +118,9 @@
 
                     channel.bind('group_removed', function (groupId) {
                         console.log('delete group pusher: ', groupId)
-                        this.groups = this.groups.filter(({id}) => id != groupId)
+                        //todo:remove unnecessary buses
+                        that.groups = that.groups.filter(({id}) => id != groupId)
+                        that.removeGroup(id)
                     })
 
                     if (id == that.groupId) {
@@ -140,7 +142,6 @@
                     alert('New group!')
                     that.newGroups.push(newGroup)
                     that.saveNewGroup(newGroup)
-                    console.log('done')
                 })
             },
 
@@ -178,6 +179,10 @@
 
             saveNewGroup: function (group) {
                 global.groupState.addGroup(group)
+            },
+
+            removeGroup: function (id) {
+                global.groupState.removeGroup(id)
             },
 
             clearStorage: function () {

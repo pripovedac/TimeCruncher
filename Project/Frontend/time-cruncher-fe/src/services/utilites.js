@@ -54,6 +54,12 @@ export class GroupState extends StateFactory {
         groups.push(group)
         this.save(groups)
     }
+
+    removeGroup(groupId) {
+        let groups = this.load()
+        groups = groups.filter(({id}) => id != groupId)
+        this.save(groups)
+    }
 }
 
 export class UserState extends StateFactory {
