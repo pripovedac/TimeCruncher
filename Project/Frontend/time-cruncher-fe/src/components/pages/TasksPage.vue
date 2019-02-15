@@ -16,8 +16,6 @@
             </router-link>
         </div>
 
-        <NoTasksCard v-if="tasks.length == 0"/>
-
         <LoadButton v-if="newTasks.length > 0"
                     @click="mergeNewTasks($event)">
             Load new tasks
@@ -32,6 +30,8 @@
                     @click="updateTasks($event)">
             You have updates
         </LoadButton>
+
+        <NoTasksCard v-if="tasks.length == 0"/>
 
         <TaskCard v-for="task in tasks"
                   :key="task.id"
@@ -60,6 +60,7 @@
     import * as newTask$ from '../../event-buses/new-task'
     import * as refresh$ from '../../event-buses/refresh-tasks'
     import * as deleteTask$ from '../../event-buses/delete-task'
+    import * as updateGroup$ from '../../event-buses/update-group'
     import * as updateTask$ from '../../event-buses/updated-task'
 
     export default {
@@ -208,6 +209,10 @@
                 if (task.modifierId != this.userId) {
                     this.haveUpdates = true
                 }
+            })
+
+            updateGroup$.subscribe((group) => {
+                this.group = group
             })
 
             refresh$.subscribe(() => {

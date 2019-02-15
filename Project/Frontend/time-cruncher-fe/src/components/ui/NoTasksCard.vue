@@ -20,6 +20,7 @@
 
     .no-tasks {
         padding: 1em;
+        margin-top: 1em;
         border: 1px solid $lightblue;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.16);
         font-family: inherit;

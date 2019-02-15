@@ -68,6 +68,7 @@
     import * as global from '../../services/utilites'
     import * as groupsApi from '../../services/api/groups'
     import * as removeGroup$ from '../../event-buses/remove-group'
+    import * as updateGroup$ from '../../event-buses/update-group'
 
     export default {
         name: 'GroupInfoPage',
@@ -106,10 +107,10 @@
                     this.name = response.name
                     this.description = response.description
                     this.members = response.users
-                    this.isLoading = false
                 } else {
                     alert('Problem with group update.')
                 }
+                this.isLoading = false
             },
 
             initMembers: async function () {
@@ -178,6 +179,9 @@
             this.group = this.loadLastActiveGroup()
             console.log('group in groupinfo: ', this.group)
             this.initMembers()
+            updateGroup$.subscribe((group) => {
+                this.group = group
+            })
         }
     }
 </script>

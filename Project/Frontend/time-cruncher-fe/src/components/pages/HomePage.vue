@@ -23,7 +23,7 @@
     import * as updateTask$ from '../../event-buses/updated-task'
     import * as newComment$ from '../../event-buses/new-comment'
     import * as removeGroup$ from '../../event-buses/remove-group'
-    import * as updateGroup$ from '../../event-buses/remove-group'
+    import * as updateGroup$ from '../../event-buses/update-group'
 
     export default {
         name: 'HomePage',
@@ -104,16 +104,16 @@
                     })
 
                     channel.bind('task_removed', function (deletedTask) {
-                        deleteTask$.publish(deletedTask)
+                        console.log('deleted task: ', deletedTask)
+                        if (deletedTask.groupId == that.groupId) {
+                            deleteTask$.publish(deletedTask)
+                        }
                     })
 
                     channel.bind('task_edited', function (updatedTask) {
-                        updateTask$.publish(updatedTask)
-                    })
-
-                    channel.bind('group_edited', function (group) {
-                        console.log('update group pusher: ', group)
-                        that.updateGroups(group)
+                        if(updatedTask.group.id == that.groupId) {
+                            updateTask$.publish(updatedTask)
+                        }
                     })
 
                     channel.bind('group_removed', function (group) {
@@ -123,6 +123,11 @@
                         if (that.getRouteGroupId() == group.id) {
                             router.push({name: 'GroupInfo', params: {groupId: that.loadLastActiveGroup().id}})
                         }
+                    })
+
+                    channel.bind('group_edited', function (group) {
+                        that.updateGroups(group)
+                        updateGroup$.publish(group)
                     })
 
                     if (id == that.groupId) {
@@ -234,8 +239,6 @@
             removeGroup$.subscribe((groupId) => {
                 this.groups = this.groups.filter(({id}) => id != groupId)
             })
-
-            // updateGroup$.subscribe((this.group.id) => {})
         },
     }
 </script>
