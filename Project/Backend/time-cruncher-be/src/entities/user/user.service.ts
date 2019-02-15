@@ -31,9 +31,9 @@ export class UserService {
   }
   async findById(id: number): Promise<User> {
     const res: User = await this.userRepository.findOne({ where: { id } });
-    delete res.password;
     if (!res)
       throw new UserNotFoundException(id);
+    delete res.password;
     return res;
   }
   async findByAccessToken(accessToken: string): Promise<User>{
@@ -87,9 +87,6 @@ export class UserService {
   async findDailyTasksByUserId(id: number, dateString: string): Promise<Task[]> {
     const dateLow = new Date(new Date(dateString).setHours(0, 0, 0, 0));
     const dateHigh = new Date(new Date(dateString).setHours(23, 59, 59, 0));
-    console.log(dateLow);
-    console.log(dateHigh);
-    console.log(dateString);
     const res: User = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.assignedTasks', 'task', 'task.dueTime >= :dateLow and task.dueTime <= :dateHigh', { dateLow, dateHigh })
       .where('user.id = :id', { id })
@@ -158,9 +155,9 @@ export class UserService {
     await groupIdList.forEach( x => this.groupService.removeById(x));
     return await this.userRepository.delete(id);
   }
-  async edit(editUserDto: EditUserDto): Promise<User> {
+  async edit(user: User): Promise<User> {
     try {
-      return await this.userRepository.save(editUserDto as User);
+      return await this.userRepository.save(user);
     } catch (exception) {
       throw new SqlException(exception.message);
     }
@@ -175,5 +172,11 @@ export class UserService {
     if (user.password !== userPassword)
       return false;
     return true;
+  }
+  async findUncategorizedTasks(userId: number): Promise<Task[]>{
+    const res = await this.userRepository.findOne({ where: { id: userId }, relations: ['assignedTasks'] });
+    if (!res)
+      throw new UserNotFoundException(userId);
+    return res.assignedTasks.filter( x => !x.dueTime );
   }
 }

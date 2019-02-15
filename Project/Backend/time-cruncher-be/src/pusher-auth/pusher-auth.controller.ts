@@ -26,10 +26,10 @@ export class PusherAuthController {
       if (channelUserId != userId)
         throw new ForbiddenException();
     }
-    if (channelName === 'channel_for_group'){
+    if (channelName === 'channel_for_group') {
       const groupId = channelNameSplit[2];
       const group: Group = await this.groupService.findByIdWithUsers(groupId);
-      const isInGroup: boolean = group.users.filter(  user => userId == user.id ).length > 0;
+      const isInGroup: boolean = group.users.filter(user => userId == user.id).length > 0;
       if (!isInGroup)
         throw new ForbiddenException();
     }

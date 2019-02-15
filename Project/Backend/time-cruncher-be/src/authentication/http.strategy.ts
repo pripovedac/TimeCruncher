@@ -11,7 +11,7 @@ export class HttpStrategy extends PassportStrategy(Strategy) {
 
   async validate(token: string) {
     const user = await this.authService.validateUser(token);
-    if (!user) {
+    if (!user || !token) {
       throw new HttpException({ message: 'Access token invalid or missing' }, 401);
     }
     return user;

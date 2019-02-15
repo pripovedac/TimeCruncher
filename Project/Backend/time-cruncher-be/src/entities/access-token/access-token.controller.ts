@@ -11,6 +11,8 @@ import { Group } from '../group/group.entity';
 import { CreateGroupDto } from '../group/DTOs/create-group.dto';
 import { GroupService } from '../group/group.service';
 import { LoginDto } from './DTOs/login.dto';
+import { comparePassword, encryptPassword } from '../../additional/passEncription.bcrypt';
+import { create } from 'domain';
 
 @Controller()
 export class AccessTokenController {
@@ -24,6 +26,7 @@ export class AccessTokenController {
   @HttpCode(HttpStatus.CREATED)
   async addUser(@Body() createUserDto: CreateUserDto){
     try {
+      createUserDto.password = await encryptPassword(createUserDto.password, 10);
       const user: User = await this.userService.addUser(createUserDto as User);
       const res: AccessToken = await this.accessTokenService.createToken(user);
       const newGeneralGroup: Partial<Group> = {
@@ -47,7 +50,7 @@ export class AccessTokenController {
   @HttpCode(HttpStatus.OK)
   async getAccessToken(@Body() loginData: LoginDto){
     const user: User = await this.userService.findByEmailWithAccessToken(loginData.email);
-    if (user.password != loginData.password){
+    if (!(await comparePassword(loginData.password, user.password))){
       throw new HttpException({ message: 'Invalid email or password' }, 404);
     }
     delete user.password;
