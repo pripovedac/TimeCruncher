@@ -4,10 +4,9 @@
 Neki od obrazaca koji će biti navedeni su ugrađeni u korišćene frejmvorke, dok su preostali implementirani od strane tima **7A3**.
 Kojoj od ove dve grupe obrazac pripada biće eksplicitno navedeno u daljem tekstu.
 
-
 Na frontendu je korišćen frejmvork *Vue.js* koji je pisan u *javaskriptu*, jeziku sa slabim tipovima podataka. 
 Iz tog razloga ne postoje apstraktne klase i interfejsi kao takvi. Ipak, potrudili smo se da obrasce koji odgovaraju
-objektno-orijentisanoj paradigmi i jezicima sa jakim tipovima podataka što više prilagodimo jeziku sa ovakvom karaterstikom.
+objektno-orijentisanoj paradigmi i jezicima sa jakim tipovima podataka što više prilagodimo jeziku sa ovakvom karakterstikom.
 U nastavku sledi pregled korišćenih obrazaca.
 
 ## Custom implementacija obrazaca
@@ -20,13 +19,13 @@ promenljive delove koda koji zavise od situacije u kojoj je funkcija pozvana. DI
 [IoC tipu obrazaca](https://en.wikipedia.org/wiki/Inversion_of_control) (*skr. eng.* Inversion
 of Control), kojima, takođe, pripada i [Template Method](https://en.wikipedia.org/wiki/Template_method_pattern),
 te se između njh može uočiti jasna sličnost. U aplikaciji je ovaj obrazac iskorišćen na više mesta: kreiranje *apiFetch* funkcije, 
-kreirenje *Vue* instance, obrada odgovora sa bekenda.Mi ćemo posebnu pažnju posvetiti obradi odgovora sa servera kako bi detaljnije opisali kako obrazac funkcioniše:
+kreirenje *Vue* instance, obrada odgovora sa bekenda. Mi ćemo posebnu pažnju posvetiti obradi odgovora sa servera kako bi detaljnije opisali kako obrazac funkcioniše.
 
 ### Primer implementacije u aplikaciji
 
-U trenutku kada se piše funkcija koja je implementirana po DI principu, kaže se da joj se indžektuju zavisnosti 
+U trenutku kada se piše funkcija koja je implementirana po DI principu, kaže se da joj se *indžektuju* zavisnosti 
 (*eng.* to inject - ubrizgati). Kada se pri pozivu funkcije kao parametri proslede neke realne vrednosti to
-se naziva provajdovanje (*eng.* to provide - obezbediti).
+se naziva *provajdovanje* (*eng.* to provide - obezbediti).
 
 ##### Deklaracija funkcije implementirane po DI principu
 ```
@@ -61,8 +60,8 @@ successfulUpdate: function(response) {
 
 ### Strategy (*srp.* Strategija)
 Poznat i pod nazivom *Policy* jedan od najpoznatijih [GoF obrazaca](https://en.wikipedia.org/wiki/Design_Patterns) 
-spada po oblasti delovanja u objektne, a po nameni u bihevioralne obrasce. Starategy obrazac je primenjen za implemenitranje različitih
-načina pribavljanja zadataka filtriranih po određenim kriterijumima i manipulacijom ruterom na frontendu.
+spada po oblasti delovanja u objektne, a po nameni u bihevioralne obrasce. Starategy obrazac je primenjen za implementiranje različitih
+načina pribavljanja zadataka filtriranih po određenim kriterijumima i za manipulaciju ruterom na frontendu.
 Kako je kod obiminiji u nastavku sledi samo UML dijagram.
 
 #### UML dijagaram
@@ -158,10 +157,9 @@ export const dateController = new DateController()
 this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
 ```
 ### Publish/Subscribe mehanizam
-
 Publish/Subscribe mehanizam stoji kao jedna od fundamentalnih karakteristika aplikacije **TimeCruncher**. Implementiran je i na
 frontendu, i na bekendu. Real-time komunikacija koristeći biblioteku Pušer je bazirana po ovom principu, gde se instance
-klijenta pretplate na događaje koji se šalju sa servera. Takođe, ovaj pristup pretplaćivanja je uveliko zastupljen i u samoj
+klijenta pretplaćuju na događaje koji se šalju sa servera. Takođe, ovaj pristup pretplaćivanja je uveliko zastupljen i u samoj
 klijentskoj aplikaciji u komunikaciji između komponenti. Pub/Sub mehanizam se nametnuo kao jedno od rešenja problema nepostojanja 
 mogućnosti komunikacije komponenti koje nisu u relaciji *predak-potomak*. Koristeći magistrale događaja postala je moguća komunikacija
 između bilo kojih komponenti unutar aplikacije.
@@ -241,21 +239,12 @@ vezanom za arhitekturu aplikacije:
 ```
 
 ### Transaction script (*srp.* Trasakciona skripta)
-
 Obrazac domenske logike koji organizuje poslovnu logiku tako da svaka procedura odgovara na jedan zahtev primljen sa
-prezentacionog sloja. Ovaj obrazac se prirodno nametnuo kao najjednovanje rešenje za implementaciju 
+prezentacionog sloja. Ovaj obrazac se prirodno nametnuo kao najjednostavanije rešenje za implementaciju 
 [API](https://en.wikipedia.org/wiki/Application_programming_interface)-ja (*skr. eng.* Application Programming Interface).
 
 
 ### Data mapper
-
 Obrazac sloja izvora podataka nametnut od strane frejmvorka [Nest](https://nestjs.com/) koji se koristio na bekendu.
 Koristi se kada je model domenske logike kompleksan i odvojen od sloja domenske logike. Objektno-relacioni maper koji
 se koristio uz Data mapper je [TypeORM](http://typeorm.io/#/).
-
-
-
-
-
-
-
