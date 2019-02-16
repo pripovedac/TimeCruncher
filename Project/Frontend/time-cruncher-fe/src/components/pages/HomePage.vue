@@ -17,6 +17,7 @@
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
     import {SingletonPusher} from '../../services/pusher'
+    import {responseHandler} from '../../services/response-handler'
     import * as groupsApi from '../../services/api/groups'
     import * as newTask$ from '../../event-buses/new-task'
     import * as deleteTask$ from '../../event-buses/delete-task'
@@ -43,7 +44,27 @@
         },
         methods: {
             initGroups: async function () {
-                const groups = await this.fetchGroups()
+                await this.fetchGroups()
+            },
+
+            initUser: async function () {
+                this.user = global.userState.load()
+            },
+
+            initPusher: function () {
+                this.pusher = SingletonPusher.Instance()
+                this.pusher.config.auth.headers = {'access_token': this.loadAT()}
+            },
+
+            fetchGroups: async function () {
+                const response = await groupsApi.getGroups()
+                const errorMessage = 'Could not load groups.'
+                responseHandler.handle(response, this.successfulGroupFetch, errorMessage)
+            },
+
+            successfulGroupFetch: function (response) {
+                const groups = response
+                global.groupState.save(groups)
                 this.groups = groups.map(group => {
                     return {
                         ...group,
@@ -51,25 +72,7 @@
                     }
                 })
             },
-            initUser: async function () {
-                this.user = global.userState.load()
-            },
-            initPusher: function () {
-                this.pusher = SingletonPusher.Instance()
-                this.pusher.config.auth.headers = {'access_token': this.loadAT()}
-            },
-            fetchGroups: async function () {
-                const response = await groupsApi.getGroups()
-                // todo: do not fetch everytime, use LS
-                if (!response.errorStatus) {
-                    const groups = response
-                    global.groupState.save(groups)
-                    return groups
-                } else {
-                    // todo: handle errors
-                    alert('Problem with groups loading.')
-                }
-            },
+
             subscribeToChannels: function () {
                 const groupIds = this.groups.filter(group => !group.isPrivate).map(({id}) => id)
                 console.log('Subscription ids: ', groupIds)
@@ -78,10 +81,12 @@
                 this.unsubscribeFromGroupUpdates()
                 this.subscribeToGroupUpdates()
             },
+
             unsubscribeFromAll: function (ids) {
                 const that = this
                 ids.forEach(id => that.pusher.unsubscribe(`private-channel_for_group-${id}`))
             },
+
             subscribeToAll: function (ids) {
                 const that = this
                 ids.forEach(id => {
@@ -127,9 +132,11 @@
                     }
                 })
             },
+
             unsubscribeFromGroupUpdates: function () {
                 this.pusher.unsubscribe(`private-channel_for_user-${this.userId}`)
             },
+
             subscribeToGroupUpdates: function () {
                 const that = this
                 const channel = this.pusher.subscribe(`private-channel_for_user-${this.userId}`)
@@ -138,77 +145,97 @@
                     that.saveNewGroup(newGroup)
                 })
             },
+
             modifyGroupNotifications: function (groups, id, value) {
                 return groups.map(group => group.id == id
                     ? {...group, shouldReload: value}
                     : group)
             },
+
             filterGroups: function (groupId) {
                 this.groups = this.groups.filter(({id}) => id != groupId)
             },
+
             updateGroups: function (group) {
                 this.groups = this.groups.map(existingGroup => existingGroup.id == group.id ? group : existingGroup)
                 this.saveGroups(this.groups)
             },
+
             mergeGroups: function () {
                 this.groups = [...this.groups, ...this.newGroups]
                 this.newGroups = []
             },
+
             logout: function () {
                 this.clearStorage()
                 router.push({path: '/login'})
             },
+
             getRouteGroupId: function () {
                 return this.$route.params.groupId
             },
+
             loadGroups: function () {
                 return global.groupState.load()
             },
+
             getUserId: function () {
                 return global.userState.loadId()
             },
+
             loadAT: function () {
                 return global.userState.loadAT()
             },
+
             loadLastActiveGroup: function () {
                 return global.groupState.loadLastActiveGroup()
             },
+
             saveLastActiveGroup: function (group) {
                 global.groupState.saveLastActiveGroup(group)
             },
+
             saveNewGroup: function (group) {
                 global.groupState.addGroup(group)
             },
+
             saveGroups: function (groups) {
                 global.groupState.save(groups)
             },
+
             removeGroup: function (id) {
                 global.groupState.removeGroup(id)
             },
+
             clearStorage: function () {
                 global.storageHandler.clear()
             },
+
             getFirstGroup: function () {
                 return global.groupState.getFirst()
+            },
+
+            bootstrap: function () {
+                this.initPusher()
+                this.subscribeToChannels()
             }
         },
         watch: {
             $route() {
                 this.groupId = this.$route.params.groupId
                 this.groups = this.modifyGroupNotifications(this.groups, this.groupId, false)
-                this.initPusher()
-                this.subscribeToChannels()
+                this.bootstrap()
             }
         },
         async created() {
+            this.initUser()
             this.initPusher()
             await this.initGroups()
-            await this.initUser()
-            this.subscribeToChannels()
+            this.bootstrap()
             removeGroup$.subscribe((groupId) => {
                 this.groups = this.groups.filter(({id}) => id != groupId)
             })
-            // updateGroup$.subscribe((this.group.id) => {})
+
         },
     }
 </script>
@@ -217,12 +244,14 @@
     .home-page {
         display: flex;
     }
+
     .sidebar, .sidebar-container {
         width: 15vw;
         position: sticky;
         top: 0;
         left: 0;
     }
+
     .main-page {
         width: 100%;
     }

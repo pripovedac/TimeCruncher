@@ -36,6 +36,7 @@
     import CommentCard from '../ui/CommentCard'
     import Button from '../ui/Button'
     import {userState} from '../../services/utilites'
+    import {responseHandler}from '../../services/response-handler'
     import * as commentsApi from '../../services/api/comments'
     import * as newComment$ from '../../event-buses/new-comment'
 
@@ -71,12 +72,12 @@
                     taskId: this.task.id
                 }
                 const response = await commentsApi.createNew(newComment)
-                if (!response.errorStatus) {
-                    this.newComment = ''
-                } else {
-                    // todo: handle errors
-                    alert('Problem with posting comment.')
-                }
+                const errorMessage = 'Could not post comment'
+                responseHandler.handle(response, this.successfulCommenting, errorMessage)
+            },
+
+            successfulCommenting: function () {
+                this.newComment = ''
             },
 
             deleteComment: async function (commentId) {

@@ -34,6 +34,7 @@
     import Button from '../ui/Button'
     import {userState} from '../../services/utilites'
     import router from '../../routes/routes'
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: "Register",
@@ -69,14 +70,15 @@
                     }
                 })
 
-                if (response.ok) {
-                    const userData = await response.json()
-                    userState.saveAT(userData.token)
-                    userState.saveId(userData.user.id)
-                    router.push({path: 'home'})
-                } else {
-                    alert('Registration did not go successfully.')
-                }
+                const errorMessage = 'Registration did not go successfully.'
+                responseHandler.handle(response, this.successfulRegistration, errorMessage)
+            },
+
+            successfullRegistration: async function (response) {
+                const userData = await response.json()
+                userState.saveAT(userData.token)
+                userState.saveId(userData.user.id)
+                router.push({path: 'home'})
             }
         }
     }

@@ -30,6 +30,7 @@
     import Button from '../ui/Button'
     import * as global from '../../services/utilites'
     import router from '../../routes/routes'
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'Login',
@@ -61,22 +62,23 @@
                     }
                 })
 
-                if (response.ok) {
-                    const userData = await response.json()
-                    const filteredData = {
-                        firstname: userData.firstname,
-                        lastname: userData.lastname,
-                        accessToken: userData.accessToken.token,
-                        id: userData.id
-                    }
-                    this.saveData(filteredData)
-                    const group = global.groupState.loadLastActiveGroup()
-                    group
-                        ? router.push({name: 'GroupInfo', params: {groupId: group.id}})
-                        : router.push('/home/daily/none-selected')
-                } else {
-                    alert('Check your credentials, please')
+                const errorMessage = 'Check your credentials, please.'
+                responseHandler.handle(response, this.successfulLogin, errorMessage)
+            },
+
+            successfulLogin: async function(response) {
+                const userData = await response.json()
+                const filteredData = {
+                    firstname: userData.firstname,
+                    lastname: userData.lastname,
+                    accessToken: userData.accessToken.token,
+                    id: userData.id
                 }
+                this.saveData(filteredData)
+                const group = global.groupState.loadLastActiveGroup()
+                group
+                    ? router.push({name: 'GroupInfo', params: {groupId: group.id}})
+                    : router.push('/home/daily/none-selected')
             },
 
             saveData: function (data) {

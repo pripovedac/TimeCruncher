@@ -65,8 +65,8 @@
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as groupsApi from '../../services/api/groups'
-    import {dateController} from "../../services/date-transformations";
-
+    import {dateController} from '../../services/date-transformations'
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'NewTask',
@@ -108,13 +108,13 @@
                 }
 
                 const response = await tasksApi.createNew(newTask)
+                const errorMessage = 'Could not create group.'
+                responseHandler.handle(response, this.successfulCreation, errorMessage)
+            },
 
-                if (!response.errorStatus) {
-                    alert('Successfully created task!')
-                    this.goBack()
-                } else {
-                    alert('Problem with creating task.')
-                }
+            successfulCreation: function() {
+                alert('Successfully created task!')
+                this.goBack()
             },
 
             initDate: function () {
@@ -136,12 +136,12 @@
 
             initMembers: async function () {
                 const response = await groupsApi.getMembers(this.group.id)
+                const errorMessage = 'Could not get group members.'
+                responseHandler.handle(response, this.initTaskMembers, errorMessage)
+            },
 
-                if (!response.errorStatus) {
-                    this.task.members = response
-                } else {
-                    alert('Problem with fetching members.')
-                }
+            initTaskMembers: function (response) {
+                this.task.members = response
             },
 
             loadLastActiveGroup: function () {

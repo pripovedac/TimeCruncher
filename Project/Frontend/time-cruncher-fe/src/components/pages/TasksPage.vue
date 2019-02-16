@@ -55,7 +55,6 @@
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
     import router from '../../routes/routes'
-
     import * as global from '../../services/utilites'
     import {Context, Group, Day, Uncategorized} from '../../services/strategy'
     import * as newTask$ from '../../event-buses/new-task'
@@ -64,6 +63,7 @@
     import * as updateGroup$ from '../../event-buses/update-group'
     import * as updateTask$ from '../../event-buses/updated-task'
     import LoadingState from "../ui/LoadingState";
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'TasksPage',
@@ -110,13 +110,13 @@
             initTasks: async function () {
                 this.setMode()
                 this.chooseStrategy()
-                console.log('Fetching tasks...')
                 const response = await this.context.getTasks()
-                if (!response.errorStatus) {
-                    this.tasks = response.reverse()
-                } else {
-                    alert('Problem with tasks loading.')
-                }
+                const errorMessage = 'Could not load tasks.'
+                responseHandler.handle(response, this.successfulTaskInit, errorMessage)
+            },
+
+            successfulTaskInit: function(response) {
+                this.tasks = response.reverse()
             },
 
             mergeNewTasks: function () {
