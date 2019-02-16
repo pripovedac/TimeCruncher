@@ -60,7 +60,8 @@
         methods: {
             fetchWeeklyTasks: async function () {
                 const response = await usersApi.getWeeklyTasks(this.userId)
-                this.handleResponse(response)
+                const errorMessage = 'Could not load weekly tasks.'
+                responseHandler.handle(response, this.successfulTaskGet, errorMessage)
             },
 
             calcDateRange: async function () {
@@ -80,7 +81,6 @@
                     this.sunday = dateController.toInputFormat(sunday)
 
                     const response = await usersApi.getSpecificWeekTasks(this.userId, this.monday)
-                    this.handleResponse(response)
                     const errorMessage = 'Could not load weekly tasks.'
                     responseHandler.handle(response, this.successfulTaskGet, errorMessage)
                 }

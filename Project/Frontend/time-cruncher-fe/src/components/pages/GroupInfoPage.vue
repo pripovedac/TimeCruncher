@@ -105,7 +105,7 @@
 
                 this.isLoading = true
                 const response = await groupsApi.updateSingle(this.$route.params.groupId, updatedGroup)
-                const errorMessage = `Could not update group ${this.group.name}`
+                const errorMessage = `Could not update group ${this.group.name}.`
                 responseHandler.handle(response, this.successfulUpdate, errorMessage)
                 this.isLoading = false
             },
@@ -171,17 +171,24 @@
 
             getFirstGroup: function () {
                 return global.groupState.getFirst()
+            },
+
+            loadSingleGroup: function (id) {
+                return global.groupState.loadSingle(id)
+            },
+
+            bootstrap: function () {
+                this.group = this.loadSingleGroup(this.$route.params.groupId)
+                this.initMembers()
             }
         },
         watch: {
             $route() {
-                this.group = this.loadLastActiveGroup()
-                this.initMembers()
+                this.bootstrap()
             }
         },
         created() {
-            this.group = this.loadLastActiveGroup()
-            this.initMembers()
+            this.bootstrap()
             updateGroup$.subscribe((group) => {
                 this.group = group
             })
