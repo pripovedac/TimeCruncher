@@ -72,7 +72,7 @@ export class Comment{
 ```
 
 ## API:
-API dokumentacija se može naći na sledećem [linku](https://identity.getpostman.com/handover/multifactor?user=4198505&handover_token=ac5524bb-62c7-4b8a-aa87-d0ee960c75cd)
+API dokumentacija se može naći na sledećem [linku](https://web.postman.co/collections/4198505-b5bc1c44-01d2-4826-be7e-4136c4189293?workspace=ea74e7a6-cead-4eae-8f6a-a5655ed7f042#introduction)
 
 ## Format odgovora na zahteve
 
