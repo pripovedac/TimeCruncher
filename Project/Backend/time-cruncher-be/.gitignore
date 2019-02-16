@@ -2,6 +2,8 @@
 node_modules
 /dist
 ./src/pusher.ts
+# env files
+dev.env
 # local env files
 .env.local
 .env.*.local
