@@ -214,7 +214,10 @@
             updateTask$.subscribe((task) => {
                 if (task.modifierId != this.userId) {
                     this.haveUpdates = true
+                } else {
+                    this.tasks = this.tasks.map(t => t.id != task.id ? t : task)
                 }
+
             })
 
             updateGroup$.subscribe((group) => {

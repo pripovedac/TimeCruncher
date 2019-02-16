@@ -106,7 +106,10 @@
                     })
 
                     channel.bind('task_edited', function (updatedTask) {
+                        console.log('updated task: ', updatedTask)
+                        console.log('group id: ', that.groupId)
                         if (updatedTask.group.id == that.groupId) {
+                            console.log('publsihing')
                             updateTask$.publish(updatedTask)
                         }
                     })
