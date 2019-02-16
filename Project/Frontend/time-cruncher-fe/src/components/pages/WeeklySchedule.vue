@@ -30,6 +30,7 @@
     import router from '../../routes/routes'
     import {userState} from '../../services/utilites'
     import {ArrowLeftCircleIcon, ArrowRightCircleIcon, MinusIcon} from 'vue-feather-icons'
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'WeeklySchedule',
@@ -67,7 +68,6 @@
                 if (typeof (offset) == 'number') {
                     let date = new Date()
                     const weekDays = 7
-                    // todo: check sunday
                     let today = date.getDay()
                     // Sunday check
                     today = today == 0 ? 7 : today
@@ -81,34 +81,32 @@
 
                     const response = await usersApi.getSpecificWeekTasks(this.userId, this.monday)
                     this.handleResponse(response)
+                    const errorMessage = 'Could not load weekly tasks.'
+                    responseHandler.handle(response, this.successfulTaskGet, errorMessage)
                 }
             },
 
-            handleResponse(response) {
-                if (!response.errorStatus) {
-                    this.mondayTasks = response[0].tasks
-                    this.tuesdayTasks = response[1].tasks
-                    this.wednesdayTasks = response[2].tasks
-                    this.thursdayTasks = response[3].tasks
-                    this.fridayTasks = response[4].tasks
-                    this.saturdayTasks = response[5].tasks
-                    this.sundayTasks = response[6].tasks
-                } else {
-                    alert('Problem with fetching weekly tasks.')
-                }
+            successfulTaskGet: function(response) {
+                this.mondayTasks = response[0].tasks
+                this.tuesdayTasks = response[1].tasks
+                this.wednesdayTasks = response[2].tasks
+                this.thursdayTasks = response[3].tasks
+                this.fridayTasks = response[4].tasks
+                this.saturdayTasks = response[5].tasks
+                this.sundayTasks = response[6].tasks
             },
 
-            incrementOffset() {
+            incrementOffset: function() {
                 const offset = parseInt(this.$route.query.offset) + 1
                 router.push({name: 'Weekly', query: {offset: offset}})
             },
 
-            decrementOffset() {
+            decrementOffset: function() {
                 const offset = parseInt(this.$route.query.offset) - 1
                 router.push({name: 'Weekly', query: {offset: offset}})
             },
 
-            bootstrap() {
+            bootstrap: function() {
                 this.calcDateRange()
             }
         },

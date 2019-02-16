@@ -43,6 +43,7 @@
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
     import * as groupsApi from '../../services/api/groups'
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'NewGroup',
@@ -72,15 +73,14 @@
                     memberEmails: memberMails[0].length ? memberMails : [],
                     isPrivate: this.group.isPrivate
                 }
-
                 const response = await groupsApi.createNew(newGroup)
+                const errorMessage = 'Could not create group.'
+                responseHandler.handle(response, this.successfulCreation, errorMessage)
+            },
 
-                if (!response.errorStatus) {
-                    alert('Successfully created group!')
-                    this.goBack()
-                } else {
-                    alert('Problem with creating group.')
-                }
+            successfulCreation: function() {
+                alert('Successfully created group!')
+                this.goBack()
             },
 
             updatePrivacy: function (checkboxValue) {

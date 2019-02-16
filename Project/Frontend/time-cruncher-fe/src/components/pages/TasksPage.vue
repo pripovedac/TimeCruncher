@@ -16,7 +16,7 @@
             </router-link>
         </div>
 
-        <NoTasksCard v-if="tasks.length == 0"/>
+        <LoadingState v-if="isLoading"/>
 
         <LoadButton v-if="newTasks.length > 0"
                     @click="mergeNewTasks($event)">
@@ -32,6 +32,8 @@
                     @click="updateTasks($event)">
             You have updates
         </LoadButton>
+
+        <NoTasksCard v-if="tasks.length == 0"/>
 
         <TaskCard v-for="task in tasks"
                   :key="task.id"
@@ -53,18 +55,20 @@
     import LoadButton from '../ui/LoadButton'
     import {PlusCircleIcon} from 'vue-feather-icons'
     import router from '../../routes/routes'
-
     import * as global from '../../services/utilites'
-    import * as tasksApi from '../../services/api/tasks'
     import {Context, Group, Day, Uncategorized} from '../../services/strategy'
     import * as newTask$ from '../../event-buses/new-task'
     import * as refresh$ from '../../event-buses/refresh-tasks'
     import * as deleteTask$ from '../../event-buses/delete-task'
+    import * as updateGroup$ from '../../event-buses/update-group'
     import * as updateTask$ from '../../event-buses/updated-task'
+    import LoadingState from "../ui/LoadingState";
+    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'TasksPage',
         components: {
+            LoadingState,
             NoTasksCard,
             TaskCard,
             LoadButton,
@@ -82,6 +86,7 @@
                 haveDeleted: false,
                 context: {},
                 mode: '', // Groups, Daily, Uncategorized
+                isLoading: true
             }
         },
         methods: {
@@ -105,13 +110,13 @@
             initTasks: async function () {
                 this.setMode()
                 this.chooseStrategy()
-                console.log('Fetching tasks...')
                 const response = await this.context.getTasks()
-                if (!response.errorStatus) {
-                    this.tasks = response.reverse()
-                } else {
-                    alert('Problem with tasks loading.')
-                }
+                const errorMessage = 'Could not load tasks.'
+                responseHandler.handle(response, this.successfulTaskInit, errorMessage)
+            },
+
+            successfulTaskInit: function(response) {
+                this.tasks = response.reverse()
             },
 
             mergeNewTasks: function () {
@@ -174,7 +179,9 @@
             },
 
             bootstrap() {
+                this.isLoading = true
                 this.initTasks()
+                this.isLoading = false
                 this.saveGroup()
             },
         },
@@ -208,6 +215,10 @@
                 if (task.modifierId != this.userId) {
                     this.haveUpdates = true
                 }
+            })
+
+            updateGroup$.subscribe((group) => {
+                this.group = group
             })
 
             refresh$.subscribe(() => {

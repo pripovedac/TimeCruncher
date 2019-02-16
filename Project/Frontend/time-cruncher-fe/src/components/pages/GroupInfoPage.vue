@@ -2,7 +2,8 @@
     <div class="task-info" :class="{loading: isLoading}">
         <form @submit.prevent="updateGroup($event)">
             <h1>
-                <input aria-label="title" placeholder="Task name"
+                <input aria-label="title"
+                       placeholder="Group name"
                        v-model="group.name"
                        spellcheck="false"/>
             </h1>
@@ -66,8 +67,10 @@
     import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
+    import {responseHandler} from '../../services/response-handler'
     import * as groupsApi from '../../services/api/groups'
     import * as removeGroup$ from '../../event-buses/remove-group'
+    import * as updateGroup$ from '../../event-buses/update-group'
 
     export default {
         name: 'GroupInfoPage',
@@ -102,24 +105,26 @@
 
                 this.isLoading = true
                 const response = await groupsApi.updateSingle(this.$route.params.groupId, updatedGroup)
-                if (!response.errorStatus) {
-                    this.name = response.name
-                    this.description = response.description
-                    this.members = response.users
-                    this.isLoading = false
-                } else {
-                    alert('Problem with group update.')
-                }
+                const errorMessage = `Could not update group ${this.group.name}`
+                responseHandler.handle(response, this.successfulUpdate, errorMessage)
+                this.isLoading = false
+            },
+
+            successfulUpdate: function(response) {
+                this.name = response.name
+                this.description = response.description
+                this.members = response.users
             },
 
             initMembers: async function () {
                 const groupId = this.$route.params.groupId
                 const response = await groupsApi.getMembers(groupId)
-                if (!response.errorStatus) {
-                    this.members = response
-                } else {
-                    alert('Problem with fetch members.')
-                }
+                const errorMessage = `Could not load members.`
+                responseHandler.handle(response, this.successfulMemberInit, errorMessage)
+            },
+
+            successfulMemberInit: function(response) {
+                this.members = response
             },
 
             deleteGroup: async function () {
@@ -127,17 +132,17 @@
                 const shouldDelete = confirm(`Are you sure you want to delete group ${groupName}?`)
                 if (shouldDelete) {
                     const response = await groupsApi.deleteSingle(this.group.id)
+                    const errorMessage = 'Could not delete group.'
+                    responseHandler.handle(response, this.wellDeletedGroup, errorMessage)
+                }
+            },
 
-                    if (!response.errorStatus) {
-                        const group = this.getFirstGroup()
-                        if (group) {
-                            removeGroup$.publish(this.group.id)
-                            this.saveLastActiveGroup(group)
-                            router.push({name: 'GroupInfo', params: {groupId: group.id}})
-                        }
-                    } else {
-                        alert('Problem with group deletion.')
-                    }
+            wellDeletedGroup: function(){
+                const group = this.getFirstGroup()
+                if (group) {
+                    removeGroup$.publish(this.group.id)
+                    this.saveLastActiveGroup(group)
+                    router.push({name: 'GroupInfo', params: {groupId: group.id}})
                 }
             },
 
@@ -176,8 +181,10 @@
         },
         created() {
             this.group = this.loadLastActiveGroup()
-            console.log('group in groupinfo: ', this.group)
             this.initMembers()
+            updateGroup$.subscribe((group) => {
+                this.group = group
+            })
         }
     }
 </script>

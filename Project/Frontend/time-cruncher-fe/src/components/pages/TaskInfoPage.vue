@@ -1,5 +1,7 @@
 <template>
-    <div class="task-info" v-if="!$route.query.comments">
+    <div class="task-info"
+         :class="{loading: isLoading}"
+         v-if="!$route.query.comments">
         <form @submit.prevent="updateTask($event)">
             <h1>
                 <input aria-label="title" placeholder="Task name"
@@ -103,6 +105,7 @@
     import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import {dateController} from '../../services/date-transformations'
+    import {responseHandler} from '../../services/response-handler'
     import * as global from '../../services/utilites'
     import * as tasksApi from '../../services/api/tasks'
     import * as groupsApi from '../../services/api/groups'
@@ -131,6 +134,7 @@
                 completionTime: {},
                 dueTime: {},
                 comments: [],
+                isLoading: false,
             }
         },
         methods: {
@@ -151,7 +155,15 @@
                     dueTime: this.dueTime,
                     assignedUserIds: selectedMembers,
                 }
-                await tasksApi.updateSingle(this.task.id, newTask)
+
+                this.isLoading = true
+                const response = tasksApi.updateSingle(this.task.id, newTask)
+                const errorMessage = 'Could not update task.'
+                responseHandler.handle(response, this.successfulUpdate, errorMessage)
+                this.isLoading = false
+            },
+
+            successfulUpdate: function () {
                 refresh$.publish()
             },
 
@@ -164,7 +176,6 @@
 
             removeMember: function (member) {
                 this.taskMembers = this.taskMembers.filter(tMember => tMember.id != member.id)
-                // todo: sort by name
                 this.groupMembers.push(member)
             },
 
@@ -173,53 +184,52 @@
             },
 
             fetchTask: async function () {
-                // todo: this shouldn't be BE connected
-                console.log('Fetching task...')
                 const taskId = this.$route.params.taskId
                 const response = await tasksApi.getSingleTask(taskId)
+                const errorMessage = 'Could not get task'
+                responseHandler.handle(response, this.successfulTaskGet, errorMessage)
+            },
 
-                if (!response.errorStatus) {
-                    this.task = response
-                    this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
-                    this.completionTime = dateController.toInputFormat(new Date(this.task.completionTime))
-                    this.dueTime = this.task.dueTime
-                        ? dateController.toString(new Date(this.task.dueTime))
-                        : null
-                } else {
-                    // todo: handle errors
-                    alert('Problem with loading single task.')
-                }
+            successfulTaskGet: function (response) {
+                this.task = response
+                this.publishTime = dateController.toInputFormat(new Date(this.task.publishTime))
+                this.completionTime = dateController.toInputFormat(new Date(this.task.completionTime))
+                this.dueTime = this.task.dueTime
+                    ? dateController.toString(new Date(this.task.dueTime))
+                    : null
             },
 
             fetchTaskMembers: async function () {
                 const id = this.$route.params.taskId
                 const response = await tasksApi.getMembers(id)
+                const errorMessage = 'Could not get task members.'
+                responseHandler.handle(response, this.successfulTaskMembersGet, errorMessage)
+            },
 
-                if (!response.errorStatus) {
-                    this.taskMembers = response
-                } else {
-                    alert('Problem with fetching task members.')
-                }
+            successfulTaskMembersGet: function(response) {
+                this.taskMembers = response
             },
 
             fetchGroupMembers: async function () {
                 const id = this.task.groupId
                 const response = await groupsApi.getMembers(id)
-                if (!response.errorStatus) {
-                    this.groupMembers = this.getDifference(this.taskMembers, response)
-                } else {
-                    alert('Problem with fetching group members.')
-                }
+                const errorMessage = 'Could not get group members.'
+                responseHandler.handle(response, this.successfulGroupMembersGet, errorMessage)
+            },
+
+            successfulGroupMembersGet: function(response) {
+                this.groupMembers = this.getDifference(this.taskMembers, response)
             },
 
             fetchComments: async function () {
                 const id = this.$route.params.taskId
                 const response = await commentsApi.getComments(id)
-                if (!response.errorStatus) {
-                    this.comments = response
-                } else {
-                    alert('Problem with fetching comments.')
-                }
+                const errorMessage = 'Could not load comments.'
+                responseHandler.handle(response, this.successfulCommentGet, errorMessage)
+            },
+
+            successfulCommentGet: function(response) {
+                this.comments = response
             },
 
             getDifference: function (taskMembers, groupMembers) {
@@ -233,13 +243,13 @@
                 const shouldDelete = confirm(`Are you sure you want to delete task ${this.task.name}?`)
                 if (shouldDelete) {
                     const response = await tasksApi.deleteSingle(this.task.id)
-                    if (!response.errorStatus) {
-                        router.push({name: 'GroupInfo', params: {groupId: this.group.id}})
-                        // removeGroup$.publish(this.group.id)
-                    } else {
-                        alert('Problem with fetch members.')
-                    }
+                    const errorMessage = 'Could not delete task.'
+                    responseHandler.handle(response, this.successfulTaskDelete, errorMessage)
                 }
+            },
+
+            successfulTaskDelete: function() {
+                router.push({name: 'GroupInfo', params: {groupId: this.group.id}})
             },
 
             deleteComment: async function (commentId) {
@@ -247,7 +257,6 @@
                 if (!response.errorStatus) {
                     this.comments = this.comments.filter(comment => comment.id != commentId)
                 } else {
-                    // todo: handle errors
                     alert('Problem with deleting comment.')
                 }
             },
@@ -281,6 +290,10 @@
         background-color: #fff;
         border-left: 2px solid #eee;
         overflow-y: auto;
+    }
+
+    .loading {
+        opacity: 0.4;
     }
 
     form {
@@ -432,7 +445,6 @@
             margin-bottom: 0.4em;
         }
     }
-
 
     .danger-zone {
         box-sizing: border-box;

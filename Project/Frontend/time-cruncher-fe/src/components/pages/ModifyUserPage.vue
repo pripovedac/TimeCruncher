@@ -42,6 +42,7 @@
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
     import * as userApi from '../../services/api/user'
+    import {responseHandler} from '../../services/response-handler'
     import DeleteButton from '../ui/DeleteButton'
     import {Trash2Icon} from 'vue-feather-icons'
 
@@ -61,11 +62,17 @@
         },
         methods: {
             bootstrap: async function () {
-                this.user = await this.fetchUser()
+                await this.fetchUser()
             },
 
             fetchUser: async function () {
-                return await userApi.getUser(this.userId)
+                const response = await userApi.getUser(this.userId)
+                const errorMessage = 'Could not get your data.'
+                responseHandler.handle(response, this.initUser, errorMessage)
+            },
+
+            initUser: function (response) {
+                this.user = response
             },
 
             updateUser: async function () {
@@ -75,13 +82,13 @@
                     email: this.user.email
                 }
                 const response = await userApi.updateUser(this.userId, updatedUser)
+                const errorMessage = 'Problem with update'
+                responseHandler.handle(response, this.successfulUpdate, errorMessage)
+            },
 
-                if (!response.errorStatus) {
-                    alert('Successfully updated infos!')
-                    this.goBack()
-                } else {
-                    alert('Problem with update.')
-                }
+            successfulUpdate: function () {
+                alert('Successfully updated infos!')
+                this.goBack()
             },
 
             goBack: function () {
@@ -92,17 +99,16 @@
                 return global.userState.loadId()
             },
 
-            deleteAccount: async function() {
+            deleteAccount: async function () {
                 const response = await userApi.deleteUser(this.userId)
-
-                if (!response.errorStatus) {
-                    this.goBack()
-                    global.storageHandler.clear()
-                    router.push({name: '/login'})
-                } else {
-                    alert('Problem with update.')
-                }
+                const errorMessage = 'Problem with update.'
+                responseHandler.handle(response, this.successfulDelete, errorMessage)
             },
+
+            successfulDelete: function () {
+                global.storageHandler.clear()
+                router.push({name: '/login'})
+            }
         },
         created() {
             this.bootstrap()
@@ -196,8 +202,6 @@
         color: white;
         outline: none;
     }
-
-
 
     .danger-zone {
         box-sizing: border-box;
