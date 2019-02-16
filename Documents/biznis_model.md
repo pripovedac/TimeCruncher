@@ -72,30 +72,7 @@ export class Comment{
 ```
 
 ## API:
-
-### URI: _/users_
-
-![api users](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/9.%20api_users.png)
-
-![dto one](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/10.%20dto_one.png)
-
-### URI: _/groups_
-
-![api groups](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/11.%20api_groups.png)
-
-![dto two](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/12.%20dto_two.png)
-
-### URI: _/tasks_
-
-![api tasks](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/13.%20api_tasks.png)
-
-![dto three](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/14.%20dto_three.png)
-
-### URI: _/comments_
-
-![api comments](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/15.%20api_comments.png)
-
-![dto four](https://github.com/pripovedac/TimeCruncher/blob/master/Documents/Images/16.%20dto_four.png)
+API dokumentacija se može naći na sledećem [linku](https://documenter.getpostman.com/view/4198505/RztmsUjz)
 
 ## Format odgovora na zahteve
 

@@ -86,7 +86,7 @@ export class TaskController {
     if (!task)
       throw new TaskNotFoundException(params.id);
     const res = await this.taskService.removeById(params.id);
-    pusher.trigger('private-channel_for_group-' + task.group.id, 'task_removed', JSON.stringify({id: params.id, destructorId}));
+    pusher.trigger('private-channel_for_group-' + task.group.id, 'task_removed', JSON.stringify({id: params.id, destructorId, groupId: task.group.id}));
     return {messsage: `Task with id = ${params.id} successfully removed.`};
   }
 

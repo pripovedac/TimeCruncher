@@ -1,9 +1,9 @@
 import Pusher = require('pusher');
 
 export const pusher = new Pusher({
-  appId: '686985',
-  key: 'abda0f1c579260109aba',
-  secret: 'dc6445a6e96eec7cbcc9',
-  cluster: 'eu',
-  encrypted: true,
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
+  encrypted: process.env.PUSHER_ENCRYPTED == 'true' ? true : false,
 });
