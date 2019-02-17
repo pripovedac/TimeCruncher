@@ -107,13 +107,23 @@
                 this.context = new Context(strategies.get(routeName))
             },
 
-            initTasks: async function () {
+            initTasksOnRouteChange: async function () {
+                const lastGroupId = this.loadGroup().id
+                if (lastGroupId != this.$route.params.groupId) {
+                    console.log('loadujem')
+                    await this.initTasks()
+                }
+            },
+
+            initTasks: async function() {
                 this.setMode()
                 this.chooseStrategy()
                 const response = await this.context.getTasks()
                 const errorMessage = 'Could not load tasks.'
                 responseHandler.handle(response, this.successfulTaskInit, errorMessage)
+                this.isLoading = false
             },
+
 
             successfulTaskInit: function(response) {
                 this.tasks = response.reverse()
@@ -179,22 +189,20 @@
             },
 
             bootstrap() {
-                this.isLoading = true
-                this.initTasks()
-                this.isLoading = false
                 this.saveGroup()
             },
         },
 
         watch: {
             $route() {
-                // todo might be a problem here, will see
+                this.initTasksOnRouteChange()
                 this.bootstrap()
                 this.group = this.loadGroup()
             }
         },
         created() {
             this.group = this.loadGroup()
+            this.initTasks()
             this.bootstrap()
 
             newTask$.subscribe((newTask) => {
@@ -212,12 +220,16 @@
             })
 
             updateTask$.subscribe((task) => {
-                if (task.modifierId != this.userId) {
-                    this.haveUpdates = true
+                const isInNew = this.newTasks.find(newTask => newTask.id == task.id)
+                if (isInNew) {
+                    this.newTasks = this.newTasks.map(newTask => newTask.id != task.id ? newTask : task)
                 } else {
-                    this.tasks = this.tasks.map(t => t.id != task.id ? t : task)
+                    if (task.modifierId != this.userId) {
+                        this.haveUpdates = true
+                    } else {
+                        this.tasks = this.tasks.map(t => t.id != task.id ? t : task)
+                    }
                 }
-
             })
 
             updateGroup$.subscribe((group) => {
