@@ -64,7 +64,6 @@
 <script>
     import DeleteButton from '../ui/DeleteButton'
     import MemberCard from '../ui/MemberCard'
-    import Button from '../ui/Button'
     import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
@@ -78,7 +77,6 @@
         components: {
             DeleteButton,
             MemberCard,
-            Button,
             AlignLeftIcon,
             UsersIcon,
             Trash2Icon,
@@ -116,6 +114,7 @@
                 this.name = response.name
                 this.description = response.description
                 this.members = response.users
+                this.memberEmails = ''
             },
 
             initMembers: async function () {
@@ -193,6 +192,7 @@
             this.bootstrap()
             updateGroup$.subscribe((group) => {
                 this.group = group
+                this.members = group.users
             })
         }
     }
