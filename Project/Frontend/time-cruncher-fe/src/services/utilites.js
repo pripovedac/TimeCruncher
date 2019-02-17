@@ -75,6 +75,17 @@ export class UserState extends StateFactory {
         return super.load('user')
     }
 
+    updateUser(user) {
+        const oldData = this.load()
+        const newData = {
+            ...oldData,
+            firstname: user.firstname,
+            lastname: user.lastname
+        }
+        this.save(newData)
+    }
+
+
     saveId(id) {
         super.save('userId', id)
     }

@@ -93,7 +93,7 @@
             },
 
             goBack: function () {
-                router.go(-1)
+                router.push({name: 'WelcomePage'})
             },
 
             getUserId: function () {

@@ -94,6 +94,7 @@
         methods: {
             setMode: function () {
                 this.lastMode = this.mode
+                console.log('this.route.meta.title: ', this.$route.meta.title)
                 this.mode = this.$route.meta.title
             },
 
@@ -124,7 +125,6 @@
             },
 
             initTasks: async function () {
-                this.setMode()
                 this.chooseStrategy()
                 const response = await this.context.getTasks()
                 const errorMessage = 'Could not load tasks.'
@@ -167,7 +167,17 @@
                 this.initTasks()
                 this.haveUpdates = false
                 this.updatedTasks = []
-                router.push({name: 'GroupInfo'})
+                this.updateRedirect()
+            },
+
+            updateRedirect() {
+                if (this.mode == 'Groups') {
+                    router.push({name: 'GroupInfo'})
+                } else if (this.mode == 'Daily') {
+                    router.push({name: 'DailyInfo'})
+                } else {
+                    router.push({name: 'UncategorizedInfo'})
+                }
             },
 
             markAsDeleted(id) {
@@ -191,18 +201,18 @@
             },
 
             saveGroup: function () {
-                if (this.mode == 'Daily' || this.mode == 'Uncategorized') {
-                 //   this.removeLastActive()
-                } else {
-                    const groupId = this.$route.params.groupId
-                    const group = global.groupState.loadSingle(groupId)
-                    if (group) {
-                        global.groupState.saveLastActiveGroup(group)
-                    }
+                const groupId = this.$route.params.groupId
+                const group = global.groupState.loadSingle(groupId)
+                if (group) {
+                    global.groupState.saveLastActiveGroup(group)
                 }
             },
 
             loadGroup: function () {
+                if (this.lastMode == '') {
+                    // case Weekly -> Groups/Filters
+                    return global.groupState.loadSingle(this.$route.params.groupId)
+                }
                 return global.groupState.loadLastActiveGroup()
             },
 
@@ -245,12 +255,13 @@
                 } else {
                     // not destructor app instance
                     const isInNew = this.checkIfExists(this.newTasks, deletedTask)
+                    const isInRegular = this.checkIfExists(this.tasks, deletedTask)
                     const isInUpdated = this.checkIfExists(this.updatedTasks, deletedTask)
                     if (isInNew) {
                         this.newTasks = this.newTasks.filter(newTask => newTask.id != deletedTask.id)
                     } else if (isInUpdated) {
                         this.updatedTasks = this.updatedTasks.filter(task => task.id != deletedTask.id)
-                    } else {
+                    } else if (isInRegular) {
                         this.markAsDeleted(deletedTask.id)
                         this.redirect()
                         this.haveDeleted = true
@@ -260,14 +271,17 @@
 
             updateTask$.subscribe((task) => {
                 const isInNew = this.checkIfExists(this.newTasks, task)
-                if (isInNew) {
-                    this.newTasks = this.newTasks.map(newTask => newTask.id != task.id ? newTask : task)
-                } else {
-                    if (task.modifierId != this.userId) {
-                        this.haveUpdates = true
-                        this.updatedTasks.push(task)
+                const isInRegular = this.checkIfExists(this.tasks, task)
+                if (isInRegular || isInNew) {
+                    if (isInNew) {
+                        this.newTasks = this.newTasks.map(newTask => newTask.id != task.id ? newTask : task)
                     } else {
-                        this.tasks = this.tasks.map(t => t.id != task.id ? t : task)
+                        if (task.modifierId != this.userId) {
+                            this.haveUpdates = true
+                            this.updatedTasks.push(task)
+                        } else {
+                            this.tasks = this.tasks.map(t => t.id != task.id ? t : task)
+                        }
                     }
                 }
             })
@@ -275,8 +289,8 @@
             updateGroup$.subscribe((group) => {
                 if (group.id == this.group.id) {
                     global.groupState.saveLastActiveGroup(group)
+                    this.group = {...group}
                 }
-                this.group = {...group}
 
             })
 

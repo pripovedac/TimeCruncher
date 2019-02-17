@@ -191,8 +191,10 @@
         created() {
             this.bootstrap()
             updateGroup$.subscribe((group) => {
-                this.group = {...group}
-                this.members = group.users
+                if(this.group.id == group.id) {
+                    this.group = {...group}
+                    this.members = group.users
+                }
             })
         }
     }

@@ -40,6 +40,7 @@
     import PublicInput from '../ui/PublicInput'
     import Button from '../ui/Button'
     import router from '../../routes/routes'
+    import {userState} from '../../services/utilites'
     import * as global from '../../services/utilites'
     import * as userApi from '../../services/api/user'
     import {responseHandler} from '../../services/response-handler'
@@ -84,6 +85,7 @@
                 const response = await userApi.updateUser(this.userId, updatedUser)
                 const errorMessage = 'Problem with update'
                 responseHandler.handle(response, this.successfulUpdate, errorMessage)
+                userState.updateUser(updatedUser)
             },
 
             successfulUpdate: function () {
@@ -92,7 +94,7 @@
             },
 
             goBack: function () {
-                router.go(-1)
+                router.push({name: 'WelcomePage'})
             },
 
             getUserId: function () {

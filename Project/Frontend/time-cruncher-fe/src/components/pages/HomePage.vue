@@ -40,9 +40,14 @@
                 groupId: this.getRouteGroupId(),
                 userId: this.getUserId(),
                 pusher: {},
+                mode: '',
             }
         },
         methods: {
+            initMode: function() {
+                this.mode = this.$route.meta.title
+            },
+
             initGroups: async function () {
                 await this.fetchGroups()
             },
@@ -100,16 +105,19 @@
                     })
 
                     channel.bind('task_removed', function (deletedTask) {
-                        if (deletedTask.groupId == that.groupId) {
+                        const shouldPublish = that.mode == 'Daily' ||
+                            that.mode == 'Uncategorized'
+                        const goodGroup = deletedTask.groupId == that.groupId
+                        if (shouldPublish || goodGroup) {
                             deleteTask$.publish(deletedTask)
                         }
                     })
 
                     channel.bind('task_edited', function (updatedTask) {
-                        console.log('updated task: ', updatedTask)
-                        console.log('group id: ', that.groupId)
-                        if (updatedTask.group.id == that.groupId) {
-                            console.log('publsihing')
+                        const shouldPublish = that.mode == 'Daily' ||
+                            that.mode == 'Uncategorized'
+                        const goodGroup = updatedTask.group.id == that.groupId
+                        if (shouldPublish || goodGroup) {
                             updateTask$.publish(updatedTask)
                         }
                     })
@@ -167,6 +175,7 @@
             mergeGroups: function () {
                 this.groups = [...this.groups, ...this.newGroups]
                 this.newGroups = []
+                this.subscribeToChannels()
             },
 
             logout: function () {
@@ -219,6 +228,7 @@
             },
 
             bootstrap: function () {
+                this.initMode()
                 this.initPusher()
                 this.subscribeToChannels()
             }
@@ -232,7 +242,7 @@
         },
         async created() {
             this.initUser()
-            this.initPusher()
+            // this.initPusher()
             await this.initGroups()
             this.bootstrap()
             removeGroup$.subscribe((groupId) => {
