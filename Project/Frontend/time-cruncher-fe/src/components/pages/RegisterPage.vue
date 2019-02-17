@@ -70,16 +70,16 @@
                     }
                 })
 
-                const errorMessage = 'Registration did not go successfully.'
-                responseHandler.handle(response, this.successfulRegistration, errorMessage)
+                if (response.ok) {
+                    const userData = await response.json()
+                    userState.saveAT(userData.token)
+                    userState.saveId(userData.user.id)
+                    router.push({path: 'home'})
+                } else {
+                    alert('Registration did not go successfully.')
+                }
             },
 
-            successfullRegistration: async function (response) {
-                const userData = await response.json()
-                userState.saveAT(userData.token)
-                userState.saveId(userData.user.id)
-                router.push({path: 'home'})
-            }
         }
     }
 </script>

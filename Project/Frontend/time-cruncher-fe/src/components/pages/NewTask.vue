@@ -16,7 +16,7 @@
                               spellcheck="false"
                               type="text"/>
                 </label>
-                <label class="label-select">
+                <label class="label-select" v-if="!group.isPrivate">
                     Members
                     <select @change="selectMember($event)">
                         <option value="">Member list</option>
