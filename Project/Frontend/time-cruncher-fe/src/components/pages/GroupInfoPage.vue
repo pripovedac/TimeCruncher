@@ -191,7 +191,7 @@
         created() {
             this.bootstrap()
             updateGroup$.subscribe((group) => {
-                this.group = group
+                this.group = {...group}
                 this.members = group.users
             })
         }
