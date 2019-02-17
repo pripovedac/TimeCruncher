@@ -158,7 +158,9 @@
 
                 this.isLoading = true
                 const response = tasksApi.updateSingle(this.task.id, newTask)
-                const errorMessage = 'Could not update task.'
+                const errorMessage = 'Could not update task.' +
+                    'It is probably deleted.' +
+                    'Check the original group for the latest task info.'
                 responseHandler.handle(response, this.successfulUpdate, errorMessage)
                 this.isLoading = false
             },
@@ -206,7 +208,7 @@
                 responseHandler.handle(response, this.successfulTaskMembersGet, errorMessage)
             },
 
-            successfulTaskMembersGet: function(response) {
+            successfulTaskMembersGet: function (response) {
                 this.taskMembers = response
             },
 
@@ -217,7 +219,7 @@
                 responseHandler.handle(response, this.successfulGroupMembersGet, errorMessage)
             },
 
-            successfulGroupMembersGet: function(response) {
+            successfulGroupMembersGet: function (response) {
                 this.groupMembers = this.getDifference(this.taskMembers, response)
             },
 
@@ -228,7 +230,7 @@
                 responseHandler.handle(response, this.successfulCommentGet, errorMessage)
             },
 
-            successfulCommentGet: function(response) {
+            successfulCommentGet: function (response) {
                 this.comments = response
             },
 
@@ -243,12 +245,14 @@
                 const shouldDelete = confirm(`Are you sure you want to delete task ${this.task.name}?`)
                 if (shouldDelete) {
                     const response = await tasksApi.deleteSingle(this.task.id)
-                    const errorMessage = 'Could not delete task.'
+                    const errorMessage = 'Could not delete task. ' +
+                        'It is probably deleted.' +
+                        'Check the original group for the latest task info.'
                     responseHandler.handle(response, this.successfulTaskDelete, errorMessage)
                 }
             },
 
-            successfulTaskDelete: function() {
+            successfulTaskDelete: function () {
                 router.push({name: 'GroupInfo', params: {groupId: this.group.id}})
             },
 

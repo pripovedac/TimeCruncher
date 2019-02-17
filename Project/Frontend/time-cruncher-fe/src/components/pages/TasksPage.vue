@@ -80,17 +80,20 @@
                 tasks: [],
                 newTasks: [],
                 deletedTasks: [],
+                updatedTasks: [],
                 group: {},
                 userId: global.userState.loadId(),
                 haveUpdates: false,
                 haveDeleted: false,
                 context: {},
                 mode: '', // Groups, Daily, Uncategorized
+                lastMode: '',
                 isLoading: true
             }
         },
         methods: {
             setMode: function () {
+                this.lastMode = this.mode
                 this.mode = this.$route.meta.title
             },
 
@@ -108,24 +111,29 @@
             },
 
             initTasksOnRouteChange: async function () {
-                const lastGroupId = this.loadGroup().id
-                if (lastGroupId != this.$route.params.groupId) {
-                    console.log('loadujem')
+                const lastGroup = this.loadGroup()
+                const currentMode = this.mode == 'Daily' || this.mode == 'Uncategorized'
+                const lastMode = this.lastMode == 'Daily' || this.lastMode == 'Uncategorized'
+                let initConditions = currentMode
+                    || lastMode
+                    || this.$route.params.groupId && lastGroup.id != this.$route.params.groupId
+                if (initConditions) {
+                    console.log('Loading tasks...')
                     await this.initTasks()
                 }
             },
 
-            initTasks: async function() {
+            initTasks: async function () {
                 this.setMode()
                 this.chooseStrategy()
                 const response = await this.context.getTasks()
                 const errorMessage = 'Could not load tasks.'
                 responseHandler.handle(response, this.successfulTaskInit, errorMessage)
-                this.isLoading = false
+                this.isLoading = this.haveDeleted = this.haveUpdates = false
             },
 
 
-            successfulTaskInit: function(response) {
+            successfulTaskInit: function (response) {
                 this.tasks = response.reverse()
             },
 
@@ -135,9 +143,14 @@
             },
 
             mergeDeletedTasks: function () {
-                this.tasks = this.tasks.filter(task => !task.isDeleted)
+                this.tasks = this.filterDeleted(this.tasks)
+                this.updatedTasks = this.filterDeleted(this.updatedTasks)
                 this.redirect()
                 this.haveDeleted = false
+            },
+
+            filterDeleted: function (tasks) {
+                return tasks.filter(task => !task.isDeleted)
             },
 
             redirect: function () {
@@ -153,6 +166,7 @@
             updateTasks() {
                 this.initTasks()
                 this.haveUpdates = false
+                this.updatedTasks = []
                 router.push({name: 'GroupInfo'})
             },
 
@@ -177,10 +191,14 @@
             },
 
             saveGroup: function () {
-                const groupId = this.$route.params.groupId
-                const group = global.groupState.loadSingle(groupId)
-                if (group) {
-                    global.groupState.saveLastActiveGroup(group)
+                if (this.mode == 'Daily' || this.mode == 'Uncategorized') {
+                 //   this.removeLastActive()
+                } else {
+                    const groupId = this.$route.params.groupId
+                    const group = global.groupState.loadSingle(groupId)
+                    if (group) {
+                        global.groupState.saveLastActiveGroup(group)
+                    }
                 }
             },
 
@@ -188,19 +206,31 @@
                 return global.groupState.loadLastActiveGroup()
             },
 
+            removeLastActive: function () {
+                global.groupState.removeLastActive()
+            },
+
             bootstrap() {
                 this.saveGroup()
+            },
+
+            checkIfExists(elements, task) {
+                if (elements.length > 0) {
+                    return elements.find(el => el.id == task.id) != undefined
+                }
             },
         },
 
         watch: {
             $route() {
+                this.setMode()
                 this.initTasksOnRouteChange()
                 this.bootstrap()
                 this.group = this.loadGroup()
             }
         },
         created() {
+            this.setMode()
             this.group = this.loadGroup()
             this.initTasks()
             this.bootstrap()
@@ -213,19 +243,29 @@
                 if (this.userId == deletedTask.destructorId) {
                     this.removeDeleted(deletedTask.id)
                 } else {
-                    this.markAsDeleted(deletedTask.id)
-                    this.redirect()
-                    this.haveDeleted = true
+                    // not destructor app instance
+                    const isInNew = this.checkIfExists(this.newTasks, deletedTask)
+                    const isInUpdated = this.checkIfExists(this.updatedTasks, deletedTask)
+                    if (isInNew) {
+                        this.newTasks = this.newTasks.filter(newTask => newTask.id != deletedTask.id)
+                    } else if (isInUpdated) {
+                        this.updatedTasks = this.updatedTasks.filter(task => task.id != deletedTask.id)
+                    } else {
+                        this.markAsDeleted(deletedTask.id)
+                        this.redirect()
+                        this.haveDeleted = true
+                    }
                 }
             })
 
             updateTask$.subscribe((task) => {
-                const isInNew = this.newTasks.find(newTask => newTask.id == task.id)
+                const isInNew = this.checkIfExists(this.newTasks, task)
                 if (isInNew) {
                     this.newTasks = this.newTasks.map(newTask => newTask.id != task.id ? newTask : task)
                 } else {
                     if (task.modifierId != this.userId) {
                         this.haveUpdates = true
+                        this.updatedTasks.push(task)
                     } else {
                         this.tasks = this.tasks.map(t => t.id != task.id ? t : task)
                     }

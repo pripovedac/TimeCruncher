@@ -49,6 +49,10 @@ export class GroupState extends StateFactory {
         return super.load('lastGroup')
     }
 
+    removeLastActive() {
+        super.remove('lastGroup')
+    }
+
     addGroup(group) {
         let groups = this.load()
         groups.push(group)
