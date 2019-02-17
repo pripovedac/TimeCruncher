@@ -30,7 +30,6 @@
     import Button from '../ui/Button'
     import * as global from '../../services/utilites'
     import router from '../../routes/routes'
-    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: 'Login',
@@ -43,7 +42,7 @@
             return {
                 user: {
                     email: 'thefirstpresenter@gmail.com',
-                    password: 'daretovasifra'
+                    password: '123'
                 },
             }
         },

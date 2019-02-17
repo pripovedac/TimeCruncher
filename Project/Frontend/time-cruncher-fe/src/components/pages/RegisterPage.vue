@@ -34,7 +34,6 @@
     import Button from '../ui/Button'
     import {userState} from '../../services/utilites'
     import router from '../../routes/routes'
-    import {responseHandler} from '../../services/response-handler'
 
     export default {
         name: "Register",
