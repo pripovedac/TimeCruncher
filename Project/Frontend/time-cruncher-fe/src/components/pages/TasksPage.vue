@@ -221,7 +221,11 @@
             })
 
             updateGroup$.subscribe((group) => {
-                this.group = group
+                if (group.id == this.group.id) {
+                    global.groupState.saveLastActiveGroup(group)
+                }
+                this.group = {...group}
+
             })
 
             refresh$.subscribe(() => {
