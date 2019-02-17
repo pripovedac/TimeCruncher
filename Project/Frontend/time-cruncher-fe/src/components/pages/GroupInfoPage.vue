@@ -64,6 +64,7 @@
 <script>
     import DeleteButton from '../ui/DeleteButton'
     import MemberCard from '../ui/MemberCard'
+    import Button from '../ui/Button'
     import {AlignLeftIcon, UsersIcon, Trash2Icon} from 'vue-feather-icons'
     import router from '../../routes/routes'
     import * as global from '../../services/utilites'
@@ -77,6 +78,7 @@
         components: {
             DeleteButton,
             MemberCard,
+            Button,
             AlignLeftIcon,
             UsersIcon,
             Trash2Icon,
@@ -358,7 +360,7 @@
 
     button[type="submit"] {
         display: block;
-        width: 30%;
+        min-width: 30%;
         margin-top: 1em;
         padding: 1em;
         align-self: center;

@@ -468,7 +468,7 @@
     button[type="submit"] {
         @include remove(border, outline);
         display: block;
-        width: 30%;
+        min-width: 30%;
         margin-top: 0;
         padding: 1em;
         align-self: center;
