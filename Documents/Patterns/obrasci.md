@@ -190,7 +190,7 @@ export function subscribe(fn) {
 newTask$.publish(newTask)
 ```
 
-##### Odgovor na emitovan događaj detektovan na magistrali
+###### Odgovor na emitovan događaj detektovan na magistrali
 ```
 newTask$.subscribe((newTask) => {
   this.newTasks.push(newTask)
